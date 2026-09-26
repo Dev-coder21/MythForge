@@ -1,0 +1,19 @@
+node_modules/
+dist/
+*.local
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+
+# Starter bundle (contents already extracted)
+mythforge-starter.zip
