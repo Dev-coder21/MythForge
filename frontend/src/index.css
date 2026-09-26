@@ -1,9 +1,15 @@
 @import "tailwindcss";
+@import "lenis/dist/lenis.css";
+
+@theme {
+  --font-display: "Anton", "Impact", sans-serif;
+  --font-sans: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+}
 
 @layer base {
   html,
   body,
   #root {
-    @apply min-h-full bg-black text-white antialiased;
+    @apply min-h-full bg-black font-sans text-white antialiased;
   }
 }
