@@ -96,7 +96,9 @@ export function TitleLayer({
       if (!mesh) continue
       const v = s.letters[i]?.v ?? 0
       mesh.position.y = s.reducedMotion ? 0 : -(1 - v) * riseDistance * fontSize
-      const alpha = Math.min(1, v * 1.6) * (1 - out)
+      // The scene blends in linear light, so a linear alpha of 0.1 still reads as
+      // ~30% on screen. Square-ish gamma makes titleOut a perceptual fade.
+      const alpha = Math.pow(Math.min(1, v * 1.6) * (1 - out), 2.2)
       mesh.fillOpacity = alpha
       mesh.outlineOpacity = glowOpacity * alpha
     }

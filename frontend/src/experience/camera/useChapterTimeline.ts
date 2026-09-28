@@ -27,8 +27,10 @@ const LINE_REVEALS: [string, number, number][] = [
  * and the hero copy fades in, so the chapter opens composed rather than empty.
  *
  * Scroll (pinned, scrubbed, timeline duration 1 = whole chapter):
- *   0–12%   hero copy + numerals leave, camera starts its push
- *   12–40%  title ghosts into the scene, scene dims, chapter copy reveals
+ *   0–10%   hero copy crossfades out; chapter copy container fades in at 8–14%
+ *           (only one copy state is ever visible)
+ *   12–40%  title ghosts into the scene, scene dims, label/heading then body reveal
+ *           (portrait body arrives last, below the moon)
  *   60–85%  title fades out, particles thicken, light intensifies
  *   85–100% copy clears (transition slot)
  */
@@ -59,7 +61,6 @@ export function useChapterTimeline(
         { autoAlpha: 0, y: 18 * rise, duration: 0.9, ease: 'power2.out', stagger: 0.1 },
         0.35,
       )
-      intro.from(q('[data-numerals] > *, [data-side]'), { autoAlpha: 0, y: 10 * rise, duration: 0.7, stagger: 0.06 }, 0.7)
 
       // --- scroll ------------------------------------------------------------
       const tl = gsap.timeline({
@@ -76,12 +77,21 @@ export function useChapterTimeline(
 
       tl.to(s, { progress: 1, duration: 1 }, 0)
 
-      // Hero leaves (to-tweens: start values are read on first scroll, after the intro).
-      tl.to(q('[data-hero]'), { autoAlpha: 0, y: -48 * rise, duration: 0.12, ease: 'power1.in' }, 0)
-      tl.to(q('[data-numerals], [data-side]'), { autoAlpha: 0, duration: 0.12 }, 0.04)
+      // Persistent chrome: this chapter's rail segment + counter ring fill with progress.
+      tl.fromTo(q('[data-rail-fill]'), { scaleX: 0 }, { scaleX: 1, duration: 1 }, 0)
+      const ring = q('[data-ring]')[0]
+      if (ring) {
+        const c = Number(ring.getAttribute('stroke-dasharray'))
+        tl.fromTo(ring, { attr: { 'stroke-dashoffset': c } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1 }, 0)
+      }
+
+      // Crossfade hero → chapter copy. The intro animates the hero's children and
+      // the scroll animates the wrapper, so a mid-intro scroll still hides it.
+      tl.to(q('[data-hero]'), { autoAlpha: 0, y: -40 * rise, duration: 0.1, ease: 'power1.in' }, 0)
+      tl.fromTo(q('[data-copy]'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.06 }, 0.08)
 
       // Title ghosts back while the scene dims for reading.
-      tl.to(s, { titleOut: 0.9, duration: 0.2, ease: 'power1.inOut' }, 0.12)
+      tl.to(s, { titleOut: 0.8, duration: 0.2, ease: 'power1.inOut' }, 0.12)
       tl.to(s, { dim: 1, duration: 0.18, ease: 'sine.inOut' }, 0.14)
 
       tl.fromTo(
@@ -111,13 +121,19 @@ export function useChapterTimeline(
         }),
       )
       tl.fromTo(q('[data-reveal="cta"]'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.06 }, 0.38)
+      tl.fromTo(
+        q('[data-reveal="body-mobile"]'),
+        { autoAlpha: 0, y: 14 * rise },
+        { autoAlpha: 1, y: 0, duration: 0.08, ease: 'power2.out' },
+        0.34,
+      )
 
       // Title out, light up.
       tl.to(s, { titleOut: 1, duration: 0.2, ease: 'power1.in' }, 0.62)
       tl.to(s, { intensity: 1, duration: 0.25, ease: 'sine.inOut' }, 0.6)
 
       // Clear the copy; the shader transition will live here.
-      tl.to(q('[data-copy]'), { autoAlpha: 0, duration: 0.1 }, 0.87)
+      tl.to(q('[data-copy], [data-reveal="body-mobile"]'), { autoAlpha: 0, duration: 0.1 }, 0.87)
       tl.to(s, { dim: 0.45, duration: 0.12 }, 0.87)
 
       return () => splits.forEach((split) => split.revert())

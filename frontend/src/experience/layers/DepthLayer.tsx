@@ -82,7 +82,7 @@ export function DepthLayer({
     const { focus } = chapterState
     const d = Math.max(0.1, Math.abs(camera.position.z - z))
     const f = Math.abs(camera.position.z - focus.z)
-    u.uBlur!.value = focus.strength * (Math.abs(d - f) / d)
+    u.uBlur!.value = focus.strength * (Math.abs(d - f) / d) * (d < f ? focus.front : 1)
   })
 
   return (

@@ -21,11 +21,15 @@ export const chapterState = {
   dim: 0,
   /** Normalized pointer, -1..1 on both axes. */
   pointer: { x: 0, y: 0 },
-  /** Layer depth of field: focal plane z (the title) and blur strength (0 = off). */
-  focus: { z: -6, strength: 0 },
+  /** Layer depth of field: focal plane z (the title), blur strength (0 = off), and
+   *  multiplier for layers in front of the focal plane (keeps foreground silhouettes crisp). */
+  focus: { z: -6, strength: 0, front: 0.2 },
   reducedMotion: false,
 }
 
 export function resetLetters(count: number) {
   chapterState.letters = Array.from({ length: count }, () => ({ v: 0 }))
 }
+
+// Dev-only handle for scripted checks (npm run shots) and console debugging.
+if (import.meta.env.DEV) (window as { __chapter?: typeof chapterState }).__chapter = chapterState

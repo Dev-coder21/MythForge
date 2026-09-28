@@ -42,6 +42,8 @@ export function PostStack({ bloomSelection, bloomLights, focusTarget, gradeTint 
     // full-screen bokeh pass, which alone cost ~30fps at 1280x720 @1.75 DPR on an iGPU.
     mode: { value: 'layer', options: ['layer', 'post', 'off'] },
     layerStrength: { value: 2.2, min: 0, max: 6, step: 0.1 },
+    // Layers in front of the title get this fraction of the blur, so grass reads as a silhouette.
+    frontBlur: { value: 0.2, min: 0, max: 1, step: 0.01 },
     postFocusRange: { value: 9, min: 0.5, max: 40, step: 0.5 },
     postBokehScale: { value: 1.6, min: 0, max: 6, step: 0.1 },
   })
@@ -75,7 +77,8 @@ export function PostStack({ bloomSelection, bloomLights, focusTarget, gradeTint 
   useEffect(() => {
     chapterState.focus.z = focusTarget[2]
     chapterState.focus.strength = dof.mode === 'layer' ? dof.layerStrength : 0
-  }, [focusTarget, dof.mode, dof.layerStrength])
+    chapterState.focus.front = dof.frontBlur
+  }, [focusTarget, dof.mode, dof.layerStrength, dof.frontBlur])
 
   useFrame(() => {
     const { dim, intensity } = chapterState

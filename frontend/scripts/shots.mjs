@@ -50,6 +50,7 @@ async function ensureServer() {
   throw new Error(`dev server did not come up at ${url}`)
 }
 
+const overlaps = []
 const server = await ensureServer()
 mkdirSync(outDir, { recursive: true })
 
@@ -84,6 +85,28 @@ try {
         [p, PIN_VH],
       )
       await page.waitForTimeout(2800) // scrub: 1.2 settles, then a few frames render
+      // Copy-state check: the hero and the chapter copy must never be visible together.
+      const vis = await page.evaluate(() => {
+        const effective = (el) => {
+          if (!el) return 0
+          let op = 1
+          for (let n = el; n && n !== document.body; n = n.parentElement) {
+            const cs = getComputedStyle(n)
+            if (cs.visibility === 'hidden' || cs.display === 'none') return 0
+            op *= Number(cs.opacity)
+          }
+          return op
+        }
+        const max = (sel) => Math.max(0, ...[...document.querySelectorAll(sel)].map(effective))
+        return {
+          hero: max('[data-hero] > *'),
+          chapter: max('[data-reveal="label"], [data-reveal="heading"] > * > *, [data-reveal="body-mobile"]'),
+        }
+      })
+      const clash = vis.hero > 0.05 && vis.chapter > 0.05
+      console.log(`  ${width}px @ ${Math.round(p * 100)}%  hero ${vis.hero.toFixed(2)}  chapter ${vis.chapter.toFixed(2)}${clash ? '  <-- BOTH VISIBLE' : ''}`)
+      if (clash) overlaps.push(`${width}px @ ${Math.round(p * 100)}%`)
+
       const file = join(outDir, `${width}_p${Math.round(p * 100)}.png`)
       await page.screenshot({ path: file })
       console.log(`saved ${file}`)
@@ -93,6 +116,10 @@ try {
     await page.close()
   }
 } finally {
+  if (overlaps.length) {
+    console.warn(`copy overlap at: ${overlaps.join(', ')}`)
+    process.exitCode = 1
+  }
   await browser.close()
   if (server) server.kill()
 }
