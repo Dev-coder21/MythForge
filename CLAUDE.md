@@ -38,6 +38,29 @@ backend/app/{api,retrieval,llm_pipeline,schemas,models,core}
 - Respect `prefers-reduced-motion` (disable scrub camera moves, keep fades).
 - Original work only: do not copy code, shaders, artwork or layouts from Kage/threeui or any other template. Techniques are fine; assets and code must be ours.
 
+## Design quality rules
+Apply to every page, component and piece of copy. If a request conflicts with these, say so before building.
+
+**Visual**
+- No pure white backgrounds, harsh gradients, rainbow/neon/pastel palettes, or purple-and-black themes.
+- No generic radial orb glows, dot grids, glassmorphism, heavy drop shadows, rounded-everything, or colored left-stripe cards.
+- No emojis, Lucide/sparkle icons, checkmark bullet lists, 3-feature-card rows or bento grids.
+- No Inter, Geist or Space Grotesk. Current pairing: Anton (3D titles), Outfit (UI copy).
+- Motion is purposeful and scroll-driven. No hover animations everywhere.
+
+**Copy**
+- No em dashes. Separator in labels and captions is the middle dot: `CHAPTER 01 · THE HIDDEN GATE`.
+- No "it's not X, it's Y" constructions (or "less like X, more like Y"), no clichés, no placeholder text.
+- The same rules go into the backend LLM system prompt (`backend/app/llm_pipeline`), and generated specs are validated against them (see `frontend/src/spec/spec.test.ts`).
+
+**UX**
+- Skeleton loaders for anything async; real error, success and empty states; a 404 page.
+- No horizontal scroll. Test at 390px (`npm run shots` covers 390 and 1440).
+
+**Ship checklist (before deploy)**
+- Favicon; per-page titles and meta descriptions, including per story.
+- Compressed images; no broken links; a privacy note.
+
 ## Commands
 - Frontend: `cd frontend && npm run dev` / `npm run build` / `npm run test`
 - Backend: `cd backend && uvicorn app.main:app --reload` / `pytest`

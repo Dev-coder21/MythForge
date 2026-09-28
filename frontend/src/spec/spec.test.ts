@@ -15,6 +15,16 @@ describe('sample-kyoto.json', () => {
     expect(sampleKyoto.chapters.map((c) => c.index)).toEqual([1, 2, 3])
   })
 
+  // Copy rules (CLAUDE.md "Design quality rules"): no em dashes anywhere in story copy.
+  it('has no em dashes in any copy', () => {
+    const texts = [
+      sampleKyoto.title,
+      sampleKyoto.subtitle,
+      ...sampleKyoto.chapters.flatMap((c) => [c.label, c.titleWord, c.heading, c.subheading, c.body]),
+    ]
+    for (const t of texts) expect(t).not.toMatch(/—/)
+  })
+
   it('uses only valid enum values and hex colors', () => {
     for (const c of sampleKyoto.chapters) {
       const p = c.sceneParams

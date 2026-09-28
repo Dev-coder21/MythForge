@@ -54,7 +54,7 @@ export interface ImageRef {
 
 export interface Chapter {
   index: number
-  /** e.g. "CHAPTER 01 — THE HIDDEN GATE" */
+  /** e.g. "CHAPTER 01 · THE HIDDEN GATE" (middle dot separator, never an em dash) */
   label: string
   /** The giant 3D title word placed between mid and near layers. */
   titleWord: string

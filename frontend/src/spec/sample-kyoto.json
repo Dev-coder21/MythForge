@@ -9,11 +9,11 @@
   "chapters": [
     {
       "index": 1,
-      "label": "CHAPTER 01 — THE HIDDEN GATE",
+      "label": "CHAPTER 01 · THE HIDDEN GATE",
       "titleWord": "TORII",
       "heading": "WHERE STILLNESS REVEALS THE UNSEEN.",
       "subheading": "Every path to the sacred begins with a single vermilion threshold.",
-      "body": "At Fushimi Inari, thousands of torii climb the slopes of Mount Inari, each one a gift from a merchant or family. Walking beneath them at night, lantern light pooling on the stone, the boundary between the everyday and the divine feels less like an idea and more like a place you can cross.",
+      "body": "At Fushimi Inari, thousands of torii climb the slopes of Mount Inari, each one a gift from a merchant or family. Walking beneath them at night, lantern light pooling on the stone, the boundary between the everyday and the divine becomes a line you can step across.",
       "sceneTemplate": "threshold",
       "sceneParams": {
         "primaryColor": "#0b1026",
@@ -31,7 +31,7 @@
     },
     {
       "index": 2,
-      "label": "CHAPTER 02 — GARDENS OF STILLNESS",
+      "label": "CHAPTER 02 · GARDENS OF STILLNESS",
       "titleWord": "ZEN",
       "heading": "RAKED STONE, UNMOVING SEA.",
       "subheading": "In the dry gardens, water is only ever suggested.",
@@ -53,7 +53,7 @@
     },
     {
       "index": 3,
-      "label": "CHAPTER 03 — AFTERLIGHT",
+      "label": "CHAPTER 03 · AFTERLIGHT",
       "titleWord": "KYOTO",
       "heading": "THE CITY THAT KEEPS ITS SECRETS.",
       "subheading": "Seventeen World Heritage sites, and still the quiet wins.",
