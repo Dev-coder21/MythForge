@@ -27,16 +27,20 @@ export const THRESHOLD_LAYOUT = {
   fog: { z: -25, opacity: 0.16, speed: 0.035, height: 0.5, scale: 2.2 },
   // anchorUv = the hill's ground line in the structure texture, pinned at bottomFrac.
   mid: { z: -15, heightFrac: 0.62, bottomFrac: 0.16, anchorUv: 0.31, maxWidthFrac: 2.4, fogMix: 0.18 },
-  // Landscape: wide-tracked, left-anchored and allowed to bleed off the right
-  // edge (fitWidth > 1). Portrait: centered and fitted. Baseline sits deep in the hill.
+  // Landscape: wide-tracked, left-anchored, scaled to fitWidth × the opening
+  // frame so the last letter is partly clipped by the right edge (margin 0.05 +
+  // 0.98 → right edge at ~103%). Portrait: centered and fitted. Baseline sits deep in the hill.
   title: {
     z: -6,
     v: 0.17,
+    // Portrait: tighter tracking so the fitted word stays large, and a higher baseline so it clears the grass.
+    vPortrait: 0.3,
     fontSize: 6.4,
     letterSpacing: 0.3,
+    letterSpacingPortrait: 0.06,
     riseDistance: 1.05,
     driftBack: 3,
-    fitWidth: 1.15,
+    fitWidth: 0.98,
     fitWidthPortrait: 0.9,
     leftMargin: 0.05,
   },

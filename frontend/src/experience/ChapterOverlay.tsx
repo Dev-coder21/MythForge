@@ -41,7 +41,7 @@ export function ChapterOverlay({ spec, chapterIndex }: ChapterOverlayProps) {
       {/* Secondary kinetic type: chapter numerals on the horizon + vertical side text. */}
       <div
         data-numerals
-        className="absolute bottom-[26%] left-5 flex gap-6 text-xs tabular-nums tracking-[0.2em] text-white/70 md:left-10 md:gap-10 md:text-sm"
+        className="absolute bottom-[26%] left-5 hidden gap-6 text-xs tabular-nums tracking-[0.2em] text-white/70 md:left-10 md:flex md:gap-10 md:text-sm"
       >
         {spec.chapters.map((c) => (
           <span key={c.index} className={c.index === chapter.index ? 'text-white' : 'text-white/45'}>

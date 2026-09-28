@@ -10,7 +10,12 @@ interface StoryPageProps {
 export function StoryPage({ spec }: StoryPageProps) {
   return (
     <>
-      <Leva collapsed hidden={!import.meta.env.DEV} />
+      {/* Dev-only tuning panel, docked bottom-right, clear of the header nav and horizon numerals. */}
+      {import.meta.env.DEV && (
+        <div className="fixed bottom-4 right-4 z-50 max-h-[70vh] w-[min(300px,calc(100vw-2rem))] overflow-y-auto">
+          <Leva fill collapsed />
+        </div>
+      )}
 
       <main>
         <StoryExperience spec={spec} chapterIndex={0} />

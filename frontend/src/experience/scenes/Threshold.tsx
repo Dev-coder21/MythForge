@@ -108,8 +108,10 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
   })
   const title = useControls('Title', {
     v: frac(L.title.v, 0, 1),
+    vPortrait: frac(L.title.vPortrait, 0, 1),
     fontSize: { value: L.title.fontSize, min: 1, max: 12, step: 0.1 },
     letterSpacing: { value: L.title.letterSpacing, min: -0.1, max: 0.8, step: 0.005 },
+    letterSpacingPortrait: { value: L.title.letterSpacingPortrait, min: -0.1, max: 0.8, step: 0.005 },
     fitWidth: frac(L.title.fitWidth, 0.3, 1.6),
     fitWidthPortrait: frac(L.title.fitWidthPortrait, 0.3, 1.2),
     leftMargin: frac(L.title.leftMargin, -0.2, 0.5),
@@ -159,10 +161,14 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
 
   const titleRect = rectAt(layers.titleZ)
   const titleX = (titleRect.minX + titleRect.maxX) / 2
-  const titleY = titleRect.minY + titleRect.h * title.v
+  const titleY = titleRect.minY + titleRect.h * (portrait ? title.vPortrait : title.v)
   // Landscape: the word starts at a left margin and runs off the right edge.
   const titleLeft = portrait ? undefined : titleRect.minX + titleRect.w * title.leftMargin
-  const titleFit = fitRectAt(layers.titleZ).w * (portrait ? title.fitWidthPortrait : title.fitWidth)
+  // Landscape: the word spans fitWidth × the opening frame (> 1 = runs off the
+  // right edge from the first frame). Portrait: shrink-to-fit at the closest pose.
+  const titleFit = portrait
+    ? fitRectAt(layers.titleZ).w * title.fitWidthPortrait
+    : titleRect.w * title.fitWidth
   const particleRect = rectAt(-8)
 
   const moonDisc = useRef<Mesh>(null)
@@ -251,8 +257,9 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
         left={titleLeft}
         baseY={titleY}
         fontSize={title.fontSize}
-        letterSpacing={title.letterSpacing}
+        letterSpacing={portrait ? title.letterSpacingPortrait : title.letterSpacing}
         maxWidth={titleFit}
+        fill={!portrait}
         color={colors.title}
         glowColor={colors.titleGlow}
         glowOpacity={title.glowOpacity}

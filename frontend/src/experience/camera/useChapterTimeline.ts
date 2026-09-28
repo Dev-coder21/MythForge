@@ -16,8 +16,8 @@ interface ChapterTimelineOptions {
 
 /** [data-reveal key, timeline position, duration] for the line-mask copy reveal. */
 const LINE_REVEALS: [string, number, number][] = [
-  ['heading', 0.24, 0.14],
-  ['body', 0.32, 0.14],
+  ['heading', 0.2, 0.1],
+  ['body', 0.27, 0.12],
 ]
 
 /**
@@ -28,7 +28,7 @@ const LINE_REVEALS: [string, number, number][] = [
  *
  * Scroll (pinned, scrubbed, timeline duration 1 = whole chapter):
  *   0–12%   hero copy + numerals leave, camera starts its push
- *   16–42%  title ghosts into the scene, scene dims, chapter copy reveals
+ *   12–40%  title ghosts into the scene, scene dims, chapter copy reveals
  *   60–85%  title fades out, particles thicken, light intensifies
  *   85–100% copy clears (transition slot)
  */
@@ -81,14 +81,14 @@ export function useChapterTimeline(
       tl.to(q('[data-numerals], [data-side]'), { autoAlpha: 0, duration: 0.12 }, 0.04)
 
       // Title ghosts back while the scene dims for reading.
-      tl.to(s, { titleOut: 0.82, duration: 0.26, ease: 'power1.inOut' }, 0.16)
-      tl.to(s, { dim: 1, duration: 0.2, ease: 'sine.inOut' }, 0.18)
+      tl.to(s, { titleOut: 0.9, duration: 0.2, ease: 'power1.inOut' }, 0.12)
+      tl.to(s, { dim: 1, duration: 0.18, ease: 'sine.inOut' }, 0.14)
 
       tl.fromTo(
         q('[data-reveal="label"]'),
         { autoAlpha: 0, y: 12 * rise },
         { autoAlpha: 1, y: 0, duration: 0.06, ease: 'power2.out' },
-        0.22,
+        0.17,
       )
       const splits = LINE_REVEALS.map(([key, at, duration]) =>
         SplitText.create(q(`[data-reveal="${key}"]`), {
@@ -110,7 +110,7 @@ export function useChapterTimeline(
           },
         }),
       )
-      tl.fromTo(q('[data-reveal="cta"]'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.06 }, 0.44)
+      tl.fromTo(q('[data-reveal="cta"]'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.06 }, 0.38)
 
       // Title out, light up.
       tl.to(s, { titleOut: 1, duration: 0.2, ease: 'power1.in' }, 0.62)

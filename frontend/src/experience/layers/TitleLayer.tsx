@@ -25,6 +25,8 @@ interface TitleLayerProps {
   letterSpacing: number
   /** Title is scaled down (never up) to fit this world width (mobile). */
   maxWidth: number
+  /** Scale the word to exactly `maxWidth`, up or down (landscape bleed). */
+  fill?: boolean
   color: string
   glowColor: string
   glowOpacity: number
@@ -54,6 +56,7 @@ export function TitleLayer({
   fontSize,
   letterSpacing,
   maxWidth,
+  fill = false,
   color,
   glowColor,
   glowOpacity,
@@ -80,7 +83,8 @@ export function TitleLayer({
     [letters],
   )
 
-  const scale = layout ? Math.min(1, maxWidth / layout.width) : 1
+  const fitScale = layout ? maxWidth / layout.width : 1
+  const scale = fill ? fitScale : Math.min(1, fitScale)
   const groupX = left !== undefined && layout ? left + (layout.width * scale) / 2 : x
 
   useFrame(() => {
