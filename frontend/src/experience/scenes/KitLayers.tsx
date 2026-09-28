@@ -1,7 +1,17 @@
-import { useTexture } from '@react-three/drei'
 import { useFrame, useLoader } from '@react-three/fiber'
 import { createRef, useEffect, useLayoutEffect, useMemo, type RefObject } from 'react'
-import { AdditiveBlending, Color, FileLoader, MeshBasicMaterial, SRGBColorSpace, type Mesh, type Texture } from 'three'
+import { suspend } from 'suspend-react'
+import {
+  AdditiveBlending,
+  Color,
+  FileLoader,
+  MeshBasicMaterial,
+  RepeatWrapping,
+  SRGBColorSpace,
+  TextureLoader,
+  type Mesh,
+  type Texture,
+} from 'three'
 import type { Rect } from '../camera/paths'
 import { DepthLayer, placeInRect, type LayerBox } from '../layers/DepthLayer'
 
@@ -34,13 +44,39 @@ export function useKit(template: string, name: string): Kit {
  */
 const textureUsers = new Map<Texture, number>()
 
+const loader = new TextureLoader()
+/** One load per URL, shared by every kit that references it. */
+const urlCache = new Map<string, Promise<Texture | null>>()
+function loadUrl(url: string) {
+  let p = urlCache.get(url)
+  if (!p) {
+    p = loader.loadAsync(url).catch(() => null)
+    urlCache.set(url, p)
+  }
+  return p
+}
+/** First candidate that loads (hand-painted art, then the code-painted fallback). */
+async function loadFirst(urls: string[]): Promise<Texture> {
+  for (const url of urls) {
+    const t = await loadUrl(url)
+    if (t) return t
+  }
+  throw new Error(`No texture could be loaded from: ${urls.join(', ')}`)
+}
+
 /** Load every texture a kit references (suspends), keyed by texture id. */
 export function useKitTextures(template: string, name: string, kit: Kit): Record<string, Texture> {
-  const urls = useMemo(
-    () => Object.fromEntries(Object.entries(kit.textures).map(([id, file]) => [id, kitUrl(template, name, file)])),
+  const sources = useMemo(
+    () =>
+      Object.entries(kit.textures).map(
+        ([id, src]) => [id, (Array.isArray(src) ? src : [src]).map((f) => kitUrl(template, name, f))] as const,
+      ),
     [kit, template, name],
   )
-  const textures = useTexture(urls) as Record<string, Texture>
+  const textures = suspend(
+    async () => Object.fromEntries(await Promise.all(sources.map(async ([id, urls]) => [id, await loadFirst(urls)] as const))),
+    [template, name, JSON.stringify(sources)],
+  ) as Record<string, Texture>
   useLayoutEffect(() => {
     const list = Object.values(textures)
     for (const t of list) {
@@ -104,6 +140,10 @@ export function KitLayers({ kit, textures, rectAt, portrait, look, glowRefs }: K
     const placement = layerPlacement(layer, portrait)
     if (!texture || placement.hidden) return null
     const img = texture.image as { width: number; height: number }
+    if (layer.tileX && texture.wrapS !== RepeatWrapping) {
+      texture.wrapS = RepeatWrapping
+      texture.needsUpdate = true
+    }
     const box = placeInRect(rectAt(layer.z), placement, img.width / img.height)
     return { layer, texture, box }
   })
@@ -134,6 +174,7 @@ export function KitLayers({ kit, textures, rectAt, portrait, look, glowRefs }: K
             rim={(layer.rim ?? 0) * look.rim}
             rimColor={look.rimColor}
             lightGain={look.lightGain}
+            tileX={layer.tileX}
           />
         )
       })}

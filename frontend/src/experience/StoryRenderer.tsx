@@ -74,7 +74,7 @@ export function StoryRenderer({ spec, states, reducedMotion }: StoryRendererProp
     readingDesaturate: { value: 0.45, min: 0, max: 1, step: 0.01 },
   })
   const trans = useControls('Transitions', {
-    edgeGlow: { value: 1, min: 0, max: 3, step: 0.05 },
+    edgeGlow: { value: 0.6, min: 0, max: 3, step: 0.05 },
     override: { value: 'spec', options: ['spec', 'noise-dissolve', 'ink-wipe', 'bloom-out', 'crossfade'] },
   })
 

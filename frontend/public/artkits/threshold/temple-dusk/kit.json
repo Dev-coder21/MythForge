@@ -2,38 +2,64 @@
   "name": "temple-dusk",
   "template": "threshold",
   "textures": {
-    "hill": "../painted/hill.webp",
-    "grass": "../painted/grass.webp",
-    "cedar-a": "../painted/cedar-a.webp",
-    "cedar-b": "../painted/cedar-b.webp",
-    "branch": "../painted/branch.webp",
+    "hill": [
+      "../torii-night/hill.webp",
+      "../painted/hill.webp"
+    ],
+    "grass": [
+      "../torii-night/grass.webp",
+      "../painted/grass.webp"
+    ],
+    "cedar-a": [
+      "../torii-night/cedar-a.webp",
+      "../painted/cedar-a.webp"
+    ],
+    "cedar-b": [
+      "../torii-night/cedar-b.webp",
+      "../painted/cedar-b.webp"
+    ],
+    "branch": [
+      "../torii-night/branch.webp",
+      "../painted/branch.webp"
+    ],
     "leaves": "../painted/leaves.webp",
-    "bush": "../painted/bush.webp",
-    "lantern": "../painted/lantern.webp",
-    "rocks": "../painted/rocks.webp",
-    "wall": "../painted/wall.webp",
+    "bush": [
+      "../torii-night/bush.webp",
+      "../painted/bush.webp"
+    ],
+    "lantern": [
+      "../torii-night/lantern.webp",
+      "../painted/lantern.webp"
+    ],
+    "rocks": [
+      "../torii-night/rocks.webp",
+      "../painted/rocks.webp"
+    ],
+    "wall": [
+      "../torii-night/wall.webp",
+      "../painted/wall.webp"
+    ],
     "maple": "../painted/maple.webp",
     "pond": "../painted/pond.webp",
     "stones": "../painted/stones.webp"
   },
   "layers": [
-    { "id": "far-ridge", "texture": "hill", "z": -40, "x": -0.1, "bottom": 0.16, "height": 0.3, "stretch": true, "fog": 0.62, "tint": 0.5 },
+    { "id": "far-ridge", "texture": "hill", "z": -40, "x": -0.1, "bottom": 0.16, "height": 0.3, "stretch": true, "fog": 0.62, "tint": 0.5, "rim": 0.12 },
     { "id": "far-maple", "texture": "maple", "z": -32, "x": 0.36, "bottom": 0.2, "height": 0.42, "fog": 0.55, "tint": 0.4, "rim": 0.3 },
     { "id": "far-cedar", "texture": "cedar-a", "z": -32, "x": -0.44, "bottom": 0.2, "height": 0.5, "fog": 0.56, "tint": 0.4, "rim": 0.3 },
-    { "id": "wall-left", "texture": "wall", "z": -20, "x": -0.25, "bottom": 0.22, "height": 0.15, "rim": 0.6, "fog": 0.28, "tint": 0.35, "portrait": {"x": -0.3, "height": 0.08} },
-    { "id": "wall-right", "texture": "wall", "z": -20, "x": 0.42, "bottom": 0.22, "height": 0.15, "rim": 0.6, "fog": 0.28, "tint": 0.35, "portrait": {"x": 0.42, "height": 0.08} },
-    { "id": "maple-left", "texture": "maple", "z": -14, "x": -0.36, "bottom": 0.14, "height": 0.72, "rim": 0.7, "fog": 0.12, "tint": 0.2, "sway": 0.05, "portrait": {"x": -0.42, "height": 0.42} },
-    { "id": "cedar-right", "texture": "cedar-b", "z": -16, "x": 0.38, "bottom": 0.16, "height": 0.8, "rim": 0.6, "fog": 0.16, "tint": 0.3, "portrait": {"x": 0.45, "height": 0.5} },
-    { "id": "ground", "texture": "hill", "z": -11, "x": 0, "bottom": -0.14, "height": 0.42, "stretch": true, "rim": 0.5, "fog": 0.08, "tint": 0.3 },
-    { "id": "pond", "texture": "pond", "z": -9, "x": 0.08, "bottom": 0.06, "height": 0.2, "rim": 0.4, "tint": 0.2, "portrait": {"height": 0.1} },
-    { "id": "lantern-left", "texture": "lantern", "z": -8.5, "x": -0.2, "bottom": 0.14, "height": 0.2, "rim": 0.6, "tint": 0.2, "light": {"u": 0.5, "v": 0.63, "color": "#ffb35a", "intensity": 1.8, "radius": 1.4, "flicker": 0.3, "glow": 0.4}, "portrait": {"x": -0.32, "height": 0.1} },
-    { "id": "lantern-right", "texture": "lantern", "z": -8.5, "x": 0.33, "bottom": 0.14, "height": 0.18, "rim": 0.6, "tint": 0.2, "light": {"u": 0.5, "v": 0.63, "color": "#ffb35a", "intensity": 1.5, "radius": 1.4, "flicker": 0.3, "glow": 0.4}, "portrait": {"x": 0.36, "height": 0.09} },
-    { "id": "rocks-mid", "texture": "rocks", "z": -8, "x": 0.46, "bottom": 0.08, "height": 0.11, "rim": 0.7, "tint": 0.2, "portrait": {"height": 0.06} },
-    { "id": "bush-mid", "texture": "bush", "z": -8, "x": -0.44, "bottom": 0.06, "height": 0.16, "rim": 0.7, "tint": 0.2, "sway": 0.08, "portrait": {"height": 0.08} },
-    { "id": "floor-near", "texture": "hill", "z": -4.5, "x": 0, "bottom": -0.02, "height": 0.36, "stretch": true, "rim": 0.5, "shade": 0.55, "tint": 0.2, "portrait": {"bottom": 0.05, "height": 0.26} },
-    { "id": "stones", "texture": "stones", "z": -3, "x": 0.02, "bottom": -0.04, "height": 0.2, "rim": 0.6, "shade": 0.8, "tint": 0.2, "portrait": {"height": 0.1} },
-    { "id": "grass-fore", "texture": "grass", "z": 2, "x": 0, "bottom": -0.14, "height": 0.34, "stretch": true, "sway": 0.6, "rim": 0.3, "shade": 0.6, "tint": 0.2, "portrait": {"height": 0.22} },
-    { "id": "branch-fore", "texture": "branch", "z": 3.5, "x": -0.53, "anchorX": 0, "bottom": 0.7, "height": 0.36, "sway": 0.18, "rim": 0.5, "tint": 0.15, "portrait": {"hidden": true} }
+    { "id": "wall", "texture": "wall", "z": -20, "x": 0.05, "bottom": 0.22, "height": 0.15, "rim": 0.6, "fog": 0.28, "tint": 0.4, "portrait": {"height": 0.08, "tileX": 10}, "tileX": 10 },
+    { "id": "maple-left", "texture": "maple", "z": -14, "x": -0.36, "bottom": 0.14, "height": 0.72, "rim": 0.7, "fog": 0.12, "tint": 0.4, "sway": 0.05, "portrait": {"x": -0.42, "height": 0.42} },
+    { "id": "cedar-right", "texture": "cedar-b", "z": -16, "x": 0.38, "bottom": 0.16, "height": 0.8, "rim": 0.6, "fog": 0.16, "tint": 0.4, "portrait": {"x": 0.45, "height": 0.5} },
+    { "id": "ground", "texture": "hill", "z": -11, "x": 0, "bottom": -0.14, "height": 0.42, "stretch": true, "rim": 0.12, "fog": 0.08, "tint": 0.4 },
+    { "id": "pond", "texture": "pond", "z": -9, "x": 0.08, "bottom": 0.06, "height": 0.2, "rim": 0.4, "tint": 0.4, "portrait": {"height": 0.1} },
+    { "id": "lantern-left", "texture": "lantern", "z": -8.5, "x": -0.2, "bottom": 0.14, "height": 0.2, "rim": 0.6, "tint": 0.4, "light": {"u": 0.5, "v": 0.63, "color": "#ffb35a", "intensity": 1.8, "radius": 1.4, "flicker": 0.3, "glow": 0.4}, "portrait": {"x": -0.32, "height": 0.1} },
+    { "id": "lantern-right", "texture": "lantern", "z": -8.5, "x": 0.33, "bottom": 0.14, "height": 0.18, "rim": 0.6, "tint": 0.4, "light": {"u": 0.5, "v": 0.63, "color": "#ffb35a", "intensity": 1.5, "radius": 1.4, "flicker": 0.3, "glow": 0.4}, "portrait": {"x": 0.36, "height": 0.09} },
+    { "id": "rocks-mid", "texture": "rocks", "z": -8, "x": 0.46, "bottom": 0.08, "height": 0.11, "rim": 0.7, "tint": 0.4, "portrait": {"height": 0.06} },
+    { "id": "bush-mid", "texture": "bush", "z": -8, "x": -0.44, "bottom": 0.06, "height": 0.16, "rim": 0.7, "tint": 0.4, "sway": 0.08, "portrait": {"height": 0.08} },
+    { "id": "floor-near", "texture": "hill", "z": -4.5, "x": 0, "bottom": -0.02, "height": 0.36, "stretch": true, "rim": 0.12, "shade": 0.55, "tint": 0.4, "portrait": {"bottom": 0.05, "height": 0.26} },
+    { "id": "stones", "texture": "stones", "z": -3, "x": 0.02, "bottom": -0.04, "height": 0.2, "rim": 0.6, "shade": 0.8, "tint": 0.4, "portrait": {"height": 0.1} },
+    { "id": "grass-fore", "texture": "grass", "z": 2, "x": 0, "bottom": -0.14, "height": 0.34, "stretch": true, "sway": 0.6, "rim": 0, "shade": 0.6, "tint": 0.4, "portrait": {"height": 0.22} },
+    { "id": "branch-fore", "texture": "branch", "z": 3.5, "x": -0.53, "anchorX": 0, "bottom": 0.7, "height": 0.36, "sway": 0.18, "rim": 0.5, "tint": 0.4, "portrait": {"hidden": true} }
   ],
   "camera": { "fov": 38, "position": [[-1.6,1.5,13.5],[-0.6,1.45,12.6],[0.6,1.4,11.6],[1.6,1.35,10.6]], "lookAt": [[-0.8,2.2,-20],[-0.1,2.1,-20],[0.7,2,-20],[1.6,1.9,-20]] },
   "celestial": { "u": 0.3, "v": 0.4, "uPortrait": 0.5, "vPortrait": 0.52, "size": 0.11, "driftU": 0.02, "driftV": -0.06, "intensity": 2.6, "halo": 0.03 },

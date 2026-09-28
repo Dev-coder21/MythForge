@@ -34,6 +34,8 @@ export interface KitPlacement {
   maxWidth?: number
   /** Stretch horizontally to cover the frame (ground planes). */
   stretch?: boolean
+  /** Repeat the texture this many times across (tileable strips like the wall). */
+  tileX?: number
   /** Skip this layer (e.g. a foreground branch that would crowd portrait copy). */
   hidden?: boolean
 }
@@ -125,10 +127,16 @@ export interface KitTitle {
   height?: number
 }
 
+/**
+ * A texture file, or candidates tried in order: the first that loads wins. Used to
+ * prefer hand-painted art and fall back to the code-painted version.
+ */
+export type KitTextureSource = string | string[]
+
 export interface Kit {
   name: string
   template: string
-  textures: Record<string, string>
+  textures: Record<string, KitTextureSource>
   layers: KitLayer[]
   fog?: KitFog[]
   particles?: KitParticles[]

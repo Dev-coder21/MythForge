@@ -16,7 +16,7 @@ export interface LayerBox {
 /** World-space box of a kit element placed in `rect` (the visible frame at its depth). */
 export function placeInRect(rect: Rect, p: KitPlacement, texAspect: number): LayerBox {
   let h = rect.h * p.height
-  let w = h * texAspect
+  let w = h * texAspect * (p.tileX ?? 1)
   if (p.stretch) w = Math.max(rect.w * 1.3, w)
   if (p.maxWidth && w > rect.w * p.maxWidth && !p.stretch) {
     const k = (rect.w * p.maxWidth) / w
@@ -43,11 +43,13 @@ export interface DepthLayerProps {
   rim?: number
   rimColor?: string
   lightGain?: number
+  /** Texture repeats across the plane (texture must use RepeatWrapping). */
+  tileX?: number
 }
 
 /** A painted, textured plane at a real Z depth (one kit element). */
 export const DepthLayer = forwardRef<Mesh, DepthLayerProps>(function DepthLayer(
-  { texture, z, box, flip = false, tint, fogColor, fogMix, sway = 0, wind = 0, rim = 0, rimColor = '#ffffff', lightGain = 1 },
+  { texture, z, box, flip = false, tint, fogColor, fogMix, sway = 0, wind = 0, rim = 0, rimColor = '#ffffff', lightGain = 1, tileX = 1 },
   ref,
 ) {
   const chapter = useChapter()
@@ -66,6 +68,7 @@ export const DepthLayer = forwardRef<Mesh, DepthLayerProps>(function DepthLayer(
   u.uRimColor!.value.set(rimColor)
   u.uRimTexel!.value.set(3 / image.width, 3 / image.height)
   u.uLightGain!.value = lightGain
+  u.uTileX!.value = tileX
 
   useFrame(({ clock, camera }) => {
     if (sway > 0) u.uTime!.value = clock.elapsedTime

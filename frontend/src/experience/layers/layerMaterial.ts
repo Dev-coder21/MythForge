@@ -28,6 +28,7 @@ export function createLayerMaterial(map: Texture, lights: LightUniforms) {
       uRimTexel: { value: new Vector2(0.003, 0.003) },
       uBlur: { value: 0 },
       uLightGain: { value: 1 },
+      uTileX: { value: 1 },
       // The chapter's light uniform objects are shared by reference, so one update per frame lights them all.
       ...lights,
     },
@@ -36,11 +37,12 @@ export function createLayerMaterial(map: Texture, lights: LightUniforms) {
       uniform float uWind;
       uniform float uSway;
       uniform float uFlip;
+      uniform float uTileX;
       varying vec2 vUv;
       varying vec3 vWorld;
 
       void main() {
-        vUv = vec2(mix(uv.x, 1.0 - uv.x, uFlip), uv.y);
+        vUv = vec2(mix(uv.x, 1.0 - uv.x, uFlip) * uTileX, uv.y);
         vec4 world = modelMatrix * vec4(position, 1.0);
         float phase = uTime * 1.4 + world.x * 0.7;
         float gust = 0.65 + 0.35 * sin(uTime * 0.37 + world.x * 0.11);

@@ -79,8 +79,8 @@ export function thresholdPalette(p: SceneParams) {
   // other times of day keep a warm natural tone.
   const moonByTime = {
     night: hex(accent.clone().lerp(white, 0.18)),
-    dawn: '#ffe9c9',
-    dusk: '#ffd2a1',
+    dawn: '#ffd9bd',
+    dusk: '#ffb45e',
     day: '#fffaf0',
   } as const
 
@@ -97,17 +97,19 @@ export function thresholdPalette(p: SceneParams) {
       horizon: primary.clone().lerp(accent, 0.1).lerp(white, 0.08),
       fog: primary.clone().lerp(white, 0.18),
     },
+    // Golden dusk: deep blue overhead falling into amber, with a hot band at the horizon.
     dusk: {
-      top: new Color('#0c1424').lerp(primary, 0.25),
-      mid: primary.clone().lerp(sunLight, 0.12).multiplyScalar(0.75),
-      horizon: sunLight.clone().lerp(accent, 0.3).multiplyScalar(0.85),
-      fog: primary.clone().lerp(sunLight, 0.3).multiplyScalar(0.75),
+      top: new Color('#141a2e').lerp(primary, 0.15),
+      mid: new Color('#7a3f1c').lerp(sunLight, 0.18),
+      horizon: sunLight.clone().lerp(new Color('#ff9a3c'), 0.35),
+      fog: new Color('#6b3a1e').lerp(sunLight, 0.25),
     },
+    // Soft dawn: pale blue overhead, peach at the horizon, a cool clear mist.
     dawn: {
-      top: primary.clone().multiplyScalar(0.6),
-      mid: primary.clone().lerp(white, 0.1),
-      horizon: accent.clone().lerp(white, 0.3).multiplyScalar(0.9),
-      fog: primary.clone().lerp(accent, 0.15).lerp(white, 0.22),
+      top: new Color('#3d5578').lerp(primary, 0.2),
+      mid: new Color('#8ea6c4'),
+      horizon: new Color('#f6c9a8'),
+      fog: new Color('#7f8fa8').lerp(sunLight, 0.15),
     },
     day: {
       top: primary.clone().lerp(white, 0.2),
@@ -123,7 +125,14 @@ export function thresholdPalette(p: SceneParams) {
     skyHorizon: hex(sky.horizon),
     fog: hex(sky.fog),
     /** Tint for kit layers that opt in (kit.json "tint"), so kits follow the chapter palette. */
-    kitTint: hex(p.timeOfDay === 'night' ? primary.clone().lerp(white, 0.55) : sky.fog.clone().lerp(sunLight, 0.3)),
+    // Painted art is night-lit; day-side kits pull it toward the light of the hour.
+    kitTint: hex(
+      p.timeOfDay === 'night'
+        ? primary.clone().lerp(white, 0.55)
+        : p.timeOfDay === 'dusk'
+          ? new Color('#e0a060')
+          : new Color('#c9d2e4').lerp(sunLight, 0.3),
+    ),
     /** Runtime rim on kit edges: the key light. Moonlight is cooled toward pale blue; sun stays warm. */
     kitRim: hex(p.timeOfDay === 'night' ? sunLight.clone().lerp(pale, 0.6) : sunLight.clone()),
     moon: moonByTime[p.timeOfDay],

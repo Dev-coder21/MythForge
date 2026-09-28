@@ -40,8 +40,8 @@
       "body": "At Ryōan-ji, fifteen stones rest on a bed of raked white gravel, arranged so that no single viewpoint reveals them all. Monks rake the patterns each morning, and the garden asks nothing of you but attention. As dusk settles, cherry petals drift across the temple walls.",
       "sceneTemplate": "threshold",
       "sceneParams": {
-        "primaryColor": "#2a1a2e",
-        "accentColor": "#f4a6b8",
+        "primaryColor": "#2a1c12",
+        "accentColor": "#f0a24a",
         "particleType": "petals",
         "groundType": "sand",
         "backgroundObject": "sun",
@@ -62,8 +62,8 @@
       "body": "Spared from bombing in the Second World War, Kyoto kept its wooden temples, its shrines and its narrow lanes of machiya townhouses. At first light the incense smoke rises from Kiyomizu-dera, the last stars fade over the eastern hills, and the old capital wakes as it has for twelve centuries.",
       "sceneTemplate": "threshold",
       "sceneParams": {
-        "primaryColor": "#1c2a3a",
-        "accentColor": "#f2c46d",
+        "primaryColor": "#2c3a52",
+        "accentColor": "#f4b894",
         "particleType": "dust",
         "groundType": "grass",
         "backgroundObject": "stars",
