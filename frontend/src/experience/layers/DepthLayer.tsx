@@ -3,7 +3,7 @@ import { forwardRef, useEffect, useMemo } from 'react'
 import type { Mesh, Texture } from 'three'
 import type { Rect } from '../camera/paths'
 import type { KitPlacement } from '../scenes/kit'
-import { chapterState } from '../store'
+import { storyState, useChapter } from '../store'
 import { createLayerMaterial } from './layerMaterial'
 
 export interface LayerBox {
@@ -50,7 +50,8 @@ export const DepthLayer = forwardRef<Mesh, DepthLayerProps>(function DepthLayer(
   { texture, z, box, flip = false, tint, fogColor, fogMix, sway = 0, wind = 0, rim = 0, rimColor = '#ffffff', lightGain = 1 },
   ref,
 ) {
-  const material = useMemo(() => createLayerMaterial(texture), [texture])
+  const chapter = useChapter()
+  const material = useMemo(() => createLayerMaterial(texture, chapter.lights), [texture, chapter])
   useEffect(() => () => material.dispose(), [material])
 
   const image = texture.image as { width: number; height: number }
@@ -69,10 +70,10 @@ export const DepthLayer = forwardRef<Mesh, DepthLayerProps>(function DepthLayer(
   useFrame(({ clock, camera }) => {
     if (sway > 0) u.uTime!.value = clock.elapsedTime
     // Circle of confusion ∝ |d - f| / d, applied as a mip LOD bias.
-    const { focus } = chapterState
+    const { dof } = storyState
     const d = Math.max(0.1, Math.abs(camera.position.z - z))
-    const f = Math.abs(camera.position.z - focus.z)
-    u.uBlur!.value = focus.strength * (Math.abs(d - f) / d) * (d < f ? focus.front : 1)
+    const f = Math.abs(camera.position.z - chapter.focusZ)
+    u.uBlur!.value = dof.strength * (Math.abs(d - f) / d) * (d < f ? dof.front : 1)
   })
 
   // Sway needs vertices to bend; a column per ~2% of width is plenty.

@@ -9,7 +9,7 @@ import {
   ShaderMaterial,
   type Texture,
 } from 'three'
-import { chapterState } from '../store'
+import { storyState, useChapter } from '../store'
 
 interface KitParticlesProps {
   texture: Texture
@@ -35,6 +35,7 @@ const MAX = 600
  * Out-of-focus sprites grow and fade (bokeh). One draw call per layer.
  */
 export function KitParticles({ texture, cells, count, min, max, size, speed, fall, opacity, tint }: KitParticlesProps) {
+  const chapter = useChapter()
   const geometry = useMemo(() => {
     const quad = new PlaneGeometry(1, 1)
     const geo = new InstancedBufferGeometry()
@@ -157,9 +158,9 @@ export function KitParticles({ texture, cells, count, min, max, size, speed, fal
   u.uTint!.value.set(tint)
 
   useFrame(({ clock, camera }) => {
-    u.uTime!.value = clock.elapsedTime * (chapterState.reducedMotion ? 0.35 : 1)
-    u.uFocusDist!.value = Math.abs(camera.position.z - chapterState.focus.z)
-    u.uDof!.value = chapterState.focus.strength
+    u.uTime!.value = clock.elapsedTime * (storyState.reducedMotion ? 0.35 : 1)
+    u.uFocusDist!.value = Math.abs(camera.position.z - chapter.focusZ)
+    u.uDof!.value = storyState.dof.strength
   })
 
   return <mesh geometry={geometry} material={material} frustumCulled={false} />

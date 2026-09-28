@@ -2,11 +2,13 @@ import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo, useRef, type RefObject } from 'react'
 import { AdditiveBlending, Color, Group, Mesh, MeshBasicMaterial, ShaderMaterial } from 'three'
 import type { Rect } from '../camera/paths'
-import { chapterState } from '../store'
+import { useChapter } from '../store'
 import { NOISE_GLSL } from './glsl'
 import { getPlaceholder } from './placeholderTextures'
 
 interface MoonLayerProps {
+  /** 'moon' has maria and a crisp limb; 'sun' is a smooth, soft-edged disc. */
+  surface?: 'moon' | 'sun'
   z: number
   rect: Rect
   /** Position within the visible rect, 0–1. */
@@ -51,17 +53,21 @@ export function MoonLayer({
   haloOpacity,
   haloRadius,
   discRef,
+  surface = 'moon',
 }: MoonLayerProps) {
+  const chapter = useChapter()
   const group = useRef<Group>(null)
 
   const discMat = useMemo(
     () =>
       new ShaderMaterial({
-        uniforms: { uColor: { value: new Color() }, uIntensity: { value: 2 } },
+        uniforms: { uColor: { value: new Color() }, uIntensity: { value: 2 }, uMaria: { value: 1 }, uSoft: { value: 0.03 } },
         vertexShader: VERT,
         fragmentShader: /* glsl */ `
           uniform vec3 uColor;
           uniform float uIntensity;
+          uniform float uMaria;
+          uniform float uSoft;
           varying vec2 vUv;
           ${NOISE_GLSL}
           void main() {
@@ -70,8 +76,8 @@ export function MoonLayer({
             if (r > 1.0) discard;
             float maria = fbm(p * 2.3 + 3.0);
             float limb = mix(0.78, 1.0, sqrt(1.0 - r * r));
-            float shade = (0.82 + 0.18 * smoothstep(0.35, 0.7, maria)) * limb;
-            float edge = smoothstep(1.0, 0.97, r);
+            float shade = mix(1.0, 0.82 + 0.18 * smoothstep(0.35, 0.7, maria), uMaria) * limb;
+            float edge = smoothstep(1.0, 1.0 - uSoft, r);
             gl_FragColor = vec4(uColor * shade * uIntensity, edge);
           }
         `,
@@ -129,18 +135,20 @@ export function MoonLayer({
   const radius = Math.min(rect.h, rect.w) * size
   const haloScale = radius * haloRadius * 2 / 0.7 // ring sits at uv radius 0.7 of the plane
   discMat.uniforms.uColor!.value.set(color)
+  discMat.uniforms.uMaria!.value = surface === 'sun' ? 0 : 1
+  discMat.uniforms.uSoft!.value = surface === 'sun' ? 0.12 : 0.03
   haloMat.uniforms.uColor!.value.set(color)
   haloMat.uniforms.uOpacity!.value = haloOpacity
   glowMat.color.set(color)
 
   useFrame(() => {
-    const p = chapterState.progress
+    const p = chapter.progress
     const g = group.current
     if (g) {
       g.position.x = rect.minX + rect.w * (u + driftU * p)
       g.position.y = rect.minY + rect.h * (v + driftV * p)
     }
-    const boost = 1 + chapterState.intensity * 0.45
+    const boost = 1 + chapter.intensity * 0.45
     discMat.uniforms.uIntensity!.value = intensity * boost
     glowMat.opacity = glowOpacity * boost
     haloMat.uniforms.uOpacity!.value = haloOpacity * boost

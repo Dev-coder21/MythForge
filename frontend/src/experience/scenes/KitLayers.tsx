@@ -4,9 +4,9 @@ import { createRef, useEffect, useLayoutEffect, useMemo, type RefObject } from '
 import { AdditiveBlending, Color, FileLoader, MeshBasicMaterial, SRGBColorSpace, type Mesh, type Texture } from 'three'
 import type { Rect } from '../camera/paths'
 import { DepthLayer, placeInRect, type LayerBox } from '../layers/DepthLayer'
-import { MAX_LIGHTS, sharedLights } from '../layers/layerMaterial'
+
 import { getPlaceholder } from '../layers/placeholderTextures'
-import { chapterState } from '../store'
+import { MAX_LIGHTS, storyState, useChapter } from '../store'
 import { kitUrl, type Kit, type KitLayer } from './kit'
 
 export interface KitLook {
@@ -152,6 +152,7 @@ function LanternLights({
   gain: number
   glowRefs: Record<string, RefObject<Mesh | null>>
 }) {
+  const chapter = useChapter()
   const materials = useMemo(
     () =>
       lights.map(
@@ -173,25 +174,25 @@ function LanternLights({
 
   useEffect(
     () => () => {
-      sharedLights.uLightCount.value = 0
+      chapter.lights.uLightCount.value = 0
     },
     [],
   )
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime
-    const reduced = chapterState.reducedMotion
+    const reduced = storyState.reducedMotion
     const n = Math.min(lights.length, MAX_LIGHTS)
-    sharedLights.uLightCount.value = n
+    chapter.lights.uLightCount.value = n
     for (let i = 0; i < n; i++) {
       const l = lights[i]!
       // Layered sines ≈ candle flicker; gentler under reduced motion.
       const f = l.flicker * (reduced ? 0.3 : 1)
       const wobble =
         0.55 * Math.sin(t * 7.3 + l.seed) + 0.3 * Math.sin(t * 13.1 + l.seed * 2.1) + 0.15 * Math.sin(t * 23.7 + l.seed * 0.7)
-      const k = l.intensity * gain * (1 - f * 0.5 + f * 0.5 * wobble) * (1 + chapterState.intensity * 0.25)
-      sharedLights.uLightPos.value[i]!.set(l.x, l.y, l.z, l.radius)
-      sharedLights.uLightCol.value[i]!.set(l.color.r * k, l.color.g * k, l.color.b * k)
+      const k = l.intensity * gain * (1 - f * 0.5 + f * 0.5 * wobble) * (1 + chapter.intensity * 0.25)
+      chapter.lights.uLightPos.value[i]!.set(l.x, l.y, l.z, l.radius)
+      chapter.lights.uLightCol.value[i]!.set(l.color.r * k, l.color.g * k, l.color.b * k)
       const m = materials[i]
       if (m) m.opacity = Math.min(1, 0.55 + 0.45 * (k / Math.max(0.001, l.intensity * gain)))
     }

@@ -23,7 +23,7 @@ for (const [w, h] of [[1440, 900], [390, 844]]) {
     frames.shift()
     const avg = frames.reduce((a, b) => a + b, 0) / frames.length
     const s = [...frames].sort((a, b) => a - b)
-    const c = document.querySelector('section canvas')
+    const c = document.querySelector('canvas')
     return { fps: +(1000 / avg).toFixed(1), p95: +s[Math.floor(s.length * 0.95)].toFixed(1), over20: frames.filter((f) => f > 20).length, n: frames.length, canvas: [c.width, c.height] }
   })
   console.log(`${w}x${h}`, JSON.stringify(r))

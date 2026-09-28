@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo } from 'react'
 import { AdditiveBlending, Color, ShaderMaterial } from 'three'
-import { chapterState } from '../store'
+import { storyState, useChapter } from '../store'
 import { NOISE_GLSL } from './glsl'
 
 interface LightShaftsProps {
@@ -26,6 +26,7 @@ interface LightShaftsProps {
  * the torii and cedars in front cut into them.
  */
 export function LightShafts({ origin, angle, count, length, spread, width, color, opacity }: LightShaftsProps) {
+  const chapter = useChapter()
   const material = useMemo(
     () =>
       new ShaderMaterial({
@@ -73,9 +74,9 @@ export function LightShafts({ origin, angle, count, length, spread, width, color
   material.uniforms.uColor!.value.set(color)
 
   useFrame(({ clock }) => {
-    material.uniforms.uTime!.value = chapterState.reducedMotion ? 0 : clock.elapsedTime
+    material.uniforms.uTime!.value = storyState.reducedMotion ? 0 : clock.elapsedTime
     // Light intensifies in beat 3; shafts fade a little behind the reading copy.
-    material.uniforms.uOpacity!.value = opacity * (1 + chapterState.intensity * 0.6) * (1 - chapterState.dim * 0.35)
+    material.uniforms.uOpacity!.value = opacity * (1 + chapter.intensity * 0.6) * (1 - chapter.dim * 0.35)
   })
 
   const beams = useMemo(

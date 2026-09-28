@@ -25,6 +25,8 @@ export type BackgroundObject = 'moon' | 'sun' | 'stars' | 'clouds' | 'none'
 
 export type TimeOfDay = 'dawn' | 'day' | 'dusk' | 'night'
 
+export type TitleLayout = 'horizontal' | 'vertical'
+
 /** Full-screen shader pass used to leave this chapter. */
 export type TransitionType = 'noise-dissolve' | 'ink-wipe' | 'bloom-out'
 
@@ -63,6 +65,8 @@ export interface Chapter {
   body: string
   sceneTemplate: SceneTemplateId
   sceneParams: SceneParams
+  /** How the giant 3D title is set: across the frame (default) or stacked vertically. */
+  titleLayout?: TitleLayout
   transition: TransitionType
   heroImage?: ImageRef
 }

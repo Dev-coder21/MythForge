@@ -24,7 +24,9 @@
         "propVariant": "gate",
         "artKit": "torii-night",
         "timeOfDay": "night",
-        "props": ["lanterns"],
+        "props": [
+          "lanterns"
+        ],
         "particleDensity": 0.6
       },
       "transition": "noise-dissolve"
@@ -66,12 +68,15 @@
         "groundType": "grass",
         "backgroundObject": "stars",
         "propVariant": "pagoda",
-        "artKit": "torii-night",
+        "artKit": "lantern-dawn",
         "timeOfDay": "dawn",
-        "props": ["banners"],
+        "props": [
+          "banners"
+        ],
         "particleDensity": 0.4
       },
-      "transition": "bloom-out"
+      "transition": "bloom-out",
+      "titleLayout": "vertical"
     }
   ]
 }

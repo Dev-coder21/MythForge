@@ -2,17 +2,17 @@
   "name": "torii-night",
   "template": "threshold",
   "textures": {
-    "hill": "hill.webp",
-    "grass": "grass.webp",
-    "cedar-a": "cedar-a.webp",
-    "cedar-b": "cedar-b.webp",
-    "branch": "branch.webp",
-    "leaves": "leaves.webp",
-    "bush": "bush.webp",
-    "lantern": "lantern.webp",
-    "rocks": "rocks.webp",
-    "wall": "wall.webp",
-    "torii": "torii.webp"
+    "hill": "../painted/hill.webp",
+    "grass": "../painted/grass.webp",
+    "cedar-a": "../painted/cedar-a.webp",
+    "cedar-b": "../painted/cedar-b.webp",
+    "branch": "../painted/branch.webp",
+    "leaves": "../painted/leaves.webp",
+    "bush": "../painted/bush.webp",
+    "lantern": "../painted/lantern.webp",
+    "rocks": "../painted/rocks.webp",
+    "wall": "../painted/wall.webp",
+    "torii": "../painted/torii.webp"
   },
   "layers": [
     { "id": "far-ridge", "texture": "hill", "z": -38, "x": 0.1, "bottom": 0.1, "height": 0.34, "stretch": true, "fog": 0.55, "tint": 0.3 },

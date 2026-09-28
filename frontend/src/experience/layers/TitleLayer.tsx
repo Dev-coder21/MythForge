@@ -3,7 +3,7 @@ import { Text } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import type { Group, Mesh } from 'three'
-import { chapterState } from '../store'
+import { storyState, useChapter } from '../store'
 
 /** The bits of troika's Text mesh we touch. */
 type TroikaText = Mesh & {
@@ -27,6 +27,13 @@ interface TitleLayerProps {
   maxWidth: number
   /** Scale the word to exactly `maxWidth`, up or down (landscape bleed). */
   fill?: boolean
+  /**
+   * Stack the letters top to bottom instead of across. `maxWidth` is then the
+   * stack height, `x` its centre and `baseY` the baseline of the last letter.
+   */
+  vertical?: boolean
+  /** Fill mode: cap on cap-height in world units, so short words don't blow up. */
+  maxLetterHeight?: number
   color: string
   glowColor: string
   glowOpacity: number
@@ -57,12 +64,15 @@ export function TitleLayer({
   letterSpacing,
   maxWidth,
   fill = false,
+  vertical = false,
+  maxLetterHeight = Infinity,
   color,
   glowColor,
   glowOpacity,
   riseDistance,
   driftBack,
 }: TitleLayerProps) {
+  const chapter = useChapter()
   // split('') (not Array.from) so indices match troika's UTF-16 caret array.
   const letters = useMemo(() => word.split(''), [word])
   const [layout, setLayout] = useState<Layout | null>(null)
@@ -83,19 +93,25 @@ export function TitleLayer({
     [letters],
   )
 
-  const fitScale = layout ? maxWidth / layout.width : 1
-  const scale = fill ? fitScale : Math.min(1, fitScale)
-  const groupX = left !== undefined && layout ? left + (layout.width * scale) / 2 : x
+  // Vertical stacks use a fixed line pitch (Anton caps ≈ 0.72em tall).
+  const pitch = fontSize * 0.86
+  const n = letters.length
+  const fitScale = vertical ? maxWidth / Math.max(1e-3, n * pitch) : layout ? maxWidth / layout.width : 1
+  const heightCap = maxLetterHeight / (fontSize * 0.72)
+  const scale = vertical ? fitScale : fill ? Math.min(fitScale, heightCap) : Math.min(1, fitScale)
+  const groupX = !vertical && left !== undefined && layout ? left + (layout.width * scale) / 2 : x
+  const letterX = (i: number) => (vertical ? 0 : (layout?.xs[i] ?? 0))
+  const letterY = (i: number) => (vertical ? (n - 1 - i) * pitch : 0)
 
   useFrame(() => {
-    const s = chapterState
+    const s = chapter
     const out = s.titleOut
     if (group.current) group.current.position.z = z - out * driftBack
     for (let i = 0; i < letters.length; i++) {
       const mesh = refs.current[i]
       if (!mesh) continue
       const v = s.letters[i]?.v ?? 0
-      mesh.position.y = s.reducedMotion ? 0 : -(1 - v) * riseDistance * fontSize
+      mesh.position.y = letterY(i) + (storyState.reducedMotion ? 0 : -(1 - v) * riseDistance * fontSize)
       // The scene blends in linear light, so a linear alpha of 0.1 still reads as
       // ~30% on screen. Square-ish gamma makes titleOut a perceptual fade.
       const alpha = Math.pow(Math.min(1, v * 1.6) * (1 - out), 2.2)
@@ -129,7 +145,8 @@ export function TitleLayer({
             }}
             {...common}
             anchorX="center"
-            position-x={layout.xs[i] ?? 0}
+            position-x={letterX(i)}
+            position-y={letterY(i)}
             fillOpacity={0}
             outlineOpacity={0}
           >

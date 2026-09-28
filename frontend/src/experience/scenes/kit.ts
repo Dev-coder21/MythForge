@@ -87,6 +87,42 @@ export interface KitShafts {
   opacity: number
   length: number
   spread: number
+  /** Fan direction in radians (-π/2 = straight down). */
+  angle?: number
+}
+
+type Vec3 = [number, number, number]
+
+/** Per-kit camera move: CatmullRom position + look-at paths sampled by chapter progress. */
+export interface KitCamera {
+  position: [Vec3, Vec3, Vec3, Vec3]
+  lookAt: [Vec3, Vec3, Vec3, Vec3]
+  fov?: number
+}
+
+/** Sun/moon placement in the opening frame (0–1 from left / bottom). */
+export interface KitCelestial {
+  u: number
+  v: number
+  uPortrait?: number
+  vPortrait?: number
+  /** Radius as a fraction of the frame's short side. */
+  size?: number
+  driftU?: number
+  driftV?: number
+  intensity?: number
+  halo?: number
+}
+
+/** Where the giant title sits (fractions of the frame at the title's depth). */
+export interface KitTitle {
+  v?: number
+  vPortrait?: number
+  /** Horizontal centre for vertical titles, from the frame centre (-0.5 … 0.5). */
+  x?: number
+  xPortrait?: number
+  /** Vertical titles: stack height as a fraction of the frame height. */
+  height?: number
 }
 
 export interface Kit {
@@ -97,6 +133,9 @@ export interface Kit {
   fog?: KitFog[]
   particles?: KitParticles[]
   shafts?: KitShafts
+  camera?: KitCamera
+  celestial?: KitCelestial
+  title?: KitTitle
 }
 
 export const kitUrl = (template: string, kit: string, file = 'kit.json') =>

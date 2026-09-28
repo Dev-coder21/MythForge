@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { MathUtils, Vector2, Vector3 } from 'three'
-import { chapterState } from '../store'
+import { storyState, useChapter } from '../store'
 import type { CameraPaths } from './paths'
 
 interface CameraRigProps {
@@ -20,17 +20,18 @@ const look = new Vector3()
 /** Samples the position + look-at curves by chapter progress and adds lerped mouse parallax. */
 export function CameraRig({ paths, parallax, parallaxDamping, reducedPoseT }: CameraRigProps) {
   const offset = useRef(new Vector2())
+  const chapter = useChapter()
 
   useFrame(({ camera }, dt) => {
-    const reduced = chapterState.reducedMotion
-    const t = reduced ? reducedPoseT : MathUtils.clamp(chapterState.progress, 0, 1)
+    const reduced = storyState.reducedMotion
+    const t = reduced ? reducedPoseT : MathUtils.clamp(chapter.progress, 0, 1)
 
     paths.position.getPointAt(t, pos)
     paths.lookAt.getPointAt(t, look)
 
     const o = offset.current
-    const tx = reduced ? 0 : chapterState.pointer.x * parallax
-    const ty = reduced ? 0 : chapterState.pointer.y * parallax * 0.6
+    const tx = reduced ? 0 : storyState.pointer.x * parallax
+    const ty = reduced ? 0 : storyState.pointer.y * parallax * 0.6
     o.x = MathUtils.damp(o.x, tx, parallaxDamping, dt)
     o.y = MathUtils.damp(o.y, ty, parallaxDamping, dt)
 

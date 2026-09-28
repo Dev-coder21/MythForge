@@ -1,5 +1,6 @@
 /**
- * Paints the Threshold "torii-night" art kit and writes it as webp with alpha.
+ * Paints the Threshold template's elements and writes them as webp with alpha
+ * to public/artkits/threshold/painted/ (shared by every kit of the template).
  *
  *   npm run kit                 # all elements
  *   npm run kit -- torii hill   # just these
@@ -15,7 +16,8 @@ import { fileURLToPath } from 'node:url'
 import { chromium } from 'playwright'
 
 const here = fileURLToPath(new URL('.', import.meta.url))
-const outDir = join(here, '../../public/artkits/threshold/torii-night')
+// Shared by every Threshold kit; each kit.json references these by relative path.
+const outDir = join(here, '../../public/artkits/threshold/painted')
 const only = process.argv.slice(2)
 
 mkdirSync(outDir, { recursive: true })

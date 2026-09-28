@@ -8,7 +8,7 @@ interface StoryPageProps {
 
 const showLeva = import.meta.env.DEV && !navigator.webdriver
 
-/** Chapter 1 renders as the full 3D experience; later chapters are still text placeholders. */
+/** Renders a full story spec as the scroll experience. */
 export function StoryPage({ spec }: StoryPageProps) {
   return (
     <>
@@ -24,26 +24,7 @@ export function StoryPage({ spec }: StoryPageProps) {
       )}
 
       <main>
-        <StoryExperience spec={spec} chapterIndex={0} />
-
-        {spec.chapters.slice(1).map((chapter) => (
-          <section
-            key={chapter.index}
-            className="flex h-screen items-center justify-center border-t border-white/10 px-6"
-          >
-            <div className="max-w-2xl space-y-3">
-              <p className="text-xs tracking-[0.3em] text-white/50">{chapter.label}</p>
-              <h2
-                className="font-display text-6xl uppercase md:text-8xl"
-                style={{ color: chapter.sceneParams.accentColor }}
-              >
-                {chapter.titleWord}
-              </h2>
-              <p className="text-2xl font-normal tracking-[-0.02em]">{chapter.heading}</p>
-              <p className="text-white/60">{chapter.subheading}</p>
-            </div>
-          </section>
-        ))}
+        <StoryExperience spec={spec} />
       </main>
     </>
   )

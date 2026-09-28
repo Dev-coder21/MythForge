@@ -1,17 +1,5 @@
-import { Color, DoubleSide, ShaderMaterial, Vector2, Vector3, Vector4, type Texture } from 'three'
-
-export const MAX_LIGHTS = 4
-
-/**
- * Point lights shared by every layer material (lantern glow). One object is
- * referenced by all materials, so updating it once per frame lights the scene.
- * Position xyz + radius in w; colour already multiplied by intensity.
- */
-export const sharedLights = {
-  uLightPos: { value: Array.from({ length: MAX_LIGHTS }, () => new Vector4()) },
-  uLightCol: { value: Array.from({ length: MAX_LIGHTS }, () => new Vector3()) },
-  uLightCount: { value: 0 },
-}
+import { Color, DoubleSide, ShaderMaterial, Vector2, type Texture } from 'three'
+import { MAX_LIGHTS, type LightUniforms } from '../store'
 
 /**
  * Material for every painted depth layer:
@@ -22,7 +10,7 @@ export const sharedLights = {
  * - alpha test + depth write so near layers genuinely occlude the title
  * - mip-bias blur driven by distance from the focal plane (layer DOF)
  */
-export function createLayerMaterial(map: Texture) {
+export function createLayerMaterial(map: Texture, lights: LightUniforms) {
   return new ShaderMaterial({
     uniforms: {
       uMap: { value: map },
@@ -40,7 +28,8 @@ export function createLayerMaterial(map: Texture) {
       uRimTexel: { value: new Vector2(0.003, 0.003) },
       uBlur: { value: 0 },
       uLightGain: { value: 1 },
-      ...sharedLights,
+      // The chapter's light uniform objects are shared by reference, so one update per frame lights them all.
+      ...lights,
     },
     vertexShader: /* glsl */ `
       uniform float uTime;

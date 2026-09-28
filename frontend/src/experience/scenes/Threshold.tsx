@@ -1,7 +1,7 @@
 import { useThree } from '@react-three/fiber'
 import { useControls } from 'leva'
-import { useEffect, useMemo, useRef } from 'react'
-import type { AmbientLight, Mesh, PerspectiveCamera } from 'three'
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
+import type { Mesh, PerspectiveCamera } from 'three'
 import type { Chapter } from '@/spec'
 import { CameraRig } from '../camera/CameraRig'
 import { buildPaths, makeRectAt, type Vec3Tuple } from '../camera/paths'
@@ -13,12 +13,14 @@ import { Particles } from '../layers/Particles'
 import { PARTICLE_PRESETS } from '../layers/particlePresets'
 import { SkyLayer } from '../layers/SkyLayer'
 import { TitleLayer } from '../layers/TitleLayer'
-import { PostStack } from '../post/PostStack'
+import { useChapter } from '../store'
 import { KitLayers, useKit, useKitGlowRefs, useKitTextures } from './KitLayers'
 import { THRESHOLD_CAMERA, THRESHOLD_LAYOUT as L, thresholdPalette } from './threshold.defaults'
 
 interface ThresholdProps {
   chapter: Chapter
+  /** Position in the story; namespaces this chapter's leva folders. */
+  index: number
   reducedMotion: boolean
 }
 
@@ -32,8 +34,10 @@ const frac = (value: number, min = -0.5, max = 1.5) => ({ value, min, max, step:
  * comes from the art kit named by `sceneParams.artKit` (kit.json + webp), so
  * all variation comes from the spec and the kit, never from topic code.
  */
-export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
+export function Threshold({ chapter, index, reducedMotion }: ThresholdProps) {
   const params = chapter.sceneParams
+  const state = useChapter()
+  const ns = (folder: string) => `Ch${index + 1} / ${folder}`
   const palette = useMemo(() => thresholdPalette(params), [params])
   const kit = useKit(chapter.sceneTemplate, params.artKit)
   const kitTextures = useKitTextures(chapter.sceneTemplate, params.artKit, kit)
@@ -42,21 +46,26 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
   const aspect = useThree((s) => s.size.width / s.size.height)
 
   // --- leva -----------------------------------------------------------------
-  const cam = useControls('Camera', {
-    fov: { value: 35, min: 20, max: 70, step: 1 },
-    p0: v3(THRESHOLD_CAMERA.position[0]!),
-    p1: v3(THRESHOLD_CAMERA.position[1]!),
-    p2: v3(THRESHOLD_CAMERA.position[2]!),
-    p3: v3(THRESHOLD_CAMERA.position[3]!),
-    look0: v3(THRESHOLD_CAMERA.lookAt[0]!),
-    look1: v3(THRESHOLD_CAMERA.lookAt[1]!),
-    look2: v3(THRESHOLD_CAMERA.lookAt[2]!),
-    look3: v3(THRESHOLD_CAMERA.lookAt[3]!),
+  // Camera move, sun/moon and title placement come from the kit (defaults = the original Threshold framing).
+  const kc = kit.camera ?? { ...THRESHOLD_CAMERA, fov: 35 }
+  const cel = { ...L.moon, ...kit.celestial }
+  const kt = { ...L.title, ...kit.title }
+  const vertical = chapter.titleLayout === 'vertical'
+  const cam = useControls(ns('Camera'), {
+    fov: { value: kc.fov ?? 35, min: 20, max: 70, step: 1 },
+    p0: v3(kc.position[0]!),
+    p1: v3(kc.position[1]!),
+    p2: v3(kc.position[2]!),
+    p3: v3(kc.position[3]!),
+    look0: v3(kc.lookAt[0]!),
+    look1: v3(kc.lookAt[1]!),
+    look2: v3(kc.lookAt[2]!),
+    look3: v3(kc.lookAt[3]!),
     parallax: { value: 0.3, min: 0, max: 1, step: 0.01 },
     parallaxDamping: { value: 2.5, min: 0.5, max: 10, step: 0.1 },
     reducedPoseT: { value: 0.3, min: 0, max: 1, step: 0.01, label: 'reduced-motion pose' },
   })
-  const layers = useControls('Layers', {
+  const layers = useControls(ns('Layers'), {
     skyZ: zRange(L.sky.z),
     moonZ: zRange(L.moon.z),
     fogZ: zRange(L.fog.z),
@@ -64,7 +73,7 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
     stars: frac(L.sky.stars, 0, 3),
     skyMidPosition: frac(L.sky.midPosition, 0.05, 0.95),
   })
-  const colors = useControls('Colors', {
+  const colors = useControls(ns('Colors'), {
     skyTop: palette.skyTop,
     skyMid: palette.skyMid,
     skyHorizon: palette.skyHorizon,
@@ -76,36 +85,39 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
     titleGlow: palette.titleGlow,
   })
   // Fog layers, shafts and falling petals are authored per kit; these scale them live.
-  const fog = useControls('Fog', {
+  const fog = useControls(ns('Fog'), {
     opacity: frac(1, 0, 3),
     speed: frac(1, 0, 4),
   })
-  const shafts = useControls('Shafts', {
+  const shafts = useControls(ns('Shafts'), {
     opacity: frac(1, 0, 3),
-    angle: { value: -1.95, min: -3.1, max: 0, step: 0.01 },
+    angle: { value: kit.shafts?.angle ?? -1.95, min: -3.1, max: 0, step: 0.01 },
     z: zRange(-13.5),
   })
-  const petals = useControls('Petals', {
+  const petals = useControls(ns('Petals'), {
     count: frac(1, 0, 3),
     opacity: frac(1, 0, 2),
     tint: '#f2e6ef',
   })
-  const moon = useControls('Moon', {
-    u: frac(L.moon.u, 0, 1),
-    v: frac(L.moon.v, 0, 1),
-    uPortrait: frac(L.moon.uPortrait, 0, 1),
-    vPortrait: frac(L.moon.vPortrait, 0, 1),
-    size: { value: L.moon.size, min: 0.01, max: 0.3, step: 0.005 },
-    driftU: frac(L.moon.driftU, -0.5, 0.5),
-    driftV: frac(L.moon.driftV, -0.5, 0.5),
-    intensity: { value: L.moon.intensity, min: 0.5, max: 8, step: 0.1 },
+  const moon = useControls(ns(params.backgroundObject === 'sun' ? 'Sun' : 'Moon'), {
+    u: frac(cel.u, 0, 1),
+    v: frac(cel.v, 0, 1),
+    uPortrait: frac(cel.uPortrait, 0, 1),
+    vPortrait: frac(cel.vPortrait, 0, 1),
+    size: { value: cel.size, min: 0.01, max: 0.3, step: 0.005 },
+    driftU: frac(cel.driftU, -0.5, 0.5),
+    driftV: frac(cel.driftV, -0.5, 0.5),
+    intensity: { value: cel.intensity, min: 0.5, max: 8, step: 0.1 },
     glow: frac(0.35, 0, 1.5),
-    halo: frac(L.moon.halo, 0, 1),
+    halo: frac(cel.halo, 0, 1),
     haloRadius: { value: L.moon.haloRadius, min: 1.2, max: 5, step: 0.05 },
   })
-  const title = useControls('Title', {
-    v: frac(L.title.v, 0, 1),
-    vPortrait: frac(L.title.vPortrait, 0, 1),
+  const title = useControls(ns('Title'), {
+    v: frac(kt.v, 0, 1),
+    vPortrait: frac(kt.vPortrait, 0, 1),
+    x: frac(kit.title?.x ?? -0.3, -0.5, 0.5),
+    xPortrait: frac(kit.title?.xPortrait ?? kit.title?.x ?? -0.3, -0.5, 0.5),
+    stackHeight: frac(kit.title?.height ?? 0.6, 0.1, 1.2),
     fontSize: { value: L.title.fontSize, min: 1, max: 12, step: 0.1 },
     letterSpacing: { value: L.title.letterSpacing, min: -0.1, max: 0.8, step: 0.005 },
     letterSpacingPortrait: { value: L.title.letterSpacingPortrait, min: -0.1, max: 0.8, step: 0.005 },
@@ -117,14 +129,14 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
     glowOpacity: frac(0, 0, 1),
   })
   // Global multipliers over the kit's authored per-layer values (kit.json).
-  const kitLook = useControls('Kit', {
+  const kitLook = useControls(ns('Kit'), {
     wind: { value: 0.35, min: 0, max: 2, step: 0.01 },
     rim: frac(1.35, 0, 3),
     lightGain: frac(1, 0, 3),
     fogBoost: frac(0, -1, 2),
   })
   const preset = params.particleType === 'none' ? null : PARTICLE_PRESETS[params.particleType]
-  const particles = useControls('Particles', {
+  const particles = useControls(ns('Particles'), {
     count: { value: Math.round(300 + 300 * (params.particleDensity ?? 0.5)), min: 0, max: 1000, step: 10 },
     baseDensity: frac(0.55, 0, 1),
     color: preset?.color ?? '#ffffff',
@@ -157,15 +169,19 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
   const fitRectAt = useMemo(() => makeRectAt(paths, 0.6, cam.fov, aspect), [paths, cam.fov, aspect])
 
   const titleRect = rectAt(layers.titleZ)
-  const titleX = (titleRect.minX + titleRect.maxX) / 2
+  const titleX = vertical
+    ? (titleRect.minX + titleRect.maxX) / 2 + titleRect.w * (portrait ? title.xPortrait : title.x)
+    : (titleRect.minX + titleRect.maxX) / 2
   const titleY = titleRect.minY + titleRect.h * (portrait ? title.vPortrait : title.v)
   // Landscape: the word starts at a left margin and runs off the right edge.
-  const titleLeft = portrait ? undefined : titleRect.minX + titleRect.w * title.leftMargin
+  const titleLeft = portrait || vertical ? undefined : titleRect.minX + titleRect.w * title.leftMargin
   // Landscape: the word spans fitWidth × the opening frame (> 1 = runs off the
   // right edge from the first frame). Portrait: shrink-to-fit at the closest pose.
-  const titleFit = portrait
-    ? fitRectAt(layers.titleZ).w * title.fitWidthPortrait
-    : titleRect.w * title.fitWidth
+  const titleFit = vertical
+    ? titleRect.h * title.stackHeight
+    : portrait
+      ? fitRectAt(layers.titleZ).w * title.fitWidthPortrait
+      : titleRect.w * title.fitWidth
   const particleRect = rectAt(-8)
   const moonU = portrait ? moon.uPortrait : moon.u
   const moonV = portrait ? moon.vPortrait : moon.v
@@ -175,15 +191,23 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
   }
 
   const moonDisc = useRef<Mesh>(null)
-  const light = useRef<AmbientLight>(null)
-  // Moon disc + lantern glows bloom; everything else stays crisp.
-  const bloomSelection = useMemo(() => [moonDisc, ...Object.values(glowRefs)], [glowRefs])
-  const bloomLights = useMemo(() => [light], [])
   const reduced = reducedMotion
+  const celestial = params.backgroundObject === 'moon' || params.backgroundObject === 'sun'
+
+  // Report what the story renderer needs (focus plane, grade tint) and that the scene is ready.
+  useLayoutEffect(() => {
+    state.focusZ = layers.titleZ
+    state.gradeTint = params.primaryColor
+  }, [state, layers.titleZ, params.primaryColor])
+  useEffect(() => {
+    state.ready = true
+    return () => {
+      state.ready = false
+    }
+  }, [state])
 
   return (
     <>
-      <ambientLight ref={light} intensity={0} />
       <CameraRig
         paths={paths}
         parallax={cam.parallax}
@@ -198,11 +222,16 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
         mid={colors.skyMid}
         horizon={colors.skyHorizon}
         midPosition={layers.skyMidPosition}
-        stars={params.backgroundObject === 'stars' || params.timeOfDay === 'night' ? layers.stars : 0}
+        stars={
+          params.backgroundObject === 'stars' || params.timeOfDay === 'night'
+            ? layers.stars * (params.timeOfDay === 'dawn' ? 0.45 : 1)
+            : 0
+        }
       />
 
-      {params.backgroundObject === 'moon' && (
+      {celestial && (
         <MoonLayer
+          surface={params.backgroundObject === 'sun' ? 'sun' : 'moon'}
           z={layers.moonZ}
           rect={rectAt(layers.moonZ)}
           u={moonU}
@@ -251,7 +280,7 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
         ),
       )}
 
-      {kit.shafts && params.backgroundObject === 'moon' && (
+      {kit.shafts && celestial && (
         <LightShafts
           origin={moonAt(shafts.z)}
           angle={shafts.angle}
@@ -295,7 +324,9 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
         fontSize={title.fontSize}
         letterSpacing={portrait ? title.letterSpacingPortrait : title.letterSpacing}
         maxWidth={titleFit}
-        fill={!portrait}
+        fill={!portrait && !vertical}
+        vertical={vertical}
+        maxLetterHeight={titleRect.h * 0.4}
         color={colors.title}
         glowColor={colors.titleGlow}
         glowOpacity={title.glowOpacity}
@@ -316,13 +347,6 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
         opacity={particles.opacity}
       />
 
-
-      <PostStack
-        bloomSelection={bloomSelection}
-        bloomLights={bloomLights}
-        focusTarget={[titleX, titleY + title.fontSize * 0.35, layers.titleZ]}
-        gradeTint={params.primaryColor}
-      />
     </>
   )
 }

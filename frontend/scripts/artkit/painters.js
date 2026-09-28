@@ -737,6 +737,163 @@
     return finish(c, { seed, rim: 1, rimWidth: 5, key: 0.4, mottle: 0.16, rimColor: [255, 196, 184] })
   }
 
+
+  /** Flat stepping stones receding along a path (perspective ellipses). */
+  function stones(seed = 111) {
+    const W = 1400, H = 460
+    const { c, ctx } = makeCanvas(W, H)
+    const rand = mulberry32(seed)
+    const n = makeNoise(seed)
+    // Far stones first (small, high), near stones last (large, low).
+    const specs = [
+      [0.52, 0.2, 70, 18], [0.47, 0.32, 95, 24], [0.54, 0.46, 125, 32], [0.45, 0.62, 165, 42], [0.53, 0.82, 215, 56],
+    ]
+    for (const [u, v, rx, ry] of specs) {
+      const cx = u * W
+      const cy = v * H
+      // side (thickness) then top face
+      blobPath(ctx, cx, cy + ry * 0.35, rx, ry, 0.12, n, u * 31)
+      ctx.fillStyle = hsl(224, 12, 7)
+      ctx.globalAlpha = 1
+      ctx.fill()
+      blobPath(ctx, cx, cy, rx, ry, 0.12, n, u * 31)
+      ctx.save()
+      ctx.clip()
+      ctx.fillStyle = hsl(222, 9, 20)
+      ctx.fillRect(cx - rx * 1.3, cy - ry * 1.3, rx * 2.6, ry * 2.6)
+      for (let i = 0; i < rx * ry * 0.08; i++) {
+        const px = cx + (rand() - 0.5) * rx * 2
+        const py = cy + (rand() - 0.5) * ry * 2
+        const lit = ((px - cx) / rx) * 0.4 - ((py - cy) / ry) * 0.5
+        dab(ctx, px, py, 8 + rand() * 18, 2 + rand() * 4, (rand() - 0.5) * 0.4, hsl(222, 8, 16 + lit * 10 + rand() * 8), 0.35)
+      }
+      for (let i = 0; i < rx * 0.8; i++) {
+        const a = rand() * Math.PI * 2
+        dab(ctx, cx + Math.cos(a) * rx * 0.92, cy + Math.sin(a) * ry * 0.92, 5 + rand() * 8, 2 + rand() * 3, a, hsl(150, 24, 11 + rand() * 10), 0.6)
+      }
+      ctx.restore()
+    }
+    // grass tufts between stones
+    for (let i = 0; i < 900; i++) {
+      const x = rand() * W
+      const y = H * (0.18 + rand() * 0.8)
+      const h = 6 + (y / H) * 30 * rand()
+      blade(ctx, x, y, h, 1 + rand() * 1.5, (rand() - 0.5) * h * 0.6, hsl(215 + rand() * 25, 22, 6 + rand() * 10), 0.7)
+    }
+    ctx.globalAlpha = 1
+    return finish(c, { seed, rim: 0.9, rimWidth: 4, key: 0.4, mottle: 0.18 })
+  }
+
+  /** Small garden pond: dark water with sky reflection, ripples, stone rim and reeds. */
+  function pond(seed = 121) {
+    const W = 1600, H = 560
+    const { c, ctx } = makeCanvas(W, H)
+    const rand = mulberry32(seed)
+    const n = makeNoise(seed)
+    const cx = W / 2
+    const cy = H * 0.58
+    const rx = W * 0.44
+    const ry = H * 0.3
+    blobPath(ctx, cx, cy, rx, ry, 0.08, n, 3.3)
+    ctx.save()
+    ctx.clip()
+    const g = ctx.createLinearGradient(0, cy - ry, 0, cy + ry)
+    g.addColorStop(0, hsl(228, 30, 6))
+    g.addColorStop(0.45, hsl(20, 35, 22)) // warm sky reflection band
+    g.addColorStop(0.62, hsl(235, 25, 10))
+    g.addColorStop(1, hsl(230, 30, 4))
+    ctx.fillStyle = g
+    ctx.fillRect(cx - rx * 1.2, cy - ry * 1.2, rx * 2.4, ry * 2.4)
+    // ripple streaks, brighter in the reflection band
+    for (let i = 0; i < 1400; i++) {
+      const y = cy - ry + rand() * ry * 2
+      const band = Math.exp(-(((y - (cy - ry * 0.1)) / (ry * 0.25)) ** 2))
+      dab(ctx, cx + (rand() - 0.5) * rx * 2, y, 20 + rand() * 60, 1 + rand() * 1.5, (rand() - 0.5) * 0.05, hsl(28, 50, 30 + band * 35), 0.08 + band * 0.25)
+    }
+    // lily pads
+    for (let i = 0; i < 7; i++) {
+      const px = cx + (rand() - 0.5) * rx * 1.4
+      const py = cy + (rand() - 0.2) * ry * 1.2
+      const r = 14 + rand() * 18
+      ctx.globalAlpha = 0.95
+      ctx.fillStyle = hsl(160, 25, 13 + rand() * 6)
+      ctx.beginPath()
+      ctx.ellipse(px, py, r, r * 0.38, 0, 0.3, Math.PI * 2 - 0.1)
+      ctx.lineTo(px, py)
+      ctx.fill()
+    }
+    ctx.restore()
+    // stone rim
+    for (let i = 0; i < 70; i++) {
+      const a = (i / 70) * Math.PI * 2 + rand() * 0.05
+      const k = 1 + (n.fbm(Math.cos(a) + 3.3, Math.sin(a) + 3.3, 4) - 0.5) * 0.16
+      const px = cx + Math.cos(a) * rx * k
+      const py = cy + Math.sin(a) * ry * k
+      const r = 16 + rand() * 22
+      blobPath(ctx, px, py, r, r * 0.6, 0.25, n, i * 1.7)
+      ctx.globalAlpha = 1
+      ctx.fillStyle = hsl(222, 9, 12 + rand() * 12 + (Math.sin(a) < 0 ? 0 : -4))
+      ctx.fill()
+    }
+    // reeds on the left
+    for (let i = 0; i < 160; i++) {
+      const x = cx - rx * (0.75 + rand() * 0.3)
+      const y = cy + ry * (0.1 + rand() * 0.6)
+      const h = 60 + rand() * 140
+      blade(ctx, x, y, h, 1.5 + rand() * 2, (rand() - 0.3) * 30, hsl(80 + rand() * 60, 20, 8 + rand() * 12), 0.85)
+    }
+    ctx.globalAlpha = 1
+    return finish(c, { seed, rim: 0.8, rimWidth: 3, key: 0.3, mottle: 0.1 })
+  }
+
+  /** Japanese maple: curving trunk, spreading limbs, clumps of red-orange leaves. */
+  function maple(seed = 131) {
+    const W = 1200, H = 1300
+    const { c, ctx } = makeCanvas(W, H)
+    const rand = mulberry32(seed)
+    const n = makeNoise(seed)
+    const tips = []
+    function limb(x, y, ang, len, width, depth) {
+      const steps = 10
+      let px = x, py = y, a = ang
+      ctx.lineCap = 'round'
+      for (let s = 0; s < steps; s++) {
+        a += (n.noise(px * 0.01, py * 0.01) - 0.5) * 0.5
+        const nx = px + Math.cos(a) * (len / steps)
+        const ny = py + Math.sin(a) * (len / steps)
+        if (nx < 20 || nx > W - 20 || ny < 20) break
+        ctx.strokeStyle = hsl(15, 16, 8)
+        ctx.globalAlpha = 1
+        ctx.lineWidth = width * (1 - (s / steps) * 0.6)
+        ctx.beginPath()
+        ctx.moveTo(px, py)
+        ctx.lineTo(nx, ny)
+        ctx.stroke()
+        if (depth < 4 && rand() < 0.28 && s > 2) limb(nx, ny, a + (rand() < 0.5 ? -1 : 1) * (0.45 + rand() * 0.5), len * 0.55, width * 0.6, depth + 1)
+        px = nx
+        py = ny
+      }
+      tips.push([px, py, depth])
+    }
+    limb(W * 0.5, H, -Math.PI / 2 + 0.08, H * 0.42, 48, 0)
+    limb(W * 0.5, H * 0.72, -Math.PI / 2 - 0.9, H * 0.34, 26, 1)
+    limb(W * 0.52, H * 0.64, -Math.PI / 2 + 0.95, H * 0.34, 24, 1)
+    // leaf clumps around every tip (canopy), darker underneath
+    for (const [tx, ty, depth] of tips) {
+      const r = 60 + rand() * 80 - depth * 6
+      for (let i = 0; i < 420; i++) {
+        const t = rand() * Math.PI * 2
+        const d = Math.sqrt(rand()) * r
+        const px = tx + Math.cos(t) * d
+        const py = ty + Math.sin(t) * d * 0.7
+        const under = py > ty ? 1 : 0
+        dab(ctx, px, py, 7 + rand() * 10, 5 + rand() * 6, rand() * Math.PI, hsl(4 + rand() * 24, 62 + rand() * 20, 22 + rand() * 20 - under * 10), 0.55 + rand() * 0.4)
+      }
+    }
+    ctx.globalAlpha = 1
+    return finish(c, { seed, rim: 1, rimWidth: 5, key: 0.45, mottle: 0.14, rimColor: [255, 200, 160] })
+  }
+
   window.ARTKIT = {
     hill: () => hill(11),
     grass: () => grass(23),
@@ -749,5 +906,8 @@
     rocks: () => rocks(81),
     wall: () => wall(91),
     torii: () => torii(101),
+    stones: () => stones(111),
+    pond: () => pond(121),
+    maple: () => maple(131),
   }
 })()

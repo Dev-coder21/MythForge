@@ -9,7 +9,7 @@ import {
   ShaderMaterial,
 } from 'three'
 import type { ParticleType } from '@/spec'
-import { chapterState } from '../store'
+import { storyState, useChapter } from '../store'
 import { PARTICLE_PRESETS } from './particlePresets'
 
 interface ParticlesProps {
@@ -32,6 +32,7 @@ const MAX_COUNT = 1000
 export function Particles({ type, count, min, max, baseDensity, color, size, speed, opacity }: ParticlesProps) {
   const preset = type === 'none' ? null : PARTICLE_PRESETS[type]
 
+  const chapter = useChapter()
   const geometry = useMemo(() => {
     const quad = new PlaneGeometry(1, 1)
     const geo = new InstancedBufferGeometry()
@@ -154,9 +155,9 @@ export function Particles({ type, count, min, max, baseDensity, color, size, spe
 
   useFrame(({ clock, camera }) => {
     u.uTime!.value = clock.elapsedTime
-    u.uIntensity!.value = chapterState.intensity
-    u.uFocusDist!.value = Math.abs(camera.position.z - chapterState.focus.z)
-    u.uDof!.value = chapterState.focus.strength
+    u.uIntensity!.value = chapter.intensity
+    u.uFocusDist!.value = Math.abs(camera.position.z - chapter.focusZ)
+    u.uDof!.value = storyState.dof.strength
   })
 
   if (!preset) return null
