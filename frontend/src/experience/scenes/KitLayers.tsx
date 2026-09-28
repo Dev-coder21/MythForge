@@ -26,6 +26,14 @@ export function useKit(template: string, name: string): Kit {
   return useMemo(() => JSON.parse(raw) as Kit, [raw])
 }
 
+/**
+ * Kits share painted elements (same URL, same cached Texture), so GPU memory is
+ * released by reference count: when the last mounted chapter using a texture
+ * unmounts, it is disposed. three re-uploads it automatically if a chapter
+ * that needs it mounts again (e.g. scrolling back).
+ */
+const textureUsers = new Map<Texture, number>()
+
 /** Load every texture a kit references (suspends), keyed by texture id. */
 export function useKitTextures(template: string, name: string, kit: Kit): Record<string, Texture> {
   const urls = useMemo(
@@ -34,10 +42,22 @@ export function useKitTextures(template: string, name: string, kit: Kit): Record
   )
   const textures = useTexture(urls) as Record<string, Texture>
   useLayoutEffect(() => {
-    for (const t of Object.values(textures)) {
+    const list = Object.values(textures)
+    for (const t of list) {
       t.colorSpace = SRGBColorSpace
       t.anisotropy = 4
       t.needsUpdate = true
+      textureUsers.set(t, (textureUsers.get(t) ?? 0) + 1)
+    }
+    return () => {
+      for (const t of list) {
+        const n = (textureUsers.get(t) ?? 1) - 1
+        if (n > 0) textureUsers.set(t, n)
+        else {
+          textureUsers.delete(t)
+          t.dispose()
+        }
+      }
     }
   }, [textures])
   return textures

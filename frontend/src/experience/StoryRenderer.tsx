@@ -47,6 +47,8 @@ export function StoryRenderer({ spec, states, reducedMotion }: StoryRendererProp
   const gl = useThree((s) => s.gl)
   const size = useThree((s) => s.size)
   const n = spec.chapters.length
+  // Dev-only: lets npm run fps read GPU memory stats.
+  if (import.meta.env.DEV) (window as { __gl?: unknown }).__gl = gl
 
   const bloomCtl = useControls('Post / Bloom', {
     intensity: { value: 1.3, min: 0, max: 5, step: 0.05 },
