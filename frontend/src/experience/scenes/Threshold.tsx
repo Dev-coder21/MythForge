@@ -6,6 +6,8 @@ import type { Chapter } from '@/spec'
 import { CameraRig } from '../camera/CameraRig'
 import { buildPaths, makeRectAt, type Vec3Tuple } from '../camera/paths'
 import { FogLayer } from '../layers/FogLayer'
+import { KitParticles } from '../layers/KitParticles'
+import { LightShafts } from '../layers/LightShafts'
 import { MoonLayer } from '../layers/MoonLayer'
 import { Particles } from '../layers/Particles'
 import { PARTICLE_PRESETS } from '../layers/particlePresets'
@@ -73,11 +75,20 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
     title: palette.title,
     titleGlow: palette.titleGlow,
   })
+  // Fog layers, shafts and falling petals are authored per kit; these scale them live.
   const fog = useControls('Fog', {
-    opacity: frac(L.fog.opacity, 0, 1),
-    speed: { value: L.fog.speed, min: 0, max: 0.3, step: 0.005 },
-    height: frac(L.fog.height, 0.05, 1),
-    scale: { value: L.fog.scale, min: 0.3, max: 8, step: 0.1 },
+    opacity: frac(1, 0, 3),
+    speed: frac(1, 0, 4),
+  })
+  const shafts = useControls('Shafts', {
+    opacity: frac(1, 0, 3),
+    angle: { value: -1.95, min: -3.1, max: 0, step: 0.01 },
+    z: zRange(-13.5),
+  })
+  const petals = useControls('Petals', {
+    count: frac(1, 0, 3),
+    opacity: frac(1, 0, 2),
+    tint: '#f2e6ef',
   })
   const moon = useControls('Moon', {
     u: frac(L.moon.u, 0, 1),
@@ -108,7 +119,7 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
   // Global multipliers over the kit's authored per-layer values (kit.json).
   const kitLook = useControls('Kit', {
     wind: { value: 0.35, min: 0, max: 2, step: 0.01 },
-    rim: frac(1, 0, 3),
+    rim: frac(1.35, 0, 3),
     lightGain: frac(1, 0, 3),
     fogBoost: frac(0, -1, 2),
   })
@@ -156,6 +167,12 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
     ? fitRectAt(layers.titleZ).w * title.fitWidthPortrait
     : titleRect.w * title.fitWidth
   const particleRect = rectAt(-8)
+  const moonU = portrait ? moon.uPortrait : moon.u
+  const moonV = portrait ? moon.vPortrait : moon.v
+  const moonAt = (z: number): [number, number, number] => {
+    const r = rectAt(z)
+    return [r.minX + r.w * moonU, r.minY + r.h * moonV, z]
+  }
 
   const moonDisc = useRef<Mesh>(null)
   const light = useRef<AmbientLight>(null)
@@ -188,8 +205,8 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
         <MoonLayer
           z={layers.moonZ}
           rect={rectAt(layers.moonZ)}
-          u={portrait ? moon.uPortrait : moon.u}
-          v={portrait ? moon.vPortrait : moon.v}
+          u={moonU}
+          v={moonV}
           size={moon.size}
           driftU={reduced ? 0 : moon.driftU}
           driftV={reduced ? 0 : moon.driftV}
@@ -219,15 +236,54 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
         }}
       />
 
-      <FogLayer
-        z={layers.fogZ}
-        rect={rectAt(layers.fogZ)}
-        color={colors.fog}
-        opacity={fog.opacity}
-        speed={reduced ? fog.speed * 0.4 : fog.speed}
-        height={fog.height}
-        scale={fog.scale}
-      />
+      {(kit.fog ?? [{ z: layers.fogZ, opacity: L.fog.opacity, speed: L.fog.speed, height: L.fog.height, scale: L.fog.scale }]).map(
+        (f, i) => (
+          <FogLayer
+            key={i}
+            z={f.z}
+            rect={rectAt(f.z)}
+            color={colors.fog}
+            opacity={f.opacity * fog.opacity}
+            speed={f.speed * fog.speed * (reduced ? 0.4 : 1)}
+            height={f.height}
+            scale={f.scale}
+          />
+        ),
+      )}
+
+      {kit.shafts && params.backgroundObject === 'moon' && (
+        <LightShafts
+          origin={moonAt(shafts.z)}
+          angle={shafts.angle}
+          count={kit.shafts.count}
+          length={rectAt(shafts.z).h * kit.shafts.length}
+          spread={kit.shafts.spread}
+          width={rectAt(shafts.z).h * 0.22}
+          color={colors.kitRim}
+          opacity={kit.shafts.opacity * shafts.opacity}
+        />
+      )}
+
+      {kit.particles?.map((p, i) => {
+        const texture = kitTextures[p.texture]
+        if (!texture) return null
+        const r = rectAt((p.zMin + p.zMax) / 2)
+        return (
+          <KitParticles
+            key={i}
+            texture={texture}
+            cells={p.cells}
+            count={Math.round(p.count * petals.count * (portrait ? 0.6 : 1))}
+            min={[r.minX * 1.2, r.minY, p.zMin]}
+            max={[r.maxX * 1.2, r.maxY * 1.1, p.zMax]}
+            size={p.size}
+            speed={p.speed}
+            fall={p.fall}
+            opacity={p.opacity * petals.opacity}
+            tint={petals.tint}
+          />
+        )
+      })}
 
 
       <TitleLayer

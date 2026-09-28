@@ -130,7 +130,7 @@ function placeLight(layer: KitLayer, box: LayerBox, seed: number): PlacedLight {
     x: box.x + (l.u - 0.5) * box.w * dir,
     y: box.y + (l.v - 0.5) * box.h,
     z: layer.z + 0.3,
-    radius: l.radius,
+    radius: l.radius * box.h,
     color: new Color(l.color),
     intensity: l.intensity,
     flicker: l.flicker ?? 0,

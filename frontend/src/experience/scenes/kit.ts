@@ -11,7 +11,7 @@ export interface KitLight {
   v: number
   color: string
   intensity: number
-  /** Falloff radius in world units. */
+  /** Falloff radius as a multiple of the element's placed height (scales with the element). */
   radius: number
   /** Flicker amount 0–1. */
   flicker?: number
