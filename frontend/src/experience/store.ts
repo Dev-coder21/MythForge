@@ -17,6 +17,8 @@ export const chapterState = {
   titleOut: 0,
   /** Particles thicken, moon/bloom intensify (beat 3). */
   intensity: 0,
+  /** Scene darkens + desaturates behind the chapter copy (0–1). */
+  dim: 0,
   /** Normalized pointer, -1..1 on both axes. */
   pointer: { x: 0, y: 0 },
   /** Layer depth of field: focal plane z (the title) and blur strength (0 = off). */

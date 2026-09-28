@@ -35,7 +35,7 @@ export function PostStack({ bloomSelection, bloomLights, focusTarget, gradeTint 
     intensity: { value: 1.6, min: 0, max: 5, step: 0.05 },
     threshold: { value: 0.35, min: 0, max: 1.5, step: 0.01 },
     smoothing: { value: 0.3, min: 0, max: 1, step: 0.01 },
-    radius: { value: 0.75, min: 0, max: 1, step: 0.01 },
+    radius: { value: 0.85, min: 0, max: 1, step: 0.01 },
   })
   const dof = useControls('Post / DOF', {
     // 'layer' blurs each depth layer by mip bias (near free); 'post' is the
@@ -47,14 +47,17 @@ export function PostStack({ bloomSelection, bloomLights, focusTarget, gradeTint 
   })
   const fx = useControls('Post / Grain + Lens', {
     grain: { value: 0.06, min: 0, max: 0.3, step: 0.005 },
-    vignetteOffset: { value: 0.28, min: 0, max: 1, step: 0.01 },
-    vignetteDarkness: { value: 0.72, min: 0, max: 1.5, step: 0.01 },
+    vignetteOffset: { value: 0.2, min: 0, max: 1, step: 0.01 },
+    vignetteDarkness: { value: 0.95, min: 0, max: 1.5, step: 0.01 },
     aberration: { value: 0.0006, min: 0, max: 0.005, step: 0.0001 },
   })
   const grade = useControls('Post / Grade', {
-    lift: { value: 0.035, min: 0, max: 0.2, step: 0.005 },
+    lift: { value: 0.018, min: 0, max: 0.2, step: 0.002 },
     saturation: { value: 0.95, min: 0, max: 1.5, step: 0.01 },
     tintOverride: { value: '', label: 'tint (blank = primary)' },
+    // Behind the chapter copy the scene darkens and loses color (0 = off).
+    readingDim: { value: 0.5, min: 0, max: 0.9, step: 0.01 },
+    readingDesaturate: { value: 0.45, min: 0, max: 1, step: 0.01 },
   })
 
   const bloomRef = useRef<SelectiveBloomEffect>(null)
@@ -68,16 +71,18 @@ export function PostStack({ bloomSelection, bloomLights, focusTarget, gradeTint 
   const max = Math.max(tint.r, tint.g, tint.b, 1e-4)
   gradeEffect.uniforms.get('uTint')!.value = tint.multiplyScalar(1 / max)
   gradeEffect.uniforms.get('uLift')!.value = grade.lift
-  gradeEffect.uniforms.get('uSaturation')!.value = grade.saturation
 
   useEffect(() => {
     chapterState.focus.z = focusTarget[2]
     chapterState.focus.strength = dof.mode === 'layer' ? dof.layerStrength : 0
   }, [focusTarget, dof.mode, dof.layerStrength])
 
-  // Beat 3: light intensifies.
   useFrame(() => {
-    if (bloomRef.current) bloomRef.current.intensity = bloom.intensity * (1 + chapterState.intensity * 0.6)
+    const { dim, intensity } = chapterState
+    // Beat 3: light intensifies.
+    if (bloomRef.current) bloomRef.current.intensity = bloom.intensity * (1 + intensity * 0.6)
+    gradeEffect.uniforms.get('uExposure')!.value = 1 - grade.readingDim * dim
+    gradeEffect.uniforms.get('uSaturation')!.value = grade.saturation * (1 - grade.readingDesaturate * dim)
   })
 
   return (

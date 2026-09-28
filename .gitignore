@@ -17,3 +17,7 @@ Thumbs.db
 
 # Starter bundle (contents already extracted)
 mythforge-starter.zip
+
+# Reference recordings + dev screenshot captures (not our work to redistribute)
+*.mp4
+.captures/

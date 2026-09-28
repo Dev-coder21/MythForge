@@ -92,7 +92,7 @@ export function StoryExperience({ spec, chapterIndex = 0 }: StoryExperienceProps
           </Suspense>
           {debug.showStats && <Stats />}
         </Canvas>
-        <ChapterOverlay chapter={chapter} storyTitle={spec.title} chapterCount={spec.chapters.length} />
+        <ChapterOverlay spec={spec} chapterIndex={chapterIndex} />
       </section>
     </div>
   )

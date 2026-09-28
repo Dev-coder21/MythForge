@@ -10,40 +10,56 @@ export const THRESHOLD_LAYOUT = {
   sky: { z: -60, midPosition: 0.45, stars: 1 },
   moon: {
     z: -45,
-    u: 0.68,
-    v: 0.76,
+    // Low enough that the gate's top beam cuts across the disc.
+    u: 0.64,
+    v: 0.66,
     // Portrait: copy fills the top of the screen, so the moon drops to frame inside the gate.
     uPortrait: 0.55,
-    vPortrait: 0.54,
-    size: 0.075,
-    driftU: -0.06,
-    driftV: 0.05,
-    intensity: 2.4,
+    vPortrait: 0.5,
+    size: 0.09,
+    driftU: -0.04,
+    driftV: 0.03,
+    intensity: 1.5,
     haloRadius: 2.3,
+    halo: 0.06,
   },
-  far: { z: -35, heightFrac: 0.55, bottomFrac: 0.02, fogMix: 0.3 },
-  fog: { z: -25, opacity: 0.32, speed: 0.035, height: 0.55, scale: 2.2 },
+  far: { z: -35, heightFrac: 0.55, bottomFrac: 0.02, fogMix: 0.22 },
+  fog: { z: -25, opacity: 0.16, speed: 0.035, height: 0.5, scale: 2.2 },
   // anchorUv = the hill's ground line in the structure texture, pinned at bottomFrac.
   mid: { z: -15, heightFrac: 0.62, bottomFrac: 0.16, anchorUv: 0.31, maxWidthFrac: 2.4, fogMix: 0.18 },
-  title: { z: -6, v: 0.25, fontSize: 5.2, letterSpacing: 0.02, riseDistance: 1.05, driftBack: 3, fitWidth: 0.84 },
+  // Landscape: wide-tracked, left-anchored and allowed to bleed off the right
+  // edge (fitWidth > 1). Portrait: centered and fitted. Baseline sits deep in the hill.
+  title: {
+    z: -6,
+    v: 0.17,
+    fontSize: 6.4,
+    letterSpacing: 0.3,
+    riseDistance: 1.05,
+    driftBack: 3,
+    fitWidth: 1.15,
+    fitWidthPortrait: 0.9,
+    leftMargin: 0.05,
+  },
   near: { z: -3, heightFrac: 1.12, bottomFrac: -0.06, sway: 0.35, rim: 0.25 },
   particles: { zMin: -18, zMax: 1 },
   fore: { z: 2, heightFrac: 0.62, bottomFrac: -0.14, sway: 0.6, rim: 0.55 },
 }
 
 export const THRESHOLD_CAMERA: { position: Vec3Tuple[]; lookAt: Vec3Tuple[] } = {
-  // Push forward, rise slightly, small yaw to the right.
+  // Straight dolly-in that settles slightly and tips down onto the hill, so the
+  // mound grows to fill the frame while the sky/moon stay nearly locked. Only a
+  // hint of yaw. (Matches the reference feel; EXPERIENCE_SPEC §4 suggested a rise.)
   position: [
-    [-0.6, 1.2, 14],
-    [-0.25, 1.35, 11.6],
-    [0.2, 1.65, 8.8],
-    [0.55, 1.95, 5.8],
+    [0, 1.3, 14],
+    [0.05, 1.25, 11.4],
+    [0.12, 1.15, 8.6],
+    [0.2, 1.05, 6],
   ],
   lookAt: [
-    [0, 2.4, -20],
-    [0.35, 2.55, -20],
-    [0.9, 2.8, -20],
-    [1.6, 3.1, -20],
+    [0, 2.6, -20],
+    [0.1, 2.2, -20],
+    [0.25, 1.6, -20],
+    [0.4, 1.0, -20],
   ],
 }
 
@@ -55,19 +71,28 @@ export function thresholdPalette(p: SceneParams) {
   const accent = new Color(p.accentColor)
   const white = new Color('#ffffff')
 
-  const moonByTime = { night: '#f4efe2', dawn: '#ffe9c9', dusk: '#ffd2a1', day: '#fffaf0' } as const
+  // At night the moon takes the chapter accent (a vermilion moon for Kyoto);
+  // other times of day keep a warm natural tone.
+  const moonByTime = {
+    night: hex(accent.clone().lerp(white, 0.18)),
+    dawn: '#ffe9c9',
+    dusk: '#ffd2a1',
+    day: '#fffaf0',
+  } as const
 
+  // Deep, contrasty base: near-black sky with little haze, so the few lit
+  // accents (moon, title, particles) carry the frame.
   return {
-    skyTop: hex(primary.clone().multiplyScalar(0.55)),
-    skyMid: hex(primary.clone().lerp(white, 0.06)),
-    skyHorizon: hex(primary.clone().lerp(accent, 0.12).lerp(white, 0.2)),
-    fog: hex(primary.clone().lerp(white, 0.3)),
-    far: hex(primary.clone().lerp(white, 0.05).multiplyScalar(1.6)),
+    skyTop: hex(primary.clone().multiplyScalar(0.35)),
+    skyMid: hex(primary.clone().multiplyScalar(0.8)),
+    skyHorizon: hex(primary.clone().lerp(accent, 0.1).lerp(white, 0.08)),
+    fog: hex(primary.clone().lerp(white, 0.18)),
+    far: hex(primary.clone().multiplyScalar(1.25)),
     mid: hex(primary.clone().lerp(accent, 0.55).multiplyScalar(0.55)),
     near: hex(primary.clone().multiplyScalar(0.5)),
     fore: hex(primary.clone().multiplyScalar(0.28)),
     moon: moonByTime[p.timeOfDay],
-    title: '#f3ebdd',
+    title: '#ece6da',
     titleGlow: hex(accent),
     particles: '',
   }

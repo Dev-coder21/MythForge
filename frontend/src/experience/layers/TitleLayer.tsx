@@ -15,7 +15,10 @@ type TroikaText = Mesh & {
 interface TitleLayerProps {
   word: string
   z: number
+  /** World x of the word's center (used when `left` is not set). */
   x: number
+  /** World x of the word's left edge; the word may then run off the right edge. */
+  left?: number
   /** World y of the title baseline (partly hidden behind the foreground). */
   baseY: number
   fontSize: number
@@ -46,6 +49,7 @@ export function TitleLayer({
   word,
   z,
   x,
+  left,
   baseY,
   fontSize,
   letterSpacing,
@@ -77,6 +81,7 @@ export function TitleLayer({
   )
 
   const scale = layout ? Math.min(1, maxWidth / layout.width) : 1
+  const groupX = left !== undefined && layout ? left + (layout.width * scale) / 2 : x
 
   useFrame(() => {
     const s = chapterState
@@ -96,7 +101,6 @@ export function TitleLayer({
   const common = {
     font: antonWoff,
     fontSize,
-    letterSpacing,
     anchorY: 'bottom-baseline' as const,
     color,
     outlineWidth: 0,
@@ -105,8 +109,9 @@ export function TitleLayer({
   }
 
   return (
-    <group ref={group} position={[x, baseY, z]} scale={scale}>
-      <Text {...common} anchorX="center" visible={false} onSync={onMeasure}>
+    <group ref={group} position={[groupX, baseY, z]} scale={scale}>
+      {/* Spacing lives only in the measuring pass; letters use the measured x positions. */}
+      <Text {...common} letterSpacing={letterSpacing} anchorX="center" visible={false} onSync={onMeasure}>
         {word}
       </Text>
       {layout &&

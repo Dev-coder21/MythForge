@@ -103,17 +103,19 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
     driftV: frac(L.moon.driftV, -0.5, 0.5),
     intensity: { value: L.moon.intensity, min: 0.5, max: 8, step: 0.1 },
     glow: frac(0.35, 0, 1.5),
-    halo: frac(0.14, 0, 1),
+    halo: frac(L.moon.halo, 0, 1),
     haloRadius: { value: L.moon.haloRadius, min: 1.2, max: 5, step: 0.05 },
   })
   const title = useControls('Title', {
     v: frac(L.title.v, 0, 1),
     fontSize: { value: L.title.fontSize, min: 1, max: 12, step: 0.1 },
-    letterSpacing: { value: L.title.letterSpacing, min: -0.1, max: 0.4, step: 0.005 },
-    fitWidth: frac(L.title.fitWidth, 0.3, 1),
+    letterSpacing: { value: L.title.letterSpacing, min: -0.1, max: 0.8, step: 0.005 },
+    fitWidth: frac(L.title.fitWidth, 0.3, 1.6),
+    fitWidthPortrait: frac(L.title.fitWidthPortrait, 0.3, 1.2),
+    leftMargin: frac(L.title.leftMargin, -0.2, 0.5),
     riseDistance: frac(L.title.riseDistance, 0, 2),
     driftBack: { value: L.title.driftBack, min: 0, max: 10, step: 0.1 },
-    glowOpacity: frac(0.25, 0, 1),
+    glowOpacity: frac(0, 0, 1),
   })
   const wind = useControls('Wind', {
     strength: { value: 0.35, min: 0, max: 2, step: 0.01 },
@@ -158,6 +160,9 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
   const titleRect = rectAt(layers.titleZ)
   const titleX = (titleRect.minX + titleRect.maxX) / 2
   const titleY = titleRect.minY + titleRect.h * title.v
+  // Landscape: the word starts at a left margin and runs off the right edge.
+  const titleLeft = portrait ? undefined : titleRect.minX + titleRect.w * title.leftMargin
+  const titleFit = fitRectAt(layers.titleZ).w * (portrait ? title.fitWidthPortrait : title.fitWidth)
   const particleRect = rectAt(-8)
 
   const moonDisc = useRef<Mesh>(null)
@@ -243,10 +248,11 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
         word={chapter.titleWord}
         z={layers.titleZ}
         x={titleX}
+        left={titleLeft}
         baseY={titleY}
         fontSize={title.fontSize}
         letterSpacing={title.letterSpacing}
-        maxWidth={fitRectAt(layers.titleZ).w * title.fitWidth}
+        maxWidth={titleFit}
         color={colors.title}
         glowColor={colors.titleGlow}
         glowOpacity={title.glowOpacity}
