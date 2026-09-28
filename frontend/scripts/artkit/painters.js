@@ -374,19 +374,23 @@
       const steps = 14
       let px = x, py = y, a = ang
       for (let s = 0; s < steps; s++) {
-        a += (n.noise(px * 0.01, py * 0.01) - 0.5) * 0.35
+        a += (n.noise(px * 0.008, py * 0.008) - 0.5) * 0.6 + (depth === 0 ? 0.012 : 0)
+        if (py > H * 0.78) a -= 0.25 // steer up away from the bottom edge
+        if (py < H * 0.06) a += 0.25
+        a = clamp(a, -0.9, 1.1)
         const nx = px + Math.cos(a) * (len / steps)
         const ny = py + Math.sin(a) * (len / steps)
         const w = width * (1 - s / steps * 0.7)
+        if (nx > W * 0.94 || ny > H * 0.95 || ny < 4) break
         segs.push([px, py, nx, ny, w])
-        if (depth < 3 && rand() < 0.2 && s > 2) limb(nx, ny, a + (rand() < 0.5 ? -1 : 1) * (0.5 + rand() * 0.6), len * (0.35 + rand() * 0.25), w * 0.6, depth + 1)
+        if (depth < 3 && rand() < 0.3 && s > 1) limb(nx, ny, clamp(a + (rand() < 0.5 ? -1 : 1) * (0.4 + rand() * 0.5), -0.9, 1.1), len * (0.3 + rand() * 0.22), w * 0.6, depth + 1)
         px = nx
         py = ny
       }
       return [px, py]
     }
-    limb(-20, H * 0.18, 0.18, W * 1.0, 34, 0)
-    limb(-20, H * 0.05, 0.42, W * 0.55, 18, 1)
+    limb(-20, H * 0.2, 0.08, W * 0.8, 46, 0)
+    limb(-20, H * 0.06, 0.36, W * 0.5, 24, 1)
     // bark
     ctx.lineCap = 'round'
     for (const [x0, y0, x1, y1, w] of segs) {
@@ -404,8 +408,8 @@
     }
     // blossom clusters along thinner limbs
     for (const [x0, y0, x1, y1, w] of segs) {
-      if (w > 24 || rand() > 0.8) continue
-      const clusters = 1 + Math.floor(rand() * 3)
+      if (w > 26 || rand() > 0.7) continue
+      const clusters = 1 + Math.floor(rand() * 2)
       for (let q = 0; q < clusters; q++) {
         const t = rand()
         const cx = lerp(x0, x1, t) + (rand() - 0.5) * 20

@@ -1,3 +1,11 @@
+/**
+ * Headless scroll frame-rate check (installed Edge, real GPU). Needs the dev
+ * server running. Warms up twice so PerformanceMonitor settles the DPR, then
+ * scrolls the whole chapter in 6s and reports average fps, p95 frame time,
+ * frames over 20ms and the final canvas size.
+ *
+ *   npm run fps
+ */
 import { chromium } from 'playwright'
 const b = await chromium.launch({ channel: 'msedge', headless: true, args: ['--use-angle=d3d11', '--enable-gpu', '--ignore-gpu-blocklist'] })
 for (const [w, h] of [[1440, 900], [390, 844]]) {

@@ -34,6 +34,8 @@ export interface KitPlacement {
   maxWidth?: number
   /** Stretch horizontally to cover the frame (ground planes). */
   stretch?: boolean
+  /** Skip this layer (e.g. a foreground branch that would crowd portrait copy). */
+  hidden?: boolean
 }
 
 export interface KitLayer extends KitPlacement {

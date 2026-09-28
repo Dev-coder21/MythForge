@@ -12,7 +12,7 @@ import { PARTICLE_PRESETS } from '../layers/particlePresets'
 import { SkyLayer } from '../layers/SkyLayer'
 import { TitleLayer } from '../layers/TitleLayer'
 import { PostStack } from '../post/PostStack'
-import { KitLayers, useKit, useKitTextures } from './KitLayers'
+import { KitLayers, useKit, useKitGlowRefs, useKitTextures } from './KitLayers'
 import { THRESHOLD_CAMERA, THRESHOLD_LAYOUT as L, thresholdPalette } from './threshold.defaults'
 
 interface ThresholdProps {
@@ -35,6 +35,7 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
   const palette = useMemo(() => thresholdPalette(params), [params])
   const kit = useKit(chapter.sceneTemplate, params.artKit)
   const kitTextures = useKitTextures(chapter.sceneTemplate, params.artKit, kit)
+  const glowRefs = useKitGlowRefs(kit)
   const camera = useThree((s) => s.camera) as PerspectiveCamera
   const aspect = useThree((s) => s.size.width / s.size.height)
 
@@ -158,7 +159,8 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
 
   const moonDisc = useRef<Mesh>(null)
   const light = useRef<AmbientLight>(null)
-  const bloomSelection = useMemo(() => [moonDisc], [])
+  // Moon disc + lantern glows bloom; everything else stays crisp.
+  const bloomSelection = useMemo(() => [moonDisc, ...Object.values(glowRefs)], [glowRefs])
   const bloomLights = useMemo(() => [light], [])
   const reduced = reducedMotion
 
@@ -205,6 +207,7 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
         textures={kitTextures}
         rectAt={rectAt}
         portrait={portrait}
+        glowRefs={glowRefs}
         look={{
           tint: colors.kitTint,
           fogColor: colors.fog,
