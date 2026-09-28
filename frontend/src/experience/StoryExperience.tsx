@@ -14,6 +14,13 @@ import { chapterState } from './store'
 import { useReducedMotion } from './useReducedMotion'
 
 const MAX_DPR = 1.75
+/**
+ * Device-pixel budget for the canvas. Six full-screen painted layers plus post
+ * cost per pixel, so large windows start at a lower DPR (1440×900 → ~1.3) while
+ * phones keep the full 1.75. PerformanceMonitor adapts further from there.
+ */
+const PIXEL_BUDGET = 2.2e6
+const maxDprFor = (w: number, h: number) => Math.max(1, Math.min(MAX_DPR, Math.sqrt(PIXEL_BUDGET / (w * h))))
 
 interface StoryExperienceProps {
   spec: StorySpec
@@ -28,7 +35,14 @@ export function StoryExperience({ spec, chapterIndex = 0 }: StoryExperienceProps
   const reduced = useReducedMotion(debug.forceReducedMotion)
   const sectionRef = useRef<HTMLElement>(null)
   const [visible, setVisible] = useState(true)
-  const [dpr, setDpr] = useState(MAX_DPR)
+  const [maxDpr, setMaxDpr] = useState(() => maxDprFor(window.innerWidth, window.innerHeight))
+  const [dpr, setDpr] = useState(maxDpr)
+  useEffect(() => {
+    const onResize = () => setMaxDpr(maxDprFor(window.innerWidth, window.innerHeight))
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+  useEffect(() => setDpr((d) => Math.min(d, maxDpr)), [maxDpr])
 
   useLayoutEffect(() => {
     chapterState.reducedMotion = reduced
@@ -76,16 +90,17 @@ export function StoryExperience({ spec, chapterIndex = 0 }: StoryExperienceProps
           gl={{ antialias: false, powerPreference: 'high-performance', stencil: false }}
           camera={{ fov: 35, near: 0.1, far: 200, position: THRESHOLD_CAMERA.position[0] }}
         >
-          {/* Scale DPR between 1 and MAX_DPR to hold ~60fps (on high-refresh screens too). */}
+          {/* Scale DPR between 1 and the pixel-budget cap to hold ~60fps. No flip-flop
+              fallback: load-time dips (shader compile, texture upload) used to trip it
+              and pin fast devices at DPR 1. */}
           <PerformanceMonitor
             factor={1}
             bounds={(refresh) => {
               const target = Math.min(refresh, 60)
               return [target * 0.92, target * 0.99]
             }}
-            onChange={({ factor }) => setDpr(Math.round((1 + (MAX_DPR - 1) * factor) * 20) / 20)}
-            flipflops={6}
-            onFallback={() => setDpr(1)}
+            onChange={({ factor }) => setDpr(Math.round((1 + (maxDpr - 1) * factor) * 20) / 20)}
+            flipflops={Infinity}
           />
           <Suspense fallback={null}>
             <Threshold chapter={chapter} reducedMotion={reduced} />

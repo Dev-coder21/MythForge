@@ -1,80 +1,70 @@
 import { useFrame } from '@react-three/fiber'
-import { useEffect, useMemo } from 'react'
-import { Color, type Texture } from 'three'
+import { forwardRef, useEffect, useMemo } from 'react'
+import type { Mesh, Texture } from 'three'
 import type { Rect } from '../camera/paths'
+import type { KitPlacement } from '../scenes/kit'
 import { chapterState } from '../store'
 import { createLayerMaterial } from './layerMaterial'
+
+export interface LayerBox {
+  x: number
+  y: number
+  w: number
+  h: number
+}
+
+/** World-space box of a kit element placed in `rect` (the visible frame at its depth). */
+export function placeInRect(rect: Rect, p: KitPlacement, texAspect: number): LayerBox {
+  let h = rect.h * p.height
+  let w = h * texAspect
+  if (p.stretch) w = Math.max(rect.w * 1.3, w)
+  if (p.maxWidth && w > rect.w * p.maxWidth && !p.stretch) {
+    const k = (rect.w * p.maxWidth) / w
+    w *= k
+    h *= k
+  }
+  const ax = p.anchorX ?? 0.5
+  const x = (rect.minX + rect.maxX) / 2 + rect.w * p.x + w * (0.5 - ax)
+  const y = rect.minY + rect.h * p.bottom - h * (p.anchorY ?? 0) + h / 2
+  return { x, y, w, h }
+}
 
 export interface DepthLayerProps {
   texture: Texture
   z: number
-  /** Visible rect at this depth for the widest camera pose. */
-  rect: Rect
-  /** Plane height as a fraction of the visible height. */
-  heightFrac: number
-  /** Where texture row `anchorUv` sits, as a fraction of visible height from the bottom. */
-  bottomFrac: number
-  /** Texture row (0 = bottom) pinned to `bottomFrac`, e.g. the ground line of a structure. */
-  anchorUv?: number
-  /** Extra width beyond the visible rect so camera moves never reveal an edge. */
-  overscan?: number
-  /** Keep the texture's aspect ratio instead of stretching to cover the width. */
-  keepAspect?: boolean
-  /** With keepAspect: cap plane width at this multiple of visible width (portrait screens). */
-  maxWidthFrac?: number
+  box: LayerBox
+  flip?: boolean
   tint: string
-  fogColor?: string
-  fogMix?: number
+  fogColor: string
+  fogMix: number
   /** 0 = rigid, 1 = full sway. Multiplied by `wind`. */
   sway?: number
   wind?: number
   rim?: number
   rimColor?: string
-  /** Subdivisions along x for smooth sway. */
-  segments?: number
+  lightGain?: number
 }
 
-/** A painted, textured plane at a real Z depth, sized to cover the frame on any aspect. */
-export function DepthLayer({
-  texture,
-  z,
-  rect,
-  heightFrac,
-  bottomFrac,
-  anchorUv = 0,
-  overscan = 1.3,
-  keepAspect = false,
-  maxWidthFrac = Infinity,
-  tint,
-  fogColor = '#000000',
-  fogMix = 0,
-  sway = 0,
-  wind = 0,
-  rim = 0,
-  rimColor = '#ffffff',
-  segments = 1,
-}: DepthLayerProps) {
+/** A painted, textured plane at a real Z depth (one kit element). */
+export const DepthLayer = forwardRef<Mesh, DepthLayerProps>(function DepthLayer(
+  { texture, z, box, flip = false, tint, fogColor, fogMix, sway = 0, wind = 0, rim = 0, rimColor = '#ffffff', lightGain = 1 },
+  ref,
+) {
   const material = useMemo(() => createLayerMaterial(texture), [texture])
   useEffect(() => () => material.dispose(), [material])
 
   const image = texture.image as { width: number; height: number }
-  const texAspect = image.width / image.height
-  const h = keepAspect
-    ? Math.min(rect.h * heightFrac, (rect.w * maxWidthFrac) / texAspect)
-    : rect.h * heightFrac
-  const w = keepAspect ? h * texAspect : Math.max(rect.w * overscan, h * texAspect)
-  const y = rect.minY + rect.h * bottomFrac - h * anchorUv + h / 2
-  const x = (rect.minX + rect.maxX) / 2
-
   const u = material.uniforms
   u.uTint!.value.set(tint)
   u.uFogColor!.value.set(fogColor)
   u.uFogMix!.value = fogMix
   u.uSway!.value = sway
   u.uWind!.value = wind
+  u.uFlip!.value = flip ? 1 : 0
   u.uRim!.value = rim
-  ;(u.uRimColor!.value as Color).set(rimColor)
-  u.uRimTexel!.value = 3 / image.height
+  u.uRimColor!.value.set(rimColor)
+  u.uRimTexel!.value.set(3 / image.width, 3 / image.height)
+  u.uLightGain!.value = lightGain
 
   useFrame(({ clock, camera }) => {
     if (sway > 0) u.uTime!.value = clock.elapsedTime
@@ -85,9 +75,11 @@ export function DepthLayer({
     u.uBlur!.value = focus.strength * (Math.abs(d - f) / d) * (d < f ? focus.front : 1)
   })
 
+  // Sway needs vertices to bend; a column per ~2% of width is plenty.
+  const segments = sway > 0 ? 48 : 1
   return (
-    <mesh position={[x, y, z]} scale={[w, h, 1]} material={material}>
-      <planeGeometry args={[1, 1, sway > 0 ? segments : 1, 1]} />
+    <mesh ref={ref} position={[box.x, box.y, z]} scale={[box.w, box.h, 1]} material={material}>
+      <planeGeometry args={[1, 1, segments, sway > 0 ? 4 : 1]} />
     </mesh>
   )
-}
+})

@@ -1,0 +1,26 @@
+{
+  "name": "torii-night",
+  "template": "threshold",
+  "textures": {
+    "hill": "hill.webp",
+    "grass": "grass.webp",
+    "cedar-a": "cedar-a.webp",
+    "cedar-b": "cedar-b.webp",
+    "branch": "branch.webp",
+    "leaves": "leaves.webp",
+    "bush": "bush.webp",
+    "lantern": "lantern.webp",
+    "rocks": "rocks.webp",
+    "wall": "wall.webp",
+    "torii": "torii.webp"
+  },
+  "layers": [
+    { "id": "far-ridge", "texture": "hill", "z": -38, "x": 0.1, "bottom": 0.1, "height": 0.34, "stretch": true, "fog": 0.55, "tint": 0.3 },
+    { "id": "cedar-left", "texture": "cedar-a", "z": -17, "x": -0.3, "bottom": 0.14, "height": 0.82, "rim": 0.5, "fog": 0.2, "portrait": {"x": -0.44, "height": 0.55} },
+    { "id": "cedar-right", "texture": "cedar-b", "z": -17, "x": 0.31, "bottom": 0.14, "height": 0.86, "rim": 0.5, "fog": 0.2, "portrait": {"x": 0.44, "height": 0.58} },
+    { "id": "torii", "texture": "torii", "z": -15, "x": 0, "bottom": 0.2, "height": 0.55, "maxWidth": 0.9, "rim": 0.5, "fog": 0.12 },
+    { "id": "hill", "texture": "hill", "z": -12, "x": 0, "bottom": -0.08, "height": 0.46, "stretch": true, "rim": 0.6, "fog": 0.05 },
+    { "id": "hill-near", "texture": "hill", "z": -4.5, "x": 0.04, "bottom": 0, "height": 0.42, "stretch": true, "rim": 0.6, "shade": 0.55, "sway": 0.08, "portrait": {"bottom": 0.06, "height": 0.3} },
+    { "id": "grass-fore", "texture": "grass", "z": 2, "x": 0, "bottom": -0.12, "height": 0.5, "stretch": true, "sway": 0.6, "rim": 0.2, "portrait": {"height": 0.3} }
+  ]
+}

@@ -5,15 +5,14 @@ import type { AmbientLight, Mesh, PerspectiveCamera } from 'three'
 import type { Chapter } from '@/spec'
 import { CameraRig } from '../camera/CameraRig'
 import { buildPaths, makeRectAt, type Vec3Tuple } from '../camera/paths'
-import { DepthLayer } from '../layers/DepthLayer'
 import { FogLayer } from '../layers/FogLayer'
 import { MoonLayer } from '../layers/MoonLayer'
 import { Particles } from '../layers/Particles'
 import { PARTICLE_PRESETS } from '../layers/particlePresets'
-import { getPlaceholder } from '../layers/placeholderTextures'
 import { SkyLayer } from '../layers/SkyLayer'
 import { TitleLayer } from '../layers/TitleLayer'
 import { PostStack } from '../post/PostStack'
+import { KitLayers, useKit, useKitTextures } from './KitLayers'
 import { THRESHOLD_CAMERA, THRESHOLD_LAYOUT as L, thresholdPalette } from './threshold.defaults'
 
 interface ThresholdProps {
@@ -26,13 +25,16 @@ const zRange = (value: number) => ({ value, min: -80, max: 10, step: 0.5 })
 const frac = (value: number, min = -0.5, max = 1.5) => ({ value, min, max, step: 0.01 })
 
 /**
- * Threshold template: the EXPERIENCE_SPEC §3 layer stack (sky → moon → far
- * range → fog → mid structure → TITLE → near foliage → particles → foreground)
- * at real Z depths. All variation comes from `chapter.sceneParams`.
+ * Threshold template: the EXPERIENCE_SPEC §3 layer stack at real Z depths.
+ * Sky, moon, fog, title and particles are procedural; every painted element
+ * comes from the art kit named by `sceneParams.artKit` (kit.json + webp), so
+ * all variation comes from the spec and the kit, never from topic code.
  */
 export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
   const params = chapter.sceneParams
   const palette = useMemo(() => thresholdPalette(params), [params])
+  const kit = useKit(chapter.sceneTemplate, params.artKit)
+  const kitTextures = useKitTextures(chapter.sceneTemplate, params.artKit, kit)
   const camera = useThree((s) => s.camera) as PerspectiveCamera
   const aspect = useThree((s) => s.size.width / s.size.height)
 
@@ -54,23 +56,8 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
   const layers = useControls('Layers', {
     skyZ: zRange(L.sky.z),
     moonZ: zRange(L.moon.z),
-    farZ: zRange(L.far.z),
     fogZ: zRange(L.fog.z),
-    midZ: zRange(L.mid.z),
     titleZ: zRange(L.title.z),
-    nearZ: zRange(L.near.z),
-    foreZ: zRange(L.fore.z),
-    farHeight: frac(L.far.heightFrac, 0.1, 2),
-    farBottom: frac(L.far.bottomFrac),
-    midHeight: frac(L.mid.heightFrac, 0.1, 2),
-    midGroundLine: frac(L.mid.bottomFrac, -0.5, 1),
-    midMaxWidth: { value: L.mid.maxWidthFrac, min: 0.5, max: 6, step: 0.1 },
-    nearHeight: frac(L.near.heightFrac, 0.1, 2),
-    nearBottom: frac(L.near.bottomFrac),
-    foreHeight: frac(L.fore.heightFrac, 0.1, 2),
-    foreBottom: frac(L.fore.bottomFrac),
-    farFogMix: frac(L.far.fogMix, 0, 1),
-    midFogMix: frac(L.mid.fogMix, 0, 1),
     stars: frac(L.sky.stars, 0, 3),
     skyMidPosition: frac(L.sky.midPosition, 0.05, 0.95),
   })
@@ -79,10 +66,8 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
     skyMid: palette.skyMid,
     skyHorizon: palette.skyHorizon,
     fog: palette.fog,
-    far: palette.far,
-    mid: palette.mid,
-    near: palette.near,
-    fore: palette.fore,
+    kitTint: palette.kitTint,
+    kitRim: palette.kitRim,
     moon: palette.moon,
     title: palette.title,
     titleGlow: palette.titleGlow,
@@ -119,12 +104,12 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
     driftBack: { value: L.title.driftBack, min: 0, max: 10, step: 0.1 },
     glowOpacity: frac(0, 0, 1),
   })
-  const wind = useControls('Wind', {
-    strength: { value: 0.35, min: 0, max: 2, step: 0.01 },
-    nearSway: frac(L.near.sway, 0, 2),
-    foreSway: frac(L.fore.sway, 0, 2),
-    nearRim: frac(L.near.rim, 0, 2),
-    foreRim: frac(L.fore.rim, 0, 2),
+  // Global multipliers over the kit's authored per-layer values (kit.json).
+  const kitLook = useControls('Kit', {
+    wind: { value: 0.35, min: 0, max: 2, step: 0.01 },
+    rim: frac(1, 0, 3),
+    lightGain: frac(1, 0, 3),
+    fogBoost: frac(0, -1, 2),
   })
   const preset = params.particleType === 'none' ? null : PARTICLE_PRESETS[params.particleType]
   const particles = useControls('Particles', {
@@ -215,15 +200,20 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
         />
       )}
 
-      <DepthLayer
-        texture={getPlaceholder('range')}
-        z={layers.farZ}
-        rect={rectAt(layers.farZ)}
-        heightFrac={layers.farHeight}
-        bottomFrac={layers.farBottom}
-        tint={colors.far}
-        fogColor={colors.fog}
-        fogMix={layers.farFogMix}
+      <KitLayers
+        kit={kit}
+        textures={kitTextures}
+        rectAt={rectAt}
+        portrait={portrait}
+        look={{
+          tint: colors.kitTint,
+          fogColor: colors.fog,
+          rimColor: colors.kitRim,
+          rim: kitLook.rim,
+          wind: reduced ? kitLook.wind * 0.3 : kitLook.wind,
+          lightGain: kitLook.lightGain,
+          fogBoost: kitLook.fogBoost,
+        }}
       />
 
       <FogLayer
@@ -236,19 +226,6 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
         scale={fog.scale}
       />
 
-      <DepthLayer
-        texture={getPlaceholder('structure', params.propVariant)}
-        z={layers.midZ}
-        rect={rectAt(layers.midZ)}
-        heightFrac={layers.midHeight}
-        bottomFrac={layers.midGroundLine}
-        anchorUv={L.mid.anchorUv}
-        keepAspect
-        maxWidthFrac={layers.midMaxWidth}
-        tint={colors.mid}
-        fogColor={colors.fog}
-        fogMix={layers.midFogMix}
-      />
 
       <TitleLayer
         word={chapter.titleWord}
@@ -267,19 +244,6 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
         driftBack={reduced ? 0 : title.driftBack}
       />
 
-      <DepthLayer
-        texture={getPlaceholder('foliage')}
-        z={layers.nearZ}
-        rect={rectAt(layers.nearZ)}
-        heightFrac={layers.nearHeight}
-        bottomFrac={layers.nearBottom}
-        tint={colors.near}
-        sway={wind.nearSway}
-        wind={wind.strength}
-        rim={wind.nearRim}
-        rimColor={colors.moon}
-        segments={48}
-      />
 
       <Particles
         type={params.particleType}
@@ -293,19 +257,6 @@ export function Threshold({ chapter, reducedMotion }: ThresholdProps) {
         opacity={particles.opacity}
       />
 
-      <DepthLayer
-        texture={getPlaceholder('grass')}
-        z={layers.foreZ}
-        rect={rectAt(layers.foreZ)}
-        heightFrac={layers.foreHeight}
-        bottomFrac={layers.foreBottom}
-        tint={colors.fore}
-        sway={wind.foreSway}
-        wind={wind.strength}
-        rim={wind.foreRim}
-        rimColor={colors.moon}
-        segments={96}
-      />
 
       <PostStack
         bloomSelection={bloomSelection}

@@ -91,6 +91,10 @@ export function thresholdPalette(p: SceneParams) {
     skyMid: hex(primary.clone().multiplyScalar(0.8)),
     skyHorizon: hex(primary.clone().lerp(accent, 0.1).lerp(white, 0.08)),
     fog: hex(primary.clone().lerp(white, 0.18)),
+    /** Tint for kit layers that opt in (kit.json "tint"), so kits follow the chapter palette. */
+    kitTint: hex(primary.clone().lerp(white, 0.55)),
+    /** Runtime rim on kit edges: the moon's light, cooled toward pale blue. */
+    kitRim: hex(new Color(moonByTime[p.timeOfDay]).lerp(new Color('#b9c8ff'), 0.6)),
     far: hex(primary.clone().multiplyScalar(1.25)),
     mid: hex(primary.clone().lerp(accent, 0.55).multiplyScalar(0.55)),
     near: hex(primary.clone().multiplyScalar(0.5)),
