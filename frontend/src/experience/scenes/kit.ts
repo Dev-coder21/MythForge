@@ -57,6 +57,8 @@ export interface KitLayer extends KitPlacement {
   /** Brightness multiplier (e.g. 0.6 to push a near silhouette darker). */
   shade?: number
   light?: KitLight
+  /** Animated reflective water confined to a mask texture (grey, white = water) in this element's UV space. */
+  water?: { mask: string; opacity?: number }
   /** Overrides for portrait screens. */
   portrait?: Partial<KitPlacement>
 }

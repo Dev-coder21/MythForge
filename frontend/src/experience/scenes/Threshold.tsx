@@ -262,6 +262,10 @@ export function Threshold({ chapter, index, reducedMotion }: ThresholdProps) {
           wind: reduced ? kitLook.wind * 0.3 : kitLook.wind,
           lightGain: kitLook.lightGain,
           fogBoost: kitLook.fogBoost,
+          skyTop: colors.skyTop,
+          skyMid: colors.skyMid,
+          skyHorizon: colors.skyHorizon,
+          sun: colors.moon,
         }}
       />
 

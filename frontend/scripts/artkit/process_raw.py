@@ -66,12 +66,13 @@ def remove_watermark(rgb: np.ndarray, key: np.ndarray, box=WATERMARK_BOX) -> np.
     return out
 
 
-def chroma_alpha(rgb: np.ndarray, key: np.ndarray) -> np.ndarray:
+def chroma_alpha(rgb: np.ndarray, key: np.ndarray, wide: bool = False) -> np.ndarray:
     """1 = keep. Narrow band: only pixels close to the flat key colour go transparent."""
     d = np.linalg.norm(rgb - key, axis=2)
     # Magenta sheets hold no pink art (blossoms are on green), so key them wider: this also
     # clears background trapped between grass blades and leaves that the matte keeps opaque.
-    lo, hi = (0.14, 0.34) if key[1] > max(key[0], key[2]) else (0.3, 0.55)
+    green = key[1] > max(key[0], key[2])
+    lo, hi = (0.3, 0.55) if (wide or not green) else (0.14, 0.34)
     return np.clip((d - lo) / (hi - lo), 0.0, 1.0)
 
 
@@ -108,13 +109,13 @@ def decontaminate(rgb: np.ndarray, alpha: np.ndarray, key: np.ndarray) -> np.nda
     return np.clip(out, 0, 1)
 
 
-def cutout(rgb: np.ndarray, watermark: bool = True) -> tuple[np.ndarray, np.ndarray]:
+def cutout(rgb: np.ndarray, watermark: bool = True, wide_key: bool = False) -> tuple[np.ndarray, np.ndarray]:
     """Cut out one element. Sheets are de-watermarked whole, then sliced, then cut per slice
     (rembg picks one salient subject per image, so slicing must come first)."""
     key = key_color(rgb)
     if watermark:
         rgb = remove_watermark(rgb, key)
-    a = rembg_alpha(rgb) * chroma_alpha(rgb, key)
+    a = rembg_alpha(rgb) * chroma_alpha(rgb, key, wide_key)
     # Drop specks left in the background (keep components with meaningful area).
     labels, n = ndimage.label(a > 0.1)
     if n > 1:
@@ -193,6 +194,24 @@ def tile_wall(rgba: np.ndarray) -> np.ndarray:
     return rgba[ys.min() : ys.max() + 1]
 
 
+def pond_water_mask(rgba: np.ndarray) -> np.ndarray:
+    """Soft mask of open water: dark, low saturation, not green (moss/lily), inside the rim."""
+    rgb, a = rgba[..., :3], rgba[..., 3]
+    l = luma(rgb)
+    mx, mn = rgb.max(axis=2), rgb.min(axis=2)
+    sat = np.where(mx > 1e-4, (mx - mn) / np.maximum(mx, 1e-4), 0)
+    greenish = rgb[..., 1] > np.maximum(rgb[..., 0], rgb[..., 2]) * 1.08
+    # The open water of this painting is an ellipse inside the stone rim; its bright and
+    # dark halves defeat colour-based detection, so it is measured once from the trimmed
+    # image (centre and semi-axes as fractions of width/height). Update if pond.png changes.
+    h, w = l.shape
+    cx, cy, rx, ry = 0.52 * w, 0.47 * h, 0.37 * w, 0.245 * h
+    yy, xx = np.mgrid[0:h, 0:w]
+    inside = ((xx - cx) / rx) ** 2 + ((yy - cy) / ry) ** 2 <= 1.0
+    water = inside & (a > 0.9) & ~ndimage.binary_dilation(greenish, iterations=1)
+    return np.clip(ndimage.gaussian_filter(water.astype(np.float32), 1.5), 0, 1)
+
+
 def to_image(rgba: np.ndarray) -> Image.Image:
     img = Image.fromarray((np.clip(rgba, 0, 1) * 255).astype(np.uint8), "RGBA")
     if max(img.size) > MAX_SIDE:
@@ -210,8 +229,15 @@ def main() -> None:
     CAPTURES.mkdir(parents=True, exist_ok=True)
     elements: dict[str, np.ndarray] = {}
 
-    for name, src in [("torii", "torii.png"), ("hill", "hill.png"), ("grass", "tall-grass.png"), ("wall", "wall.png"), ("branch", "blossom-branch.png")]:
-        rgb, a = cutout(load(src))
+    singles = [
+        ("torii", "torii.png"), ("hill", "hill.png"), ("grass", "tall-grass.png"), ("wall", "wall.png"),
+        ("branch", "blossom-branch.png"), ("maple", "maple.png"), ("pond", "pond.png"), ("stones", "stepping-stones.png"),
+    ]
+    # Green-screen art without pink/green-adjacent colours can take the wide key too
+    # (clears background trapped between leaves).
+    wide = {"maple"}
+    for name, src in singles:
+        rgb, a = cutout(load(src), wide_key=name in wide)
         rgba = rgba_of(rgb, a)
         elements[name] = tile_wall(rgba) if name == "wall" else trim(rgba)
         print(f"cut {name}")
@@ -235,6 +261,10 @@ def main() -> None:
         elements[name] = trim(rgba_of(rgb, a))
     print("cut cedars")
 
+    # Water mask for the pond: the dark, low-saturation water inside the stone rim
+    # (not rocks, moss or lily pads). Used by the runtime water shader.
+    water_mask = pond_water_mask(elements["pond"])
+
     # Consistent grade across the set.
     measured = {k: stats(v) for k, v in elements.items()}
     target_l = float(np.median([m[0] for m in measured.values()]))
@@ -250,6 +280,11 @@ def main() -> None:
         t = img.copy()
         t.thumbnail((360, 360))
         thumbs.append(t)
+
+    mask_img = Image.fromarray((water_mask * 255).astype(np.uint8), "L")
+    rgba_mask = Image.merge("RGBA", (mask_img, mask_img, mask_img, mask_img))
+    rgba_mask.save(OUT / "pond-water.webp", "WEBP", quality=90, method=6)
+    print(f"pond-water mask {mask_img.width}x{mask_img.height}  coverage {water_mask.mean():.2f}")
 
     # Contact sheet on a mid grey so fringes/halos are visible.
     cols = 4

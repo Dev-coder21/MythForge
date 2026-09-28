@@ -1,5 +1,5 @@
 import { useFrame, useLoader } from '@react-three/fiber'
-import { createRef, useEffect, useLayoutEffect, useMemo, type RefObject } from 'react'
+import { createRef, Fragment, useEffect, useLayoutEffect, useMemo, type RefObject } from 'react'
 import { suspend } from 'suspend-react'
 import {
   AdditiveBlending,
@@ -17,6 +17,7 @@ import { DepthLayer, placeInRect, type LayerBox } from '../layers/DepthLayer'
 
 import { getPlaceholder } from '../layers/placeholderTextures'
 import { MAX_LIGHTS, storyState, useChapter } from '../store'
+import { WaterSurface } from '../layers/WaterSurface'
 import { kitUrl, type Kit, type KitLayer } from './kit'
 
 export interface KitLook {
@@ -28,6 +29,11 @@ export interface KitLook {
   lightGain: number
   /** Extra fog blend added to every layer (0 = as authored). */
   fogBoost: number
+  /** Sky gradient + key light, for water reflections. */
+  skyTop: string
+  skyMid: string
+  skyHorizon: string
+  sun: string
 }
 
 /** Fetch and parse a kit manifest (suspends). */
@@ -159,9 +165,23 @@ export function KitLayers({ kit, textures, rectAt, portrait, look, glowRefs }: K
         if (!p) return null
         const { layer, texture, box } = p
         const tintAmount = layer.tint ?? 0
+        const waterMask = layer.water ? textures[layer.water.mask] : undefined
         return (
+          <Fragment key={layer.id}>
+          {waterMask && (
+            <WaterSurface
+              mask={waterMask}
+              box={box}
+              z={layer.z}
+              flip={layer.flip}
+              skyTop={look.skyTop}
+              skyMid={look.skyMid}
+              skyHorizon={look.skyHorizon}
+              sun={look.sun}
+              opacity={layer.water?.opacity ?? 0.8}
+            />
+          )}
           <DepthLayer
-            key={layer.id}
             texture={texture}
             z={layer.z}
             box={box}
@@ -176,6 +196,7 @@ export function KitLayers({ kit, textures, rectAt, portrait, look, glowRefs }: K
             lightGain={look.lightGain}
             tileX={layer.tileX}
           />
+          </Fragment>
         )
       })}
       <LanternLights lights={lights} gain={look.lightGain} glowRefs={glowRefs} />
