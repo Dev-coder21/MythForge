@@ -39,7 +39,7 @@ export function StoryPage({ spec }: StoryPageProps) {
               >
                 {chapter.titleWord}
               </h2>
-              <p className="text-2xl font-semibold">{chapter.heading}</p>
+              <p className="text-2xl font-normal tracking-[-0.02em]">{chapter.heading}</p>
               <p className="text-white/60">{chapter.subheading}</p>
             </div>
           </section>

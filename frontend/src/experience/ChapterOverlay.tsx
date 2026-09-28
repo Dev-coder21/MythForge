@@ -66,8 +66,8 @@ export function ChapterOverlay({ spec, chapterIndex }: ChapterOverlayProps) {
 
       {/* Hero copy: visible at rest, crossfades out as scrolling starts. */}
       <div data-hero className="absolute left-5 right-5 top-20 max-w-md md:left-10 md:top-28">
-        <h1 className="text-2xl font-semibold uppercase leading-[1.08] md:text-4xl">{spec.subtitle}</h1>
-        <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/65 md:text-[15px]">{chapter.subheading}</p>
+        <h1 className="text-2xl font-normal uppercase leading-[1.06] tracking-[-0.02em] md:text-4xl">{spec.subtitle}</h1>
+        <p className="mt-4 max-w-sm text-sm font-light leading-[1.75] text-white/70 md:text-[15px]">{chapter.subheading}</p>
       </div>
 
       {/* Chapter copy: hidden until the crossfade; lines reveal inside it. */}
@@ -82,14 +82,14 @@ export function ChapterOverlay({ spec, chapterIndex }: ChapterOverlayProps) {
           </p>
           <h2
             data-reveal="heading"
-            className="mt-3 text-3xl font-semibold uppercase leading-[1.02] tracking-tight md:text-6xl"
+            className="mt-3 text-3xl font-normal uppercase leading-[1.0] tracking-[-0.025em] md:text-6xl"
           >
             {chapter.heading}
           </h2>
         </div>
         {/* Desktop: full body column beside the heading. */}
         <div className="hidden md:block md:pt-8">
-          <p data-reveal="body" className="text-[15px] leading-relaxed text-white/75">
+          <p data-reveal="body" className="text-[15px] font-light leading-[1.8] text-white/80">
             {chapter.body}
           </p>
           <p
@@ -104,7 +104,7 @@ export function ChapterOverlay({ spec, chapterIndex }: ChapterOverlayProps) {
       {/* Portrait: short body (3 lines) over the dark ground, clear of the moon; revealed after the heading. */}
       <p
         data-reveal="body-mobile"
-        className="invisible absolute inset-x-5 bottom-[5.5rem] line-clamp-3 text-[13px] leading-relaxed text-white/75 md:hidden"
+        className="invisible absolute inset-x-5 bottom-[5.5rem] line-clamp-3 text-[13px] font-light leading-[1.75] text-white/80 md:hidden"
       >
         {chapter.body}
       </p>

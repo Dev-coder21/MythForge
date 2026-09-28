@@ -3,7 +3,8 @@
 
 @theme {
   --font-display: "Anton", "Impact", sans-serif;
-  --font-sans: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+  /* Anton stays on the giant 3D title; Outfit (geometric) carries all UI copy. */
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
