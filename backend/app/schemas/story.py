@@ -100,6 +100,23 @@ class ImageRef(_Model):
     license: str | None = None
 
 
+class LandmarkCheck(_Model):
+    passed: bool
+    checkedBy: str
+    reasons: list[str] = Field(default_factory=list)
+    attempts: int = 1
+
+
+class Landmark(_Model):
+    """The physical landmark a chapter depicts, described only from the sources (see types.ts)."""
+
+    name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=2, max_length=80)]
+    description: Annotated[str, StringConstraints(strip_whitespace=True, min_length=10, max_length=240)]
+    layer: ImageRef | None = None
+    reference: ImageRef | None = None
+    check: LandmarkCheck | None = None
+
+
 class Chapter(_Model):
     index: int = Field(ge=1)
     label: str
@@ -113,6 +130,7 @@ class Chapter(_Model):
     source: str | None = None
     transition: TransitionType
     heroImage: ImageRef | None = None
+    landmark: Landmark | None = None
 
     @field_validator("label")
     @classmethod

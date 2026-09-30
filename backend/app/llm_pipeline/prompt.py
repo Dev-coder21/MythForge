@@ -57,7 +57,8 @@ FORMAT = """{
       "accentColor": "#rrggbb light or glow colour",
       "particleDensity": 0.3,
       "transition": "noise-dissolve | ink-wipe | bloom-out",
-      "titleLayout": "horizontal | vertical"
+      "titleLayout": "horizontal | vertical",
+      "landmark": {"name": "the structure's name as the source gives it", "description": "its physical form only, from the source: type, shape, material, colour, parts (under 30 words)"}
     }
   ]
 }"""
@@ -90,7 +91,10 @@ SCENE CATALOG (pick the best-fitting kit for each chapter; if nothing fits well,
 {catalog_text()}
 Never show the wrong landmark: LANDMARK-SPECIFIC kits only when the topic is that place. Otherwise use the closest GENERIC
 kit and recolour it for the topic. Use the kit's painted time of day and background unless the source clearly calls for another. Pick colours that suit the
-topic and light: primaryColor is a dark base (never pure black), accentColor a warm or cool glow. No purple or violet. Keep ONE setting: every chapter uses the same sceneTemplate (a mountain story stays on "peak"), and variety comes from
+topic and light: primaryColor is a dark base (never pure black), accentColor a warm or cool glow. No purple or violet. LANDMARK: when a chapter is about one specific, visible structure (a building, monument, bridge, tower or statue) that the
+SOURCE TEXT names and describes, set "landmark" to its name and a short physical description taken only from the source.
+Otherwise set "landmark": null (natural features like mountains, deserts and rivers are null; the scene already shows them).
+Keep ONE setting: every chapter uses the same sceneTemplate (a mountain story stays on "peak"), and variety comes from
 the kits of that template, time of day, colours and transitions. Mix templates only when the topic itself spans different
 settings (a river journey that ends in a desert), and then set "mixedSettingsReason" to one sentence. Vary kits, light and
 transitions across chapters so each chapter feels distinct. titleLayout "vertical" only for lantern-dawn.

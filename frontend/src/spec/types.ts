@@ -54,6 +54,29 @@ export interface ImageRef {
   license?: string
 }
 
+/** Quality-check verdict for an AI-painted landmark layer. */
+export interface LandmarkCheck {
+  passed: boolean
+  /** "provider:model" of the vision model that judged it. */
+  checkedBy: string
+  reasons: string[]
+  attempts: number
+}
+
+/**
+ * The physical landmark a chapter depicts, described only from the sources. When
+ * `layer` is set, an AI-painted cutout is composited into the template's hero slot.
+ */
+export interface Landmark {
+  name: string
+  description: string
+  /** Transparent webp of the painted landmark (served by the backend). */
+  layer?: ImageRef
+  /** The Wikipedia lead photo the painting was checked against. */
+  reference?: ImageRef
+  check?: LandmarkCheck
+}
+
 export interface Chapter {
   index: number
   /** e.g. "CHAPTER 01 · THE HIDDEN GATE" (middle dot separator, never an em dash) */
@@ -71,6 +94,7 @@ export interface Chapter {
   source?: string
   transition: TransitionType
   heroImage?: ImageRef
+  landmark?: Landmark | null
 }
 
 export interface StorySpec {

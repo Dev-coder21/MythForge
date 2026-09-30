@@ -38,6 +38,12 @@ from app.schemas.story import (
 MAX_CORRECTIONS = 2
 
 
+class DraftLandmark(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    name: str = Field(min_length=2, max_length=80)
+    description: str = Field(min_length=10, max_length=240)
+
+
 class DraftChapter(BaseModel):
     """What the model writes per chapter; the server adds index, label prefix and ids."""
 
@@ -59,6 +65,7 @@ class DraftChapter(BaseModel):
     particleDensity: float = Field(default=0.4, ge=0, le=1)
     transition: TransitionType
     titleLayout: TitleLayout = "horizontal"
+    landmark: DraftLandmark | None = None
 
 
 class Draft(BaseModel):
@@ -208,6 +215,7 @@ def assemble(draft: Draft, topic: str, content: RetrievedContent) -> StorySpec:
             "source": c.source,
             "transition": c.transition,
             "heroImage": {"url": image["url"], "attribution": image["attribution"], "license": image["license"]} if image else None,
+            "landmark": {"name": c.landmark.name.strip(), "description": c.landmark.description.strip()} if c.landmark else None,
         })
     slug = slugify(draft.title if len(draft.title) > 2 else topic)
     return StorySpec.model_validate({
@@ -259,6 +267,10 @@ def validate_draft(raw: str, topic: str, content: RetrievedContent, chapters: in
                 f"{where}.titleWord: {c.titleWord} does not appear in the topic or SOURCE TEXT; "
                 f"pick one of: {', '.join(_title_candidates(source_text, used_words))}"
             )
+        if c.landmark and not any(
+            _word_in(w, f"{topic} {source_text}") for w in re.findall(r"[A-Za-z][A-Za-z'-]{3,}", c.landmark.name)
+        ):
+            errors.append(f"{where}.landmark: \"{c.landmark.name}\" is not named in the SOURCE TEXT; use a structure the source names, or null")
         heading = c.heading.strip()
         if len(heading) > RULES["generatedHeadingMax"]:
             errors.append(f"{where}.heading: {len(heading)} characters; keep it under {RULES['generatedHeadingMax']}, evocative, not a summary")

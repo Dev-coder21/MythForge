@@ -72,6 +72,9 @@ def claims_of(spec: StorySpec) -> list[Claim]:
         for f in FIELDS:
             for si, sentence in enumerate(split_sentences(getattr(ch, f))):
                 out.append(Claim(f"c{ci + 1}.{f}.{si + 1}", ci, f, sentence))
+        if ch.landmark:
+            # The landmark description drives an image, so it is checked like any sentence.
+            out.append(Claim(f"c{ci + 1}.landmark.1", ci, "landmark", f"{ch.landmark.name}: {ch.landmark.description}"))
     return out
 
 
@@ -108,6 +111,8 @@ def remove_unsupported(spec: StorySpec, report: GroundingReport, min_body_words:
     data = spec.model_dump(mode="json")
     kept: list[str] = []
     for ci, ch in enumerate(data["chapters"]):
+        if ch.get("landmark") and f"c{ci + 1}.landmark.1" in report.unsupported:
+            ch["landmark"] = None  # never paint a structure the sources don't support
         for f in FIELDS:
             sentences = split_sentences(ch[f])
             bad = {i for i, _ in enumerate(sentences) if f"c{ci + 1}.{f}.{i + 1}" in report.unsupported}

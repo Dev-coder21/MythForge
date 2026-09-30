@@ -345,3 +345,22 @@ def test_story_keeps_one_setting_unless_reasoned():
     ok = json.loads(draft(mixed))
     ok["mixedSettingsReason"] = "The story follows the river out of the mountains into the desert."
     validate_draft(json.dumps(ok), "Mount Fuji", CONTENT, 2)
+
+
+def test_landmark_is_carried_checked_and_dropped_when_unsupported():
+    lm = {"name": "Mount Fuji summit crater", "description": "A crater 780 m across at the top of the cone."}
+    d = draft([chapter(landmark=lm), chapter(titleWord="HONSHU")])
+    spec = validate_draft(d, "Mount Fuji", CONTENT, 2)
+    assert spec.chapters[0].landmark.name == "Mount Fuji summit crater"
+    from app.llm_pipeline.grounding import claims_of
+    assert any(c.id == "c1.landmark.1" for c in claims_of(spec))
+    bad = '{"unsupported": [{"id": "c1.landmark.1", "reason": "crater size not in source"}]}'
+    r = generate_spec(CONTENT, chain(Scripted("gemini", d, bad, d, bad)), chapters=2)
+    assert r.spec.chapters[0].landmark is None
+
+
+def test_landmark_must_be_named_in_source():
+    lm = {"name": "Eiffel Tower", "description": "A wrought-iron lattice tower on four legs."}
+    with pytest.raises(SpecInvalid) as e:
+        validate_draft(draft([chapter(landmark=lm), chapter(titleWord="HONSHU")]), "Mount Fuji", CONTENT, 2)
+    assert "not named in the SOURCE" in " ".join(e.value.errors)
