@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     cloudflare_api_token: str = ""
     cloudflare_image_model: str = "@cf/black-forest-labs/flux-1-schnell"
     hf_token: str = ""
-    hf_image_models: str = "black-forest-labs/FLUX.1-schnell,stabilityai/stable-diffusion-xl-base-1.0"
+    hf_image_models: str = "nscale:black-forest-labs/FLUX.1-schnell"
     image_timeout_s: float = 120.0
     landmark_images: bool = True  # set false to skip painting landmarks entirely
     # Python used for the art pipeline (rembg, scipy); the backend venv does not carry those heavy packages.

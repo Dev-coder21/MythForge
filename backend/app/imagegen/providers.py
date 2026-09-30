@@ -43,7 +43,7 @@ class CloudflareImages:
 
     def generate(self, prompt: str, seed: int) -> bytes:
         url = f"https://api.cloudflare.com/client/v4/accounts/{self.account_id}/ai/run/{self.model}"
-        r = self.client.post(url, headers={"Authorization": f"Bearer {self.token}"}, json={"prompt": prompt, "steps": 8, "seed": seed})
+        r = self.client.post(url, headers={"Authorization": f"Bearer {self.token}"}, json={"prompt": prompt, "steps": 8})  # flux-1-schnell takes no seed
         if r.status_code == 429 or (r.status_code >= 400 and "neurons" in r.text.lower()):
             # Workers AI reports the free daily neuron allowance being used up as a 4xx mentioning neurons.
             raise RateLimitError("Cloudflare: daily free allowance used up" if "neurons" in r.text.lower() else "Cloudflare: rate limited",
@@ -66,11 +66,12 @@ class HuggingFaceImages:
     name: str = "huggingface"
 
     def generate(self, prompt: str, seed: int) -> bytes:
-        url = f"https://router.huggingface.co/hf-inference/models/{self.model}"
+        # model = "partner:repo" routed through Hugging Face (free monthly credits), OpenAI-style images API.
+        partner, _, repo = self.model.partition(":")
         r = self.client.post(
-            url,
-            headers={"Authorization": f"Bearer {self.token}", "Accept": "image/png"},
-            json={"inputs": prompt, "parameters": {"seed": seed, "width": 1024, "height": 1024}},
+            f"https://router.huggingface.co/{partner}/v1/images/generations",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"model": repo, "prompt": prompt, "response_format": "b64_json"},
         )
         if r.status_code == 402:
             # Free monthly credits exhausted: treat like a daily quota (waiting will not help).
@@ -78,7 +79,10 @@ class HuggingFaceImages:
         if r.status_code == 503:
             raise RateLimitError("Hugging Face: model is loading", retry_after=20.0)
         _check(r, "Hugging Face")
-        return _image_bytes(r.content, "Hugging Face")
+        try:
+            return _image_bytes(base64.b64decode(r.json()["data"][0]["b64_json"]), "Hugging Face")
+        except (KeyError, IndexError, ValueError) as e:
+            raise LLMError(f"Hugging Face: unexpected response ({e})") from e
 
 
 class AllImageProvidersFailed(LLMError):

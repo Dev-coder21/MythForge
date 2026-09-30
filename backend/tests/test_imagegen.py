@@ -31,7 +31,7 @@ def test_cloudflare_base64_and_daily_allowance():
 
 
 def test_huggingface_credits_and_loading():
-    responses = iter([httpx.Response(503, text="loading"), httpx.Response(200, content=PNG), httpx.Response(402, text="credits")])
+    responses = iter([httpx.Response(503, text="loading"), httpx.Response(200, json={"data": [{"b64_json": base64.b64encode(PNG).decode()}]}), httpx.Response(402, text="credits")])
     client = httpx.Client(transport=httpx.MockTransport(lambda req: next(responses)))
     hf = HuggingFaceImages("t", "flux", client)
     chain = ImageChain([hf], sleep=lambda s: None)
@@ -46,7 +46,7 @@ def test_chain_needs_credentials():
         build_image_chain(s, client=httpx.Client()).generate("x", 1)
     s2 = Settings(_env_file=None, cloudflare_account_id="a", cloudflare_api_token="b", hf_token="h")
     names = [f"{p.name}:{p.model}" for p in build_image_chain(s2, client=httpx.Client()).providers]
-    assert names[0].startswith("cloudflare:") and names[1] == "huggingface:black-forest-labs/FLUX.1-schnell"
+    assert names[0].startswith("cloudflare:") and names[1] == "huggingface:nscale:black-forest-labs/FLUX.1-schnell"
 
 
 def test_paint_landmark_retries_then_caches(tmp_path, monkeypatch):
