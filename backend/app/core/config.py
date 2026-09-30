@@ -27,6 +27,16 @@ class Settings(BaseSettings):
     # so a story is never checked by its own writer.
     grounding_models: str = "groq:qwen/qwen3.8-27b,groq:openai/gpt-oss-20b,gemini:gemini-flash-latest"
 
+    # Landmark images (free tiers only): tried in this order, each skipped without credentials.
+    image_providers: str = "cloudflare,huggingface"
+    cloudflare_account_id: str = ""
+    cloudflare_api_token: str = ""
+    cloudflare_image_model: str = "@cf/black-forest-labs/flux-1-schnell"
+    hf_token: str = ""
+    hf_image_models: str = "black-forest-labs/FLUX.1-schnell,stabilityai/stable-diffusion-xl-base-1.0"
+    image_timeout_s: float = 120.0
+    landmark_images: bool = True  # set false to skip painting landmarks entirely
+
     # Keep requests small so free-tier limits hold.
     llm_max_output_tokens: int = 2000
     llm_timeout_s: float = 90.0
