@@ -77,7 +77,9 @@ export function RiverWater({ river, rectAt, portrait, skyTop, skyMid, skyHorizon
             float fine = fbm(rp * 3.1 + vec2(t * 0.2, 0.0));
 
             // Sky reflection, broken by ripples.
-            vec3 sky = mix(uMid, uHorizon, smoothstep(0.35, 1.0, far));
+            // Only a thin warm band at the very far edge; the rest mirrors blue sky, so it reads as water.
+            vec3 farTone = mix(uMid, uHorizon, 0.35);
+            vec3 sky = mix(uMid, farTone, smoothstep(0.55, 1.0, far));
             sky = mix(uTop * 0.7, sky, smoothstep(0.0, 0.45, far));
             // Water is darker and bluer than the sky it mirrors (Fresnel: brighter only toward the far edge).
             sky = mix(sky, uTop, 0.35);

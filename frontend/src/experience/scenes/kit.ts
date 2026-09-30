@@ -135,6 +135,8 @@ export interface KitTitle {
   xPortrait?: number
   /** Vertical titles: stack height as a fraction of the frame height. */
   height?: number
+  /** Portrait: title width as a fraction of the frame width (default 0.9). */
+  fitPortrait?: number
 }
 
 /**

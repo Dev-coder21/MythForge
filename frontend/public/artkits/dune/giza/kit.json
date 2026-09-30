@@ -44,7 +44,7 @@
   ],
   "camera": { "fov": 36, "position": [[0,0.35,14],[0.05,0.95,13.2],[0.1,1.8,12.3],[0.15,2.6,11.4]], "lookAt": [[0,1.05,-20],[0.05,1.6,-20],[0.1,2.2,-20],[0.15,2.6,-20]] },
   "celestial": { "u": 0.43, "v": 0.42, "uPortrait": 0.44, "vPortrait": 0.44, "size": 0.19, "driftU": 0, "driftV": -0.06, "intensity": 2.8, "halo": 0.03 },
-  "title": { "v": 0.22, "vPortrait": 0.3 },
+  "title": { "v": 0.22, "vPortrait": 0.255, "fitPortrait": 0.66 },
   "sky": { "top": "#2a3b5c", "mid": "#c56a3c", "horizon": "#ffc77a", "fog": "#d9945e", "tint": "#f3b474", "rim": "#ffd08c", "sun": "#ffd79a" },
   "heat": { "v": 0.3, "h": 0.07, "strength": 0.0035 },
   "fog": [

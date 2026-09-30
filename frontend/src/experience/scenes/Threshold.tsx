@@ -157,7 +157,7 @@ export function LayeredScene({ chapter, index, reducedMotion, extras }: LayeredS
     letterSpacing: { value: L.title.letterSpacing, min: -0.1, max: 0.8, step: 0.005 },
     letterSpacingPortrait: { value: L.title.letterSpacingPortrait, min: -0.1, max: 0.8, step: 0.005 },
     fitWidth: frac(L.title.fitWidth, 0.3, 1.6),
-    fitWidthPortrait: frac(L.title.fitWidthPortrait, 0.3, 1.2),
+    fitWidthPortrait: frac(kit.title?.fitPortrait ?? L.title.fitWidthPortrait, 0.3, 1.2),
     leftMargin: frac(L.title.leftMargin, -0.2, 0.5),
     riseDistance: frac(L.title.riseDistance, 0, 2),
     driftBack: { value: L.title.driftBack, min: 0, max: 10, step: 0.1 },
