@@ -121,7 +121,7 @@ def test_prompt_contains_rules_sources_and_catalog():
 def test_corrects_invalid_output_then_succeeds():
     bad = draft([chapter(artKit="nile"), chapter(titleWord="ASH")])
     p = Scripted("gemini", "not json at all", bad, draft())
-    result = generate_spec(CONTENT, chain(p), chapters=2)
+    result = generate_spec(CONTENT, chain(p), chapters=2, ground=False)
     assert result.attempts == 3 and len(p.calls) == 3
     assert "does not exist" in p.calls[2][-1]["content"]  # errors fed back to the model
 
@@ -129,7 +129,7 @@ def test_corrects_invalid_output_then_succeeds():
 def test_gives_up_after_two_corrections():
     p = Scripted("gemini", "{}", "{}", "{}", draft())
     with pytest.raises(GenerationFailed):
-        generate_spec(CONTENT, chain(p), chapters=2)
+        generate_spec(CONTENT, chain(p), chapters=2, ground=False)
     assert len(p.calls) == 3
 
 
@@ -203,3 +203,60 @@ def test_groq_parses_response():
 
     client = httpx.Client(transport=httpx.MockTransport(handler))
     assert GroqProvider("k", "m", client).complete_json("s", [], 10) == "{}"
+
+
+# grounding
+
+INVENTED = "The first climbers reached the summit by rope."
+
+
+def test_grounding_all_supported_scores_one():
+    p = Scripted("gemini", draft(), '{"unsupported": []}')
+    r = generate_spec(CONTENT, chain(p), chapters=2)
+    assert r.grounding["score"] == 1.0 and r.grounding["sentences"] > 6 and len(p.calls) == 2
+
+
+def test_grounding_correction_fixes_unsupported_sentence():
+    fixed = draft()
+    p = Scripted("gemini", draft(), '{"unsupported": [{"id": "c1.body.1", "reason": "height misquoted"}]}',
+                 fixed, '{"unsupported": []}')
+    r = generate_spec(CONTENT, chain(p), chapters=2)
+    assert "c1.body.1" in p.calls[2][-1]["content"] and "height misquoted" in p.calls[2][-1]["content"]
+    assert r.grounding["score"] == 1.0
+
+
+def test_still_unsupported_sentences_are_removed_and_scored():
+    from app.llm_pipeline.grounding import claims_of
+    padded = draft([chapter(body=f"{BODY} {INVENTED}"), chapter(titleWord="ASH")])
+    n = len(claims_of(validate_draft(padded, "Mount Fuji", CONTENT, 2)))
+    bad = '{"unsupported": [{"id": "c1.body.3", "reason": "not in source"}]}'
+    r = generate_spec(CONTENT, chain(Scripted("gemini", padded, bad, padded, bad)), chapters=2)
+    assert INVENTED not in r.spec.chapters[0].body and r.spec.chapters[0].body.startswith("The volcano")
+    assert r.grounding["removed"] == ["c1.body.3"] and r.grounding["score"] == round((n - 1) / n, 3)
+
+
+def test_unsupported_heading_is_kept_but_reported():
+    bad = '{"unsupported": [{"id": "c1.heading.1", "reason": "invented"}]}'
+    r = generate_spec(CONTENT, chain(Scripted("gemini", draft(), bad, draft(), bad)), chapters=2)
+    assert r.grounding["kept"] == ["c1.heading.1"] and r.spec.chapters[0].heading
+
+
+def test_grounding_failure_does_not_fail_generation():
+    r = generate_spec(CONTENT, chain(Scripted("gemini", draft(), LLMError("down"))), chapters=2)
+    assert r.grounding is None and any("skipped" in n for n in r.notes)
+
+
+def test_draft_heading_rules():
+    for heading, needle in (("At 3,776 m it rises.", "no numbers"), ("A" * 61, "under 60")):
+        with pytest.raises(SpecInvalid) as e:
+            validate_draft(draft([chapter(heading=heading), chapter(titleWord="ASH")]), "Mount Fuji", CONTENT, 2)
+        assert needle in " ".join(e.value.errors)
+
+
+def test_daily_quota_skips_waiting_and_benches_provider():
+    g = Scripted("gemini", RateLimitError("daily", retry_after=30, daily=True))
+    q = Scripted("groq", "a", "b")
+    slept = []
+    c = FallbackChain([g, q], sleep=slept.append)
+    assert c.complete_json("s", [], 10) == ("groq", "a") and slept == []
+    assert c.complete_json("s", [], 10) == ("groq", "b") and len(g.calls) == 1  # benched, not retried

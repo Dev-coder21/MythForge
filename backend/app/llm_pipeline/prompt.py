@@ -15,7 +15,10 @@ SYSTEM = """You write MythForge stories: short, cinematic, scroll-driven essays 
 
 VOICE
 Moody and editorial, like a fine magazine caption at night. Concrete images, calm authority, short sentences. Never breathless, never promotional.
-Headings carry the story: one specific, surprising line built from a concrete fact or image in the source ("For 3,800 years, nothing stood taller."), ending with a full stop. Avoid generic lines that would fit any topic ("A cone that dominates the horizon", "Rock and fire rise"). Subheadings are plain and specific, never abstract ("Scale beyond imagination" is wrong).
+Headings are evocative, never a summary: an image or a turn of phrase that makes the reader scroll on, at most 60 characters,
+ending with a full stop, with no numbers or dates (figures belong in the body). Style: "Carved from the ground itself." and
+"For centuries, nothing stood taller." Wrong: "A cone that dominates the horizon." (generic), "Subtropical high pressure creates
+a sun-baked world." (summary), "At 3,776.24 m it pierces the sky." (number). Subheadings are short, plain and specific.
 
 COPY RULES (hard rules; breaking one fails validation)
 - No em dashes anywhere. Use commas or full stops.
@@ -39,7 +42,7 @@ FORMAT = """{
     {
       "labelName": "UPPERCASE CHAPTER NAME, 2 TO 5 WORDS",
       "titleWord": "ONE UPPERCASE WORD, 3 TO 8 LETTERS, NO SPACES",
-      "heading": "one striking line, under 70 characters",
+      "heading": "evocative line, max 60 characters, no digits, ends with a full stop",
       "subheading": "one short line",
       "body": "40 to 70 words of facts from the source, in the voice",
       "source": "one of the SOURCE ids",
@@ -104,4 +107,14 @@ def correction_prompt(errors: list[str]) -> str:
         f"{listed}\n"
         "Return the complete corrected JSON object only. Keep everything that was valid. "
         "Remember: facts and numbers only from the SOURCE TEXT, no em dashes, no cliches."
+    )
+
+
+def grounding_correction_prompt(report) -> str:
+    listed = "\n".join(f'- {c.id} "{c.text}": {report.unsupported[c.id]}' for c in report.unsupported_claims())
+    return (
+        "A fact check found these sentences are not supported by the SOURCE TEXT:\n"
+        f"{listed}\n"
+        "Rewrite each so it states only what the source says, or drop it. Keep every other sentence and all scene "
+        "fields unchanged. Return the complete JSON object only."
     )

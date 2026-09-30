@@ -65,6 +65,8 @@ def run_generation(story_id: str, job_id: str) -> None:
                 )
                 for c in spec["chapters"]
             ]
+            if result.grounding:
+                story.grounding_score, story.grounding_report = result.grounding["score"], result.grounding
             story.status = StoryStatus.complete
             job.stage, job.progress_pct = JobStage.done, 100
         except (ThinContentError, RetrievalConfigError, GenerationFailed, LLMError) as e:

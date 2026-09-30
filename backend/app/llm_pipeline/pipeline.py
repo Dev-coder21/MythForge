@@ -18,9 +18,11 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from app.core.config import get_settings
 from app.llm_pipeline.catalog import kit_problem, landmark_problem
-from app.llm_pipeline.prompt import SYSTEM, build_prompt, correction_prompt
-from app.llm_pipeline.providers import FallbackChain
+from app.llm_pipeline.grounding import check_grounding, remove_unsupported
+from app.llm_pipeline.prompt import SYSTEM, build_prompt, correction_prompt, grounding_correction_prompt
+from app.llm_pipeline.providers import FallbackChain, LLMError
 from app.retrieval import RetrievedContent
+from app.schemas.story import RULES
 from app.schemas.story import (
     BackgroundObject,
     GroundType,
@@ -81,6 +83,8 @@ class GenerationResult:
     provider: str
     attempts: int
     notes: list[str] = field(default_factory=list)
+    # {"score": supported/total, "sentences": n, "unsupported": [...], "removed": [...], "kept": [...]}
+    grounding: dict | None = None
 
 
 def slugify(text: str) -> str:
@@ -213,6 +217,11 @@ def validate_draft(raw: str, topic: str, content: RetrievedContent, chapters: in
         invented = sorted(_numbers(f"{c.heading} {c.subheading} {c.body}") - source_numbers)
         if invented:
             errors.append(f"{where}: these numbers are not in the SOURCE TEXT: {', '.join(invented)}; use only numbers from the source")
+        heading = c.heading.strip()
+        if len(heading) > RULES["generatedHeadingMax"]:
+            errors.append(f"{where}.heading: {len(heading)} characters; keep it under {RULES['generatedHeadingMax']}, evocative, not a summary")
+        if RULES["generatedHeadingNoDigits"] and re.search(r"\d", heading):
+            errors.append(f"{where}.heading: no numbers or dates in headings; move the figure into the body")
         if c.titleWord.upper() in seen_words:
             errors.append(f"{where}.titleWord: {c.titleWord} is used twice; every chapter needs its own word")
         seen_words.add(c.titleWord.upper())
@@ -226,17 +235,14 @@ def validate_draft(raw: str, topic: str, content: RetrievedContent, chapters: in
         raise SpecInvalid([m.replace(".label:", ".labelName:") for m in _pydantic_errors(e)]) from e
 
 
-def generate_spec(content: RetrievedContent, chain: FallbackChain, chapters: int = 3) -> GenerationResult:
-    """One story call, then up to MAX_CORRECTIONS correction calls with the validation errors."""
-    max_tokens = get_settings().llm_max_output_tokens
-    messages = [{"role": "user", "content": build_prompt(content, chapters)}]
+def _write_valid(content, chain, messages, chapters, max_tokens, budget):
+    """Ask until a draft validates, feeding errors back. Returns (spec, provider, attempts, messages, raw)."""
     last_errors: list[str] = []
-    provider = ""
-    for attempt in range(1, MAX_CORRECTIONS + 2):
+    for attempt in range(1, budget + 1):
         provider, raw = chain.complete_json(SYSTEM, messages, max_tokens)
         try:
             spec = validate_draft(raw, content.topic, content, chapters)
-            return GenerationResult(spec=spec, provider=provider, attempts=attempt, notes=list(chain.notes))
+            return spec, provider, attempt, messages + [{"role": "assistant", "content": raw[:6000]}]
         except SpecInvalid as e:
             last_errors = e.errors
             chain.notes.append(f"attempt {attempt} invalid: {len(e.errors)} problem(s)")
@@ -244,6 +250,37 @@ def generate_spec(content: RetrievedContent, chain: FallbackChain, chapters: int
                 {"role": "assistant", "content": raw[:6000]},
                 {"role": "user", "content": correction_prompt(e.errors)},
             ]
-    raise GenerationFailed(
-        f"The model could not write a valid story after {MAX_CORRECTIONS} corrections. Last problems: " + "; ".join(last_errors[:6])
-    )
+    raise SpecInvalid(last_errors)
+
+
+def generate_spec(content: RetrievedContent, chain: FallbackChain, chapters: int = 3, ground: bool = True) -> GenerationResult:
+    """One story call (+ up to MAX_CORRECTIONS corrections), then a grounding check call.
+    Unsupported sentences go back once for correction; any still unsupported are removed."""
+    max_tokens = get_settings().llm_max_output_tokens
+    messages = [{"role": "user", "content": build_prompt(content, chapters)}]
+    try:
+        spec, provider, attempts, messages = _write_valid(content, chain, messages, chapters, max_tokens, MAX_CORRECTIONS + 1)
+    except SpecInvalid as e:
+        raise GenerationFailed(
+            f"The model could not write a valid story after {MAX_CORRECTIONS} corrections. Last problems: " + "; ".join(e.errors[:6])
+        ) from e
+
+    grounding = None
+    if ground:
+        try:
+            report = check_grounding(spec, content, chain)
+            if report.unsupported:
+                chain.notes.append(f"grounding: {len(report.unsupported)} unsupported sentence(s), asking for a correction")
+                fix = messages + [{"role": "user", "content": grounding_correction_prompt(report)}]
+                try:
+                    fixed, provider, _, _ = _write_valid(content, chain, fix, chapters, max_tokens, 2)
+                    spec, report = fixed, check_grounding(fixed, content, chain)
+                except SpecInvalid:
+                    chain.notes.append("grounding correction did not validate; keeping the first version")
+            spec, kept = remove_unsupported(spec, report)
+            if report.unsupported:
+                chain.notes.append(f"grounding: removed {len(report.unsupported) - len(kept)} sentence(s)")
+            grounding = report.as_dict() | {"removed": [c.id for c in report.unsupported_claims() if c.id not in kept], "kept": kept}
+        except (LLMError, ValueError) as e:
+            chain.notes.append(f"grounding check skipped: {e}")
+    return GenerationResult(spec=spec, provider=provider, attempts=attempts, notes=list(chain.notes), grounding=grounding)

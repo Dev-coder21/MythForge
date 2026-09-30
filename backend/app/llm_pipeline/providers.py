@@ -24,9 +24,10 @@ class LLMError(Exception):
 
 
 class RateLimitError(LLMError):
-    def __init__(self, message: str, retry_after: float | None = None):
+    def __init__(self, message: str, retry_after: float | None = None, daily: bool = False):
         super().__init__(message)
         self.retry_after = retry_after
+        self.daily = daily  # a per-day quota: waiting seconds will not help
 
 
 class AllProvidersFailed(LLMError):
@@ -56,7 +57,9 @@ def _retry_after(response: httpx.Response) -> float | None:
 
 def _check(response: httpx.Response, provider: str) -> None:
     if response.status_code == 429:
-        raise RateLimitError(f"{provider}: rate limited (free-tier quota reached)", _retry_after(response))
+        daily = bool(re.search(r"per ?day|PerDay|daily", response.text, re.IGNORECASE))
+        kind = "daily free-tier quota used up" if daily else "rate limited (free-tier quota reached)"
+        raise RateLimitError(f"{provider}: {kind}", _retry_after(response), daily=daily)
     if response.status_code in (500, 502, 503, 504):
         # Overloaded or briefly down: worth a short wait before falling back.
         raise RateLimitError(f"{provider}: temporarily unavailable (HTTP {response.status_code})", _retry_after(response) or 8.0)
@@ -166,6 +169,9 @@ class FallbackChain:
     max_backoff_s: float = 30.0
     sleep: Callable[[float], None] = time.sleep
     notes: list[str] = field(default_factory=list)
+    bench_s: float = 300.0  # skip a provider this long after it fails, so later calls don't re-wait on it
+    clock: Callable[[], float] = time.monotonic
+    _benched: dict[str, float] = field(default_factory=dict)
 
     def complete_json(self, system: str, messages: list[Message], max_tokens: int) -> tuple[str, str]:
         if not self.providers:
@@ -174,13 +180,15 @@ class FallbackChain:
                 "(free at console.groq.com) in backend/.env, or OLLAMA_MODEL for a local model."
             )
         failures = []
-        for p in self.providers:
+        now = self.clock()
+        active = [p for p in self.providers if self._benched.get(p.name, 0) <= now] or self.providers
+        for p in active:
             waits = 0
             while True:
                 try:
                     return p.name, p.complete_json(system, messages, max_tokens)
                 except RateLimitError as e:
-                    if waits < self.max_rate_limit_waits:
+                    if waits < self.max_rate_limit_waits and not e.daily:
                         delay = min(e.retry_after if e.retry_after is not None else 5.0 * 2**waits, self.max_backoff_s)
                         self.notes.append(f"{p.name}: rate limited, waiting {delay:.0f}s")
                         self.sleep(delay)
@@ -191,6 +199,7 @@ class FallbackChain:
                 except (LLMError, httpx.HTTPError) as e:
                     failures.append(str(e) if isinstance(e, LLMError) else f"{p.name}: {e}")
                     break
+            self._benched[p.name] = self.clock() + self.bench_s
             self.notes.append(f"{p.name} failed, trying the next provider")
         raise AllProvidersFailed(
             "All LLM providers failed: " + " | ".join(failures)

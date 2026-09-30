@@ -4,7 +4,7 @@ import enum
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import JSON, DateTime, Enum, ForeignKey, Integer, String, Text
+from sqlalchemy import JSON, DateTime, Enum, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.db import Base
@@ -49,6 +49,9 @@ class Story(Base):
     share_slug: Mapped[str | None] = mapped_column(String(120), index=True)
     # The validated StorySpec, exactly what the frontend renders.
     spec_json: Mapped[dict | None] = mapped_column(JSON)
+    # Share of heading/subheading/body sentences the fact-check call found supported by the source (0..1).
+    grounding_score: Mapped[float | None] = mapped_column(Float)
+    grounding_report: Mapped[dict | None] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
 
     chapters: Mapped[list["Chapter"]] = relationship(back_populates="story", cascade="all, delete-orphan", order_by="Chapter.chapter_index")

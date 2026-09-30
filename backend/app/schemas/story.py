@@ -9,7 +9,9 @@ errors, so the LLM pipeline's correction retries fix them.
 from __future__ import annotations
 
 import colorsys
+import json
 import re
+from pathlib import Path
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
@@ -25,22 +27,13 @@ TitleLayout = Literal["horizontal", "vertical"]
 TransitionType = Literal["noise-dissolve", "ink-wipe", "bloom-out"]
 
 # --------------------------------------------------------------------- copy rules
-EM_DASH = "—"
+# Shared with the frontend spec test (frontend/src/spec/spec.test.ts); edit copy_rules.json only.
+RULES = json.loads((Path(__file__).with_name("copy_rules.json")).read_text(encoding="utf-8"))
+EM_DASH = RULES["emDash"]
 # "it's not X, it's Y" and its cousins ("less like X, more like Y", "not just X, but Y").
-_NOT_X_BUT_Y = re.compile(
-    r"\b(it'?s|it is|this is|that'?s|was|is|are)\s+not\s+(just\s+|only\s+|merely\s+)?[^.;:!?]{1,60}[,;]\s*(it'?s|it is|but|rather)\b"
-    r"|\bless\s+(like|a|an)\b[^.;]{1,60}\bmore\s+(like|a|an)\b"
-    r"|\bnot\s+(just|only|merely)\s+[^.;]{1,60},?\s+but\s+(also\s+)?",
-    re.IGNORECASE,
-)
-# Stock travel-writing phrases the editorial voice avoids.
-CLICHES = (
-    "hidden gem", "nestled", "tapestry", "testament to", "rich history", "step back in time",
-    "journey through", "breathtaking", "awe-inspiring", "must-see", "bustling", "vibrant",
-    "delve", "a feast for the senses", "stands the test of time", "time stood still", "lorem ipsum",
-    "untold story", "in the heart of", "beyond imagination", "pulse of", "stretches to the horizon",
-    "echoes of", "shrouded in mystery", "whispers of", "timeless", "iconic",
-)
+_NOT_X_BUT_Y = re.compile(RULES["notXButY"], re.IGNORECASE)
+# Stock phrases the editorial voice avoids.
+CLICHES = tuple(RULES["cliches"])
 
 
 def copy_problems(text: str) -> list[str]:
@@ -75,7 +68,8 @@ def purple_problem(hex_color: str) -> str | None:
     """Design rule: no purple themes. Flags clearly purple/violet colours (neutral dark greys pass)."""
     r, g, b = (int(hex_color[i : i + 2], 16) / 255 for i in (1, 3, 5))
     h, l, s = colorsys.rgb_to_hls(r, g, b)
-    if 245 <= h * 360 <= 330 and s > 0.2 and l > 0.08:
+    rule = RULES["purple"]
+    if rule["hueMin"] <= h * 360 <= rule["hueMax"] and s > rule["minSaturation"] and l > rule["minLightness"]:
         return f"{hex_color} is purple; the palette rules out purple themes, pick a warm or neutral colour"
     return None
 
@@ -123,16 +117,16 @@ class Chapter(_Model):
     @field_validator("label")
     @classmethod
     def _label(cls, v: str) -> str:
-        if not re.fullmatch(r"CHAPTER \d{2} · [A-Z0-9][A-Z0-9 ,'\-]{1,48}", v):
+        if not re.fullmatch(RULES["label"].strip("^$"), v):
             raise ValueError('label must look like "CHAPTER 01 · THE HIDDEN GATE" (uppercase, middle dot separator)')
         return _check_copy(v)
 
     @field_validator("titleWord")
     @classmethod
     def _title_word(cls, v: str) -> str:
-        if not re.fullmatch(r"[A-Z]{2,10}", v):
+        if not re.fullmatch(RULES["titleWord"].strip("^$"), v):
             raise ValueError("titleWord must be one uppercase word of 2 to 10 letters (A-Z only)")
-        return v
+        return _check_copy(v)
 
     @field_validator("heading", "subheading", "body")
     @classmethod
@@ -142,8 +136,8 @@ class Chapter(_Model):
     @field_validator("heading")
     @classmethod
     def _heading_len(cls, v: str) -> str:
-        if len(v) > 80:
-            raise ValueError("heading must be at most 80 characters")
+        if len(v) > RULES["headingMax"]:
+            raise ValueError(f"heading must be at most {RULES['headingMax']} characters")
         return v
 
     @field_validator("body")

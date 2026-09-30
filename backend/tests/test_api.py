@@ -29,7 +29,7 @@ def client(db, monkeypatch):
 def test_generate_poll_and_read(client, monkeypatch):
     monkeypatch.setattr(generation, "gather_content", lambda topic, db, c: CONTENT)
     three = draft([chapter(titleWord=w) for w in ("FUJI", "ASH", "SNOW")])
-    monkeypatch.setattr(generation, "chain_factory", lambda: chain(Scripted("gemini", three)))
+    monkeypatch.setattr(generation, "chain_factory", lambda: chain(Scripted("gemini", three, '{"unsupported": []}')))
 
     r = client.post("/generate", json={"topic": "Mount Fuji"})
     assert r.status_code == 202
@@ -42,7 +42,8 @@ def test_generate_poll_and_read(client, monkeypatch):
     assert spec["id"] == ids["storyId"] and len(spec["chapters"]) == 3
     assert client.get(f"/stories/{spec['slug']}").status_code == 200
     listed = client.get("/stories").json()
-    assert listed[0]["status"] == "complete" and listed[0]["title"] == "Fuji"
+    assert listed[0]["status"] == "complete" and listed[0]["title"] == "Fuji" and listed[0]["groundingScore"] == 1.0
+    assert client.get(f"/stories/{ids['storyId']}/grounding").json()["score"] == 1.0
 
 
 def test_thin_topic_reports_error(client, monkeypatch):

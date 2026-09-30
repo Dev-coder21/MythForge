@@ -30,7 +30,12 @@ def main(topics: list[str]) -> None:
                 continue
             path = OUT / f"{result.spec.slug}.json"
             path.write_text(json.dumps(result.spec.model_dump(mode="json"), indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-            print(f"{topic}: {path.name} via {result.provider}, {result.attempts} attempt(s). {'; '.join(chain.notes)}")
+            report_path = OUT / "grounding.json"
+            reports = json.loads(report_path.read_text(encoding="utf-8")) if report_path.exists() else {}
+            reports[path.name] = result.grounding
+            report_path.write_text(json.dumps(reports, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+            score = result.grounding["score"] if result.grounding else "n/a"
+            print(f"{topic}: {path.name} via {result.provider}, {result.attempts} attempt(s), grounding {score}. {'; '.join(chain.notes)}")
             chain.notes.clear()
 
 

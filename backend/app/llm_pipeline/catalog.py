@@ -40,7 +40,8 @@ KITS: tuple[Kit, ...] = (
         "the Great Sphinx and ancient Egypt only", "night", "moon",
         landmark="the Great Sphinx of Giza", landmark_keys=("sphinx", "giza", "egypt", "pharaoh")),
     Kit("tide", "nile", "a wide river at dawn, a wooden sailing cargo boat, reeds and papyrus, palms, distant pyramids, mist",
-        "rivers, trade, boats, journeys, water, transport", "dawn", "sun"),
+        "the Nile and ancient Egypt only (pyramids on the far bank)", "dawn", "sun",
+        landmark="the Nile at Giza", landmark_keys=("nile", "egypt", "giza", "pharaoh", "pyramid")),
 )
 
 KITS_BY_TEMPLATE: dict[str, set[str]] = {}

@@ -44,6 +44,7 @@ class StorySummary(BaseModel):
     subtitle: str | None
     slug: str | None
     status: str
+    groundingScore: float | None
     createdAt: datetime
 
 
@@ -73,7 +74,7 @@ def list_stories(limit: int = 50, db: Session = Depends(get_db)) -> list[StorySu
     rows = db.scalars(select(Story).order_by(Story.created_at.desc()).limit(min(max(limit, 1), 200))).all()
     return [
         StorySummary(id=s.id, topic=s.topic, title=s.title, subtitle=s.subtitle, slug=s.share_slug,
-                     status=s.status.value, createdAt=s.created_at)
+                     status=s.status.value, groundingScore=s.grounding_score, createdAt=s.created_at)
         for s in rows
     ]
 
@@ -89,6 +90,15 @@ def get_story(story_id: str, db: Session = Depends(get_db)) -> dict:
     if story.status != StoryStatus.complete or not story.spec_json:
         raise HTTPException(409, f"Story is {story.status.value}; poll /generate/{{jobId}}/status.")
     return story.spec_json
+
+
+@router.get("/stories/{story_id}/grounding")
+def story_grounding(story_id: str, db: Session = Depends(get_db)) -> dict:
+    """Fact-check report: score plus every sentence flagged, removed or kept."""
+    story = db.get(Story, story_id)
+    if story is None:
+        raise HTTPException(404, "Story not found.")
+    return story.grounding_report or {"score": None}
 
 
 @router.get("/templates")

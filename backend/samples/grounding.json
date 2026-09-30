@@ -1,0 +1,23 @@
+{
+  "stone-dragon.json": {
+    "score": 1.0,
+    "sentences": 14,
+    "unsupported": [],
+    "removed": [],
+    "kept": []
+  },
+  "sahara.json": {
+    "score": 1.0,
+    "sentences": 15,
+    "unsupported": [],
+    "removed": [],
+    "kept": []
+  },
+  "silent-summit.json": {
+    "score": 1.0,
+    "sentences": 16,
+    "unsupported": [],
+    "removed": [],
+    "kept": []
+  }
+}
