@@ -2,7 +2,7 @@
  * Headless screenshots of the story at given scroll percentages and widths.
  *
  *   npm run shots                                  # every chapter + both transitions
- *   npm run shots -- --points 1:0,2:0.3 --widths 1440 --url http://localhost:5173/
+ *   npm run shots -- --points 1:0,2:0.3 --widths 1440 --story giza
  *
  * A point is chapter:progress (chapter is 1-based, progress 0–1 through its
  * scroll segment; 0.93 lands mid-transition into the next chapter). A bare
@@ -27,7 +27,9 @@ const args = Object.fromEntries(
     return pairs
   }, []),
 )
-const url = args.url ?? 'http://localhost:5173/'
+const story = args.story
+const base = args.url ?? 'http://localhost:5173/'
+const url = story ? `${base}?story=${story}` : base
 const DEFAULT_POINTS = '1:0,1:0.3,1:0.6,1:0.93,2:0.03,2:0.3,2:0.6,2:0.93,3:0.03,3:0.3,3:0.6'
 const points = (args.points ?? DEFAULT_POINTS).split(',').map((p) => {
   const [c, v] = p.includes(':') ? p.split(':') : ['1', p]
@@ -116,7 +118,7 @@ try {
       console.log(`  ${width}px @ ${tag}  hero ${vis.hero.toFixed(2)}  chapter ${vis.chapter.toFixed(2)}${clash ? '  <-- BOTH VISIBLE' : ''}`)
       if (clash) overlaps.push(`${width}px @ ${tag}`)
 
-      const file = join(outDir, `${width}_${tag}.png`)
+      const file = join(outDir, `${story ? story + '_' : ''}${width}_${tag}.png`)
       await page.screenshot({ path: file })
       console.log(`saved ${file}`)
     }

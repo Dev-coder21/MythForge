@@ -75,7 +75,7 @@ export function thresholdPalette(p: SceneParams) {
   const accent = new Color(p.accentColor)
   const white = new Color('#ffffff')
 
-  // At night the moon takes the chapter accent (a vermilion moon for Kyoto);
+  // At night the moon takes the chapter accent (e.g. a vermilion moon);
   // other times of day keep a warm natural tone.
   const moonByTime = {
     night: hex(accent.clone().lerp(white, 0.18)),

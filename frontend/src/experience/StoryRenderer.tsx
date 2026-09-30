@@ -16,7 +16,7 @@ import type { StorySpec } from '@/spec'
 import { chapterCaption, chromeRefs, RING_C } from './ChapterOverlay'
 import { TRANSITION_START } from './camera/useChapterTimeline'
 import { ColorGradeEffect } from './post/ColorGradeEffect'
-import { Threshold } from './scenes/Threshold'
+import { templateFor } from './scenes/templates'
 import { ChapterContext, storyState, type ChapterState } from './store'
 import { TRANSITION_IDS, TransitionPass } from './transitions/TransitionPass'
 
@@ -251,7 +251,7 @@ export function StoryRenderer({ spec, states, reducedMotion }: StoryRendererProp
             {createPortal(
               <ChapterContext.Provider value={states[i]!}>
                 <Suspense fallback={null}>
-                  <Threshold chapter={chapter} index={i} reducedMotion={reducedMotion} />
+                  <ChapterScene chapter={chapter} index={i} reducedMotion={reducedMotion} />
                 </Suspense>
               </ChapterContext.Provider>,
               scenes[i]!,
@@ -262,4 +262,10 @@ export function StoryRenderer({ spec, states, reducedMotion }: StoryRendererProp
       )}
     </>
   )
+}
+
+/** The chapter's scene template, chosen by the spec's sceneTemplate. */
+function ChapterScene(props: { chapter: StorySpec['chapters'][number]; index: number; reducedMotion: boolean }) {
+  const Template = templateFor(props.chapter.sceneTemplate)
+  return <Template {...props} />
 }

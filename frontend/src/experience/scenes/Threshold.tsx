@@ -1,10 +1,10 @@
 import { useThree } from '@react-three/fiber'
 import { useControls } from 'leva'
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
-import type { Mesh, PerspectiveCamera } from 'three'
+import { useEffect, useLayoutEffect, useMemo, useRef, type ReactNode } from 'react'
+import type { Mesh, PerspectiveCamera, Texture } from 'three'
 import type { Chapter } from '@/spec'
 import { CameraRig } from '../camera/CameraRig'
-import { buildPaths, makeRectAt, type Vec3Tuple } from '../camera/paths'
+import { buildPaths, makeRectAt, type Rect, type Vec3Tuple } from '../camera/paths'
 import { FogLayer } from '../layers/FogLayer'
 import { KitParticles } from '../layers/KitParticles'
 import { LightShafts } from '../layers/LightShafts'
@@ -14,14 +14,33 @@ import { PARTICLE_PRESETS } from '../layers/particlePresets'
 import { SkyLayer } from '../layers/SkyLayer'
 import { TitleLayer } from '../layers/TitleLayer'
 import { useChapter } from '../store'
+import type { Kit } from './kit'
 import { KitLayers, useKit, useKitGlowRefs, useKitTextures } from './KitLayers'
 import { THRESHOLD_CAMERA, THRESHOLD_LAYOUT as L, thresholdPalette } from './threshold.defaults'
 
-interface ThresholdProps {
+export interface TemplateProps {
   chapter: Chapter
   /** Position in the story; namespaces this chapter's leva folders. */
   index: number
   reducedMotion: boolean
+}
+
+/** What a template's extra effects need from the shared layered scene. */
+export interface SceneContext {
+  kit: Kit
+  textures: Record<string, Texture>
+  rectAt: (z: number) => Rect
+  portrait: boolean
+  colors: { skyTop: string; skyMid: string; skyHorizon: string; fog: string; moon: string; kitRim: string }
+  /** Sun/moon position in the opening frame (0–1 from left / bottom). */
+  celestialUV: [number, number]
+  reducedMotion: boolean
+  ns: (folder: string) => string
+}
+
+interface LayeredSceneProps extends TemplateProps {
+  /** Template-specific effects (heat shimmer, river water...) rendered into the same scene. */
+  extras?: (ctx: SceneContext) => ReactNode
 }
 
 const v3 = (value: Vec3Tuple) => ({ value, step: 0.1 })
@@ -29,12 +48,13 @@ const zRange = (value: number) => ({ value, min: -80, max: 10, step: 0.5 })
 const frac = (value: number, min = -0.5, max = 1.5) => ({ value, min, max, step: 0.01 })
 
 /**
- * Threshold template: the EXPERIENCE_SPEC §3 layer stack at real Z depths.
+ * The shared layered scene every template builds on: the EXPERIENCE_SPEC §3
+ * layer stack at real Z depths.
  * Sky, moon, fog, title and particles are procedural; every painted element
  * comes from the art kit named by `sceneParams.artKit` (kit.json + webp), so
  * all variation comes from the spec and the kit, never from topic code.
  */
-export function Threshold({ chapter, index, reducedMotion }: ThresholdProps) {
+export function LayeredScene({ chapter, index, reducedMotion, extras }: LayeredSceneProps) {
   const params = chapter.sceneParams
   const state = useChapter()
   const ns = (folder: string) => `Ch${index + 1} / ${folder}`
@@ -351,6 +371,29 @@ export function Threshold({ chapter, index, reducedMotion }: ThresholdProps) {
         opacity={particles.opacity}
       />
 
+
+      {extras?.({
+        kit,
+        textures: kitTextures,
+        rectAt,
+        portrait,
+        colors: {
+          skyTop: colors.skyTop,
+          skyMid: colors.skyMid,
+          skyHorizon: colors.skyHorizon,
+          fog: colors.fog,
+          moon: colors.moon,
+          kitRim: colors.kitRim,
+        },
+        celestialUV: [moonU, moonV],
+        reducedMotion: reduced,
+        ns,
+      })}
     </>
   )
+}
+
+/** Threshold: the layered scene with no extra effects (gates, gardens, approaches). */
+export function Threshold(props: TemplateProps) {
+  return <LayeredScene {...props} />
 }

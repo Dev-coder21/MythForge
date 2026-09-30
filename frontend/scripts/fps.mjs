@@ -6,12 +6,17 @@
  * frames over 20ms and the final canvas size.
  *
  *   npm run fps
+ *   npm run fps -- --story giza
  */
 import { chromium } from 'playwright'
+
+const storyArg = process.argv.indexOf('--story')
+const story = storyArg > 0 ? process.argv[storyArg + 1] : undefined
+const url = `http://localhost:5173/${story ? '?story=' + story : ''}`
 const b = await chromium.launch({ channel: 'msedge', headless: true, args: ['--use-angle=d3d11', '--enable-gpu', '--ignore-gpu-blocklist'] })
 for (const [w, h] of [[1440, 900], [390, 844]]) {
   const p = await b.newPage({ viewport: { width: w, height: h } })
-  await p.goto('http://localhost:5173/', { waitUntil: 'load' })
+  await p.goto(url, { waitUntil: 'load' })
   await p.waitForFunction(() => window.__lenis)
   await p.waitForTimeout(3500)
   for (let warm = 0; warm < 2; warm++) await p.evaluate(async () => { window.__lenis.scrollTo(2.2 * innerHeight, { duration: 3 }); await new Promise((r) => setTimeout(r, 3200)); window.__lenis.scrollTo(0, { duration: 3 }); await new Promise((r) => setTimeout(r, 3200)) })
