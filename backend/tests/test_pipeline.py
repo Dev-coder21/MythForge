@@ -175,8 +175,10 @@ def test_all_failed_message_is_clear():
 
 
 def test_build_chain_orders_primary_first():
-    s = Settings(_env_file=None, llm_provider="groq", gemini_api_key="g", groq_api_key="q", ollama_model="")
-    assert [p.name for p in build_chain(s, client=httpx.Client()).providers] == ["groq", "gemini"]
+    s = Settings(_env_file=None, llm_provider="groq", gemini_api_key="g", groq_api_key="q", ollama_model="",
+                 groq_fallback_models="qwen/qwen3.8-27b")
+    ids = [f"{p.name}:{p.model}" for p in build_chain(s, client=httpx.Client()).providers]
+    assert ids == ["groq:openai/gpt-oss-120b", "gemini:gemini-flash-latest", "groq:qwen/qwen3.8-27b"]
 
 
 # HTTP adapters

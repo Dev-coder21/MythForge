@@ -178,6 +178,7 @@ function liveLine(s: JobStatus | null): string {
 }
 
 function FailurePanel({ message, onRetry, onChangeTopic }: { message: string; onRetry: () => void; onChangeTopic: () => void }) {
+  const daily = /daily/i.test(message)
   const rateLimited = /rate limit|quota|busy|free tier/i.test(message)
   const thin = /not enough|too little|thin/i.test(message)
   const headline = rateLimited
@@ -185,7 +186,9 @@ function FailurePanel({ message, onRetry, onChangeTopic }: { message: string; on
     : thin
       ? 'There is not enough source material for this topic.'
       : 'The story could not be finished.'
-  const hint = rateLimited
+  const hint = daily
+    ? 'The free daily allowance of every configured model is used up. It refills gradually over the next hours; adding a second free provider key also helps.'
+    : rateLimited
     ? 'Free tiers reset within a minute or two. Try again shortly.'
     : thin
       ? 'Try a more specific or better known name, such as a single place or event.'

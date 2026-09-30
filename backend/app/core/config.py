@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     gemini_model: str = "gemini-flash-latest"
     groq_api_key: str = ""
     groq_model: str = "openai/gpt-oss-120b"
+    # Extra Groq models tried as writers after the main ones; each has its own free daily token cap.
+    groq_fallback_models: str = "qwen/qwen3.8-27b"
     ollama_url: str = "http://localhost:11434"
     ollama_model: str = ""  # empty = Ollama not used
 
@@ -28,8 +30,8 @@ class Settings(BaseSettings):
     # Keep requests small so free-tier limits hold.
     llm_max_output_tokens: int = 2000
     llm_timeout_s: float = 90.0
-    llm_max_rate_limit_waits: int = 2
-    llm_max_backoff_s: float = 30.0
+    llm_max_rate_limit_waits: int = 3
+    llm_max_backoff_s: float = 60.0  # per-minute token windows need up to a full minute
 
     # Retrieval
     wiki_lang: str = "en"

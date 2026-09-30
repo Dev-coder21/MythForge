@@ -257,8 +257,13 @@ def build_chain(settings: Settings, client: httpx.Client | None = None, sleep: C
     if settings.ollama_model:
         available["ollama"] = OllamaProvider(settings.ollama_url, settings.ollama_model, client)
     order = [settings.llm_provider] + [n for n in ("gemini", "groq", "ollama") if n != settings.llm_provider]
+    providers = [available[n] for n in order if n in available]
+    if settings.groq_api_key:
+        for model in (m.strip() for m in settings.groq_fallback_models.split(",") if m.strip()):
+            if model != settings.groq_model:
+                providers.append(GroqProvider(settings.groq_api_key, model, client))
     return FallbackChain(
-        [available[n] for n in order if n in available],
+        providers,
         max_rate_limit_waits=settings.llm_max_rate_limit_waits,
         max_backoff_s=settings.llm_max_backoff_s,
         sleep=sleep,
