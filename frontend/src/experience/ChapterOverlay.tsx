@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import { forwardRef } from 'react'
 import type { Chapter, StorySpec } from '@/spec'
 
@@ -21,7 +22,7 @@ export const chromeRefs = {
 export const chapterCaption = (spec: StorySpec, c: Chapter) => `${spec.topic} · ${c.sceneParams.timeOfDay}`
 
 /** "wikipedia:Great Pyramid of Giza" → label + link; anything else is shown as given. */
-function sourceOf(source?: string): { label: string; href?: string } | null {
+export function sourceOf(source?: string): { label: string; href?: string } | null {
   if (!source) return null
   const [kind, ...rest] = source.split(':')
   const title = rest.join(':').trim()
@@ -57,6 +58,12 @@ export function StoryChrome({ spec }: { spec: StorySpec }) {
     <div className="pointer-events-none absolute inset-0 z-20 text-white">
       <header className="absolute inset-x-0 top-0 flex items-start justify-between px-5 pt-5 md:px-10 md:pt-7">
         <div className="flex items-center gap-3">
+          <Link
+            to="/"
+            className="pointer-events-auto text-[10px] uppercase tracking-[0.3em] text-white/55 transition-colors hover:text-white"
+          >
+            MythForge
+          </Link>
           <span className="h-3 w-[3px]" style={{ backgroundColor: first.sceneParams.accentColor }} />
           <span className="font-display text-sm uppercase tracking-[0.18em]">{spec.title}</span>
           <span className="hidden text-[10px] uppercase tracking-[0.3em] text-white/45 sm:inline">

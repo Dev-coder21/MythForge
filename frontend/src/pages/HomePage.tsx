@@ -51,6 +51,10 @@ export function HomePage() {
       <AmbientBackdrop spec={sampleKyoto} chapter={1} dim={jobId ? 0.65 : 0.4} />
       {/* Readability: a soft floor of shade behind the copy, darker toward the bottom. */}
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgb(7_8_12/0.8),rgb(7_8_12/0.05)_60%,rgb(7_8_12/0.25))]" />
+      {/* While a story is being written the scene recedes further, so progress text stays legible. */}
+      <div
+        className={`pointer-events-none absolute inset-0 bg-[#07080c] transition-opacity duration-1000 ${jobId ? 'opacity-60' : 'opacity-0'}`}
+      />
 
       <header className="relative z-10 flex items-center justify-between px-5 pt-5 md:px-10 md:pt-7">
         <Link to="/" className="font-display text-sm uppercase tracking-[0.2em]">

@@ -37,7 +37,7 @@ def test_generate_poll_and_read(client, monkeypatch):
     ids = r.json()
 
     status = client.get(f"/generate/{ids['jobId']}/status").json()
-    assert status["stage"] == "done" and status["progress"] == 100 and status["provider"] == "gemini"
+    assert status["stage"] == "done" and status["progress"] == 100 and status["provider"] == "gemini:fake"
 
     spec = client.get(f"/stories/{ids['storyId']}").json()
     assert spec["id"] == ids["storyId"] and len(spec["chapters"]) == 3

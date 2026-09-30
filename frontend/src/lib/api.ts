@@ -39,6 +39,8 @@ export interface StorySummary {
 
 export interface GroundingReport {
   score: number | null
+  /** Why the fact check did not run (free tiers busy, ...). */
+  skipped?: string
   sentences?: number
   checkedBy?: string
   writtenBy?: string

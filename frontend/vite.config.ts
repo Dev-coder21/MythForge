@@ -6,8 +6,8 @@ import react from '@vitejs/plugin-react'
 import { defineConfig, type Plugin } from 'vite'
 
 /**
- * Dev-only: POST a PNG data URL to /__capture?name=foo and it is written to
- * .captures/foo.png. Used for scripted screenshot comparisons from the browser.
+ * Dev-only: POST a PNG or JPEG data URL to /__capture?name=foo and it is written to
+ * .captures/foo.png (or .jpg). Used for scripted screenshot comparisons from the browser.
  */
 function devCapture(): Plugin {
   const dir = fileURLToPath(new URL('./.captures', import.meta.url))
@@ -28,9 +28,11 @@ function devCapture(): Plugin {
         const chunks: Buffer[] = []
         req.on('data', (c: Buffer) => chunks.push(c))
         req.on('end', () => {
-          const base64 = Buffer.concat(chunks).toString().replace(/^data:image\/png;base64,/, '')
+          const body = Buffer.concat(chunks).toString()
+          const ext = body.startsWith('data:image/jpeg') ? 'jpg' : 'png'
+          const base64 = body.replace(/^data:image\/(png|jpeg);base64,/, '')
           mkdirSync(dir, { recursive: true })
-          writeFileSync(join(dir, `${name}.png`), Buffer.from(base64, 'base64'))
+          writeFileSync(join(dir, `${name}.${ext}`), Buffer.from(base64, 'base64'))
           res.end('ok')
         })
       })

@@ -79,6 +79,6 @@ function stopAll(code = 0) {
 process.on('SIGINT', () => stopAll(0))
 process.on('SIGTERM', () => stopAll(0))
 
-start('api', venvPython, ['-m', 'uvicorn', 'app.main:app', '--reload', '--port', '8000'], backend)
+start('api', venvPython, ['-m', 'uvicorn', 'app.main:app', '--reload', '--port', '8000', '--timeout-graceful-shutdown', '3'], backend)
 start('web', 'npm', ['run', 'dev', '--', '--host'], frontend)
 console.log('MythForge: http://localhost:5173  (API on :8000, proxied at /api)')

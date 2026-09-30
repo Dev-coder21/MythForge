@@ -11,7 +11,8 @@
     "test": "vitest run",
     "shots": "node scripts/shots.mjs",
     "kit": "node scripts/artkit/generate.mjs",
-    "fps": "node scripts/fps.mjs"
+    "fps": "node scripts/fps.mjs",
+    "posters": "node scripts/posters.mjs"
   },
   "dependencies": {
     "@fontsource/anton": "^5.3.0",

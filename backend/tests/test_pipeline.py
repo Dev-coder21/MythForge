@@ -243,7 +243,7 @@ def test_unsupported_heading_is_kept_but_reported():
 
 def test_grounding_failure_does_not_fail_generation():
     r = generate_spec(CONTENT, chain(Scripted("gemini", draft(), LLMError("down"))), chapters=2)
-    assert r.grounding is None and any("skipped" in n for n in r.notes)
+    assert r.grounding["score"] is None and "down" in r.grounding["skipped"] and any("skipped" in n for n in r.notes)
 
 
 def test_draft_heading_rules():
@@ -298,3 +298,10 @@ def test_build_checker_chain_skips_writer_model():
 def test_hedge_rule_is_in_checker_prompt():
     from app.llm_pipeline.grounding import SYSTEM as CHECK
     assert "about five months" in CHECK and "UNSUPPORTED" in CHECK
+
+
+def test_duplicate_title_word_error_suggests_source_words():
+    with pytest.raises(SpecInvalid) as e:
+        validate_draft(draft([chapter(titleWord="FUJI"), chapter(titleWord="FUJI")]), "Mount Fuji", CONTENT, 2)
+    msg = " ".join(e.value.errors)
+    assert "used twice" in msg and "HONSHU" in msg

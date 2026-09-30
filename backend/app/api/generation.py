@@ -70,7 +70,7 @@ def run_generation(story_id: str, job_id: str) -> None:
 
             chain.on_event = on_event
             result = generate_spec(content, chain, checker_for=checker_factory, on_stage=on_stage)
-            job.provider = result.provider
+            job.provider = chain.last_model or result.provider
             job.detail = None
 
             _stage(db, job, JobStage.assembling, 90)

@@ -26,6 +26,7 @@ export const CHAPTER_VH = 250
 
 interface StoryExperienceProps {
   spec: StorySpec
+  onPoster?: (dataUrl: string) => void
 }
 
 /**
@@ -33,7 +34,7 @@ interface StoryExperienceProps {
  * scroll spacer per chapter. Every chapter is driven by the spec; nothing here
  * knows which chapter is which.
  */
-export function StoryExperience({ spec }: StoryExperienceProps) {
+export function StoryExperience({ spec, onPoster }: StoryExperienceProps) {
   const debug = useControls('Debug', { forceReducedMotion: false, showStats: false })
   const reduced = useReducedMotion(debug.forceReducedMotion)
 
@@ -98,7 +99,7 @@ export function StoryExperience({ spec }: StoryExperienceProps) {
             onChange={({ factor }) => setDpr(Math.round((1 + (maxDpr - 1) * factor) * 20) / 20)}
             flipflops={Infinity}
           />
-          <StoryRenderer spec={spec} states={states} reducedMotion={reduced} />
+          <StoryRenderer spec={spec} states={states} reducedMotion={reduced} onPoster={onPoster} />
           {debug.showStats && <Stats />}
         </Canvas>
 

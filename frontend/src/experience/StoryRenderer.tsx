@@ -24,6 +24,23 @@ interface StoryRendererProps {
   spec: StorySpec
   states: ChapterState[]
   reducedMotion: boolean
+  /** Called once with a JPEG data URL of the first chapter, shortly after it is ready (gallery posters). */
+  onPoster?: (dataUrl: string) => void
+}
+
+/** Frames the first chapter must have been on screen before its poster is taken (art settled, fades done). */
+const POSTER_AFTER_FRAMES = 90
+const POSTER_WIDTH = 1280
+
+/** Copy the WebGL canvas right after rendering (same task, so no preserveDrawingBuffer) into a scaled JPEG. */
+function capturePoster(source: HTMLCanvasElement): string {
+  const w = Math.min(POSTER_WIDTH, source.width)
+  const h = Math.round((source.height / source.width) * w)
+  const c = document.createElement('canvas')
+  c.width = w
+  c.height = h
+  c.getContext('2d')!.drawImage(source, 0, 0, w, h)
+  return c.toDataURL('image/jpeg', 0.82)
 }
 
 const pad = (n: number) => String(n).padStart(2, '0')
@@ -43,7 +60,7 @@ const smooth = (a: number, b: number, x: number) => {
  *   fireflies), grain, vignette, ACES filmic, and a grade blended between chapters
  * - drives the DOM chrome and gates each chapter's copy, without React renders
  */
-export function StoryRenderer({ spec, states, reducedMotion }: StoryRendererProps) {
+export function StoryRenderer({ spec, states, reducedMotion, onPoster }: StoryRendererProps) {
   const gl = useThree((s) => s.gl)
   const size = useThree((s) => s.size)
   const n = spec.chapters.length
@@ -152,6 +169,8 @@ export function StoryRenderer({ spec, states, reducedMotion }: StoryRendererProp
   // Compile each chapter's shaders once it has loaded, before it is ever shown.
   const compiled = useMemo(() => new Set<number>(), [])
 
+  const poster = useMemo(() => ({ frames: 0, done: false }), [])
+
   const tintA = useMemo(() => new Color(), [])
   const tintB = useMemo(() => new Color(), [])
   const accent = useMemo(() => new Color(), [])
@@ -219,6 +238,14 @@ export function StoryRenderer({ spec, states, reducedMotion }: StoryRendererProp
     bloom.intensity = bloomCtl.intensity * (1 + intensity * 0.5)
 
     composer.render(dt)
+
+    if (onPoster && !poster.done) {
+      poster.frames = a === 0 && t === 0 && A.ready && compiled.has(0) && A.progress < 0.2 ? poster.frames + 1 : 0
+      if (poster.frames >= POSTER_AFTER_FRAMES) {
+        poster.done = true
+        onPoster(capturePoster(gl.domElement))
+      }
+    }
 
     // --- DOM: chrome + copy gating ---------------------------------------------------
     const shown = t > 0.5 ? a + 1 : a

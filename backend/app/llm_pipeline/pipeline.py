@@ -152,6 +152,16 @@ def _numbers(text: str) -> set[str]:
     return found
 
 
+def _title_candidates(source_text: str, used: set[str], n: int = 8) -> list[str]:
+    """Frequent capitalised source words (names, places) of 3 to 10 letters that no chapter uses yet."""
+    counts: dict[str, int] = {}
+    for w in re.findall(r"\b[A-Z][a-z]{2,9}\b", source_text):
+        counts[w.upper()] = counts.get(w.upper(), 0) + 1
+    skip = {"THE", "THIS", "THAT", "THESE", "SOURCE", "SUMMARY", "WIKIPEDIA", "DURING", "AFTER", "BEFORE", "SINCE", "WHEN", "WHILE"}
+    ranked = sorted((w for w in counts if w not in used and w not in skip), key=lambda w: -counts[w])
+    return ranked[:n]
+
+
 def _word_in(word: str, text: str) -> bool:
     """Whole-word match, case-insensitive; a plural or singular form also counts (WALLS for "wall")."""
     w = re.escape(word.strip().lower())
@@ -214,6 +224,7 @@ def validate_draft(raw: str, topic: str, content: RetrievedContent, chapters: in
         errors.append(f"there must be exactly {chapters} chapters (got {len(draft.chapters)})")
     source_text = content.as_prompt_text()
     source_numbers = _numbers(source_text)
+    used_words = {c.titleWord.upper() for c in draft.chapters}
     seen_words = set()
     for i, c in enumerate(draft.chapters):
         where = f"chapters.{i}"
@@ -227,14 +238,20 @@ def validate_draft(raw: str, topic: str, content: RetrievedContent, chapters: in
         if invented:
             errors.append(f"{where}: these numbers are not in the SOURCE TEXT: {', '.join(invented)}; use only numbers from the source")
         if not _word_in(c.titleWord, f"{topic} {source_text}"):
-            errors.append(f"{where}.titleWord: {c.titleWord} does not appear in the topic or SOURCE TEXT; use a word or name from them")
+            errors.append(
+                f"{where}.titleWord: {c.titleWord} does not appear in the topic or SOURCE TEXT; "
+                f"pick one of: {', '.join(_title_candidates(source_text, used_words))}"
+            )
         heading = c.heading.strip()
         if len(heading) > RULES["generatedHeadingMax"]:
             errors.append(f"{where}.heading: {len(heading)} characters; keep it under {RULES['generatedHeadingMax']}, evocative, not a summary")
         if RULES["generatedHeadingNoDigits"] and re.search(r"\d", heading):
             errors.append(f"{where}.heading: no numbers or dates in headings; move the figure into the body")
         if c.titleWord.upper() in seen_words:
-            errors.append(f"{where}.titleWord: {c.titleWord} is used twice; every chapter needs its own word")
+            errors.append(
+                f"{where}.titleWord: {c.titleWord} is used twice; every chapter needs its own word, "
+                f"for example one of: {', '.join(_title_candidates(source_text, used_words))}"
+            )
         seen_words.add(c.titleWord.upper())
     if errors:
         raise SpecInvalid(errors)
@@ -307,5 +324,6 @@ def generate_spec(content: RetrievedContent, chain: FallbackChain, chapters: int
             grounding = report.as_dict() | {"writtenBy": writer,"removed": [c.id for c in report.unsupported_claims() if c.id not in kept], "kept": kept}
         except (LLMError, ValueError) as e:
             chain.notes.append(f"grounding check skipped: {e}")
+            grounding = {"score": None, "skipped": str(e)[:400], "writtenBy": writer}
         chain.notes.extend(n for n in checker.notes if checker is not chain)
     return GenerationResult(spec=spec, provider=provider, attempts=attempts, notes=list(chain.notes), grounding=grounding)
