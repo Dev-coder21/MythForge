@@ -43,6 +43,18 @@ KITS: tuple[Kit, ...] = (
         "pine forest on the lower slopes, a rocky foreground ledge, blowing snow; no buildings or flags",
         "any mountain, range, summit, volcano, glacier, high pass, climbing and expeditions; set timeOfDay: night "
         "(moonlight), dawn (alpenglow on the peaks) or day", "dawn", "sun"),
+    Kit("skyline", "oldtown", "an old city: layered tiled rooftops and chimneys, distant domes and spires (no specific building), "
+        "a paved plaza with iron lamp posts in front, birds, soft haze",
+        "cities, towns, old quarters, urban monuments, towers, palaces, cathedrals, city squares, gates and arches in a city",
+        "dusk", "sun"),
+    Kit("ruin", "ancient", "ancient ruins: broken columns, a ruined arch and fallen stone blocks at several depths, "
+        "dry grass and wildflowers in front, distant hills, dust in light shafts",
+        "ancient sites, archaeological sites, amphitheatres, temples in ruin, forums, lost cities, classical antiquity",
+        "day", "sun"),
+    Kit("harbor", "port", "a harbor: open sea with moving water and a sun glitter path, a stone seawall promenade with a lamp, "
+        "moored boats and a ferry, a low distant skyline, gulls, sea mist",
+        "coasts, ports, harbors, bays, lighthouses, seafront monuments, bridges over the sea, island towns",
+        "dawn", "sun"),
     Kit("tide", "nile", "a wide river at dawn, a wooden sailing cargo boat, reeds and papyrus, palms, distant pyramids, mist",
         "the Nile and ancient Egypt only (pyramids on the far bank)", "dawn", "sun",
         landmark="the Nile at Giza", landmark_keys=("nile", "egypt", "giza", "pharaoh", "pyramid")),

@@ -4,7 +4,7 @@ import type { StorySpec } from './types'
 // One rule set for backend validation and this test: edit backend/app/schemas/copy_rules.json only.
 import RULES from '../../../backend/app/schemas/copy_rules.json'
 
-const TEMPLATES = ['threshold', 'peak', 'tide', 'grove', 'skyline', 'dune', 'cosmos', 'ruin']
+const TEMPLATES = ['threshold', 'peak', 'tide', 'grove', 'skyline', 'dune', 'cosmos', 'ruin', 'harbor']
 const PARTICLES = ['petals', 'snow', 'embers', 'fireflies', 'dust', 'rain', 'none']
 const GROUNDS = ['grass', 'sand', 'water', 'stone', 'void']
 const BACKGROUNDS = ['moon', 'sun', 'stars', 'clouds', 'none']

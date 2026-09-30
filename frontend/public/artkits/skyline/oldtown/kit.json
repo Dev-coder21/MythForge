@@ -1,0 +1,271 @@
+{
+  "name": "oldtown",
+  "template": "skyline",
+  "textures": {
+    "city-far": "../painted/city-far.webp",
+    "rooftops-mid": "../painted/rooftops-mid.webp",
+    "rooftops-near": "../painted/rooftops-near.webp",
+    "plaza": "../painted/plaza.webp",
+    "lamp": "../painted/lamp.webp",
+    "birds": "../painted/birds.webp"
+  },
+  "layers": [
+    {
+      "id": "city-far",
+      "texture": "city-far",
+      "z": -60,
+      "x": 0,
+      "bottom": 0.26,
+      "height": 0.26,
+      "stretch": true,
+      "fog": 0.55,
+      "tint": 0.5,
+      "rim": 0.15,
+      "portrait": {
+        "bottom": 0.34,
+        "height": 0.12
+      }
+    },
+    {
+      "id": "rooftops-mid",
+      "texture": "rooftops-mid",
+      "z": -34,
+      "x": 0,
+      "bottom": 0.12,
+      "height": 0.4,
+      "stretch": true,
+      "fog": 0.22,
+      "tint": 0.4,
+      "rim": 0.3,
+      "portrait": {
+        "bottom": 0.16,
+        "height": 0.16
+      }
+    },
+    {
+      "id": "rooftops-near",
+      "texture": "rooftops-near",
+      "z": -16,
+      "x": 0,
+      "bottom": -0.04,
+      "height": 0.46,
+      "stretch": true,
+      "fog": 0.08,
+      "tint": 0.35,
+      "rim": 0.3,
+      "portrait": {
+        "bottom": 0.02,
+        "height": 0.18
+      }
+    },
+    {
+      "id": "plaza",
+      "texture": "plaza",
+      "z": -4,
+      "x": 0,
+      "bottom": -0.14,
+      "height": 0.3,
+      "stretch": true,
+      "shade": 0.8,
+      "tint": 0.3,
+      "rim": 0.2,
+      "portrait": {
+        "bottom": -0.06,
+        "height": 0.16
+      }
+    },
+    {
+      "id": "lamp-l",
+      "texture": "lamp",
+      "z": -3,
+      "x": -0.4,
+      "bottom": -0.06,
+      "height": 0.8,
+      "shade": 0.7,
+      "tint": 0.2,
+      "rim": 0.3,
+      "light": {
+        "u": 0.5,
+        "v": 0.86,
+        "color": "#ffc27a",
+        "intensity": 2.2,
+        "radius": 1.2,
+        "flicker": 0.1,
+        "glow": 0.3
+      },
+      "portrait": {
+        "x": -0.42,
+        "height": 0.44
+      }
+    },
+    {
+      "id": "lamp-r",
+      "texture": "lamp",
+      "z": -3.4,
+      "x": 0.43,
+      "bottom": -0.06,
+      "height": 0.7,
+      "shade": 0.7,
+      "tint": 0.2,
+      "rim": 0.3,
+      "light": {
+        "u": 0.5,
+        "v": 0.86,
+        "color": "#ffc27a",
+        "intensity": 2.2,
+        "radius": 1.2,
+        "flicker": 0.1,
+        "glow": 0.3
+      },
+      "portrait": {
+        "hidden": true
+      }
+    }
+  ],
+  "camera": {
+    "fov": 38,
+    "position": [
+      [
+        0,
+        -0.4,
+        14
+      ],
+      [
+        0.05,
+        0.6,
+        13.4
+      ],
+      [
+        0.1,
+        1.7,
+        12.7
+      ],
+      [
+        0.12,
+        2.6,
+        12
+      ]
+    ],
+    "lookAt": [
+      [
+        0,
+        0.6,
+        -20
+      ],
+      [
+        0.05,
+        1.4,
+        -20
+      ],
+      [
+        0.1,
+        2.2,
+        -20
+      ],
+      [
+        0.12,
+        2.8,
+        -20
+      ]
+    ]
+  },
+  "celestial": {
+    "u": 0.74,
+    "v": 0.76,
+    "uPortrait": 0.72,
+    "vPortrait": 0.8,
+    "size": 0.07,
+    "driftV": -0.03,
+    "intensity": 2.2,
+    "halo": 0.05
+  },
+  "title": {
+    "v": 0.24,
+    "vPortrait": 0.28,
+    "fitPortrait": 0.7
+  },
+  "skyByTime": {
+    "night": {
+      "top": "#070b18",
+      "mid": "#16203a",
+      "horizon": "#34405e",
+      "fog": "#3c4866",
+      "tint": "#8fa0c8",
+      "rim": "#cad8ff",
+      "sun": "#e8eeff"
+    },
+    "dawn": {
+      "top": "#1b2744",
+      "mid": "#7a5a58",
+      "horizon": "#f0a878",
+      "fog": "#c89886",
+      "tint": "#f2bca0",
+      "rim": "#ffc8a0",
+      "sun": "#ffd8b0"
+    },
+    "day": {
+      "top": "#3a66a0",
+      "mid": "#86aad0",
+      "horizon": "#dfe6ea",
+      "fog": "#c8d4dc",
+      "tint": "#eef1f2",
+      "rim": "#ffffff",
+      "sun": "#fff4dc"
+    },
+    "dusk": {
+      "top": "#1a2036",
+      "mid": "#8a5440",
+      "horizon": "#eea060",
+      "fog": "#b8806a",
+      "tint": "#eaa882",
+      "rim": "#ffbe88",
+      "sun": "#ffc890"
+    }
+  },
+  "fog": [
+    {
+      "z": -46,
+      "opacity": 0.3,
+      "height": 0.45,
+      "speed": 0.01,
+      "scale": 1.6
+    },
+    {
+      "z": -24,
+      "opacity": 0.16,
+      "height": 0.3,
+      "speed": 0.02,
+      "scale": 2
+    }
+  ],
+  "particles": [
+    {
+      "texture": "birds",
+      "cells": 4,
+      "count": 14,
+      "zMin": -40,
+      "zMax": -20,
+      "size": 0.5,
+      "speed": 0.9,
+      "fall": -0.02,
+      "opacity": 0.8,
+      "windX": 1.4
+    }
+  ],
+  "hero": {
+    "z": -26,
+    "x": 0.06,
+    "bottom": 0.2,
+    "height": 0.62,
+    "maxWidth": 0.75,
+    "fog": 0.14,
+    "tint": 0.35,
+    "rim": 0.35,
+    "replace": [],
+    "portrait": {
+      "bottom": 0.24,
+      "height": 0.34,
+      "maxWidth": 0.95
+    }
+  }
+}

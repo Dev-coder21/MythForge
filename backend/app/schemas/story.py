@@ -18,7 +18,7 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_vali
 
 HexColor = Annotated[str, StringConstraints(pattern=r"^#[0-9a-fA-F]{6}$")]
 
-SceneTemplateId = Literal["threshold", "peak", "tide", "grove", "skyline", "dune", "cosmos", "ruin"]
+SceneTemplateId = Literal["threshold", "peak", "tide", "grove", "skyline", "dune", "cosmos", "ruin", "harbor"]
 ParticleType = Literal["petals", "snow", "embers", "fireflies", "dust", "rain", "none"]
 GroundType = Literal["grass", "sand", "water", "stone", "void"]
 BackgroundObject = Literal["moon", "sun", "stars", "clouds", "none"]

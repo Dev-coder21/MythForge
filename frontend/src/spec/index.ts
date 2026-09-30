@@ -18,6 +18,7 @@ export const STORIES: Record<string, () => Promise<StorySpec>> = {
   ...(import.meta.env.DEV ? {
         'peak-preview': async () => (await import('./preview-peak.json')).default as StorySpec,
         'hero-preview': async () => (await import('./preview-hero.json')).default as StorySpec,
+        'settings-preview': async () => (await import('./preview-settings.json')).default as StorySpec,
       } : {}),
 }
 

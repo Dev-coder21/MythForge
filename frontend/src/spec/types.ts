@@ -16,6 +16,7 @@ export type SceneTemplateId =
   | 'dune'
   | 'cosmos'
   | 'ruin'
+  | 'harbor'
 
 export type ParticleType = 'petals' | 'snow' | 'embers' | 'fireflies' | 'dust' | 'rain' | 'none'
 

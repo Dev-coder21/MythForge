@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "id": "settings-preview",
+  "topic": "Settings preview",
+  "title": "Settings",
+  "subtitle": "Development preview of the city, ruins and harbor templates.",
+  "slug": "settings-preview",
+  "createdAt": "2026-09-30T00:00:00Z",
+  "chapters": [
+    {
+      "index": 1,
+      "label": "CHAPTER 01 · CITY",
+      "titleWord": "CITY",
+      "heading": "Snow holds the high ground long after the valley thaws.",
+      "subheading": "Peak template preview",
+      "body": "A development preview of the Peak scene, used to tune the layers, the camera climb and the light for each time of day. It is not a story and never appears in the gallery or in production builds of the site.",
+      "sceneTemplate": "skyline",
+      "sceneParams": {
+        "primaryColor": "#2a1e1a",
+        "accentColor": "#f0a060",
+        "particleType": "dust",
+        "groundType": "stone",
+        "backgroundObject": "sun",
+        "propVariant": "oldtown",
+        "artKit": "oldtown",
+        "timeOfDay": "dusk",
+        "props": [],
+        "particleDensity": 0.5
+      },
+      "titleLayout": "horizontal",
+      "transition": "noise-dissolve",
+      "landmark": {
+        "name": "Test structure",
+        "description": "A synthetic test shape used to check hero slot placement.",
+        "layer": {
+          "url": "/dev/hero-test.webp",
+          "attribution": "test"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "label": "CHAPTER 02 · RUINS",
+      "titleWord": "RUINS",
+      "heading": "Snow holds the high ground long after the valley thaws.",
+      "subheading": "Peak template preview",
+      "body": "A development preview of the Peak scene, used to tune the layers, the camera climb and the light for each time of day. It is not a story and never appears in the gallery or in production builds of the site.",
+      "sceneTemplate": "ruin",
+      "sceneParams": {
+        "primaryColor": "#2e2a22",
+        "accentColor": "#f4dca8",
+        "particleType": "dust",
+        "groundType": "stone",
+        "backgroundObject": "sun",
+        "propVariant": "ancient",
+        "artKit": "ancient",
+        "timeOfDay": "day",
+        "props": [],
+        "particleDensity": 0.5
+      },
+      "titleLayout": "horizontal",
+      "transition": "ink-wipe",
+      "landmark": {
+        "name": "Test structure",
+        "description": "A synthetic test shape used to check hero slot placement.",
+        "layer": {
+          "url": "/dev/hero-test.webp",
+          "attribution": "test"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "label": "CHAPTER 03 · HARBOR",
+      "titleWord": "HARBOR",
+      "heading": "Snow holds the high ground long after the valley thaws.",
+      "subheading": "Peak template preview",
+      "body": "A development preview of the Peak scene, used to tune the layers, the camera climb and the light for each time of day. It is not a story and never appears in the gallery or in production builds of the site.",
+      "sceneTemplate": "harbor",
+      "sceneParams": {
+        "primaryColor": "#1e2638",
+        "accentColor": "#ffcca6",
+        "particleType": "none",
+        "groundType": "stone",
+        "backgroundObject": "sun",
+        "propVariant": "port",
+        "artKit": "port",
+        "timeOfDay": "dawn",
+        "props": [],
+        "particleDensity": 0.5
+      },
+      "titleLayout": "horizontal",
+      "transition": "bloom-out",
+      "landmark": {
+        "name": "Test structure",
+        "description": "A synthetic test shape used to check hero slot placement.",
+        "layer": {
+          "url": "/dev/hero-test.webp",
+          "attribution": "test"
+        }
+      }
+    }
+  ]
+}
