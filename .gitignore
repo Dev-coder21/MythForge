@@ -21,3 +21,6 @@ mythforge-starter.zip
 # Reference recordings + dev screenshot captures (not our work to redistribute)
 *.mp4
 .captures/
+
+# Backend local database
+backend/*.db
