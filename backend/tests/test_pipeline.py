@@ -335,3 +335,13 @@ def test_rate_limit_window_detection():
         with pytest.raises(RateLimitError) as e:
             _check(resp, "X")
         assert e.value.daily is daily
+
+
+def test_story_keeps_one_setting_unless_reasoned():
+    mixed = [chapter(), chapter(titleWord="HONSHU", sceneTemplate="dune", artKit="erg")]
+    with pytest.raises(SpecInvalid) as e:
+        validate_draft(draft(mixed), "Mount Fuji", CONTENT, 2)
+    assert "same sceneTemplate" in " ".join(e.value.errors)
+    ok = json.loads(draft(mixed))
+    ok["mixedSettingsReason"] = "The story follows the river out of the mountains into the desert."
+    validate_draft(json.dumps(ok), "Mount Fuji", CONTENT, 2)

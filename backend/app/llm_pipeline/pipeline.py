@@ -65,6 +65,8 @@ class Draft(BaseModel):
     model_config = ConfigDict(extra="ignore")
     title: str
     subtitle: str
+    # Only when the topic truly spans settings (a river journey into a desert); otherwise one template.
+    mixedSettingsReason: str | None = None
     chapters: list[DraftChapter] = Field(min_length=1)
 
 
@@ -230,6 +232,13 @@ def validate_draft(raw: str, topic: str, content: RetrievedContent, chapters: in
     errors: list[str] = []
     if len(draft.chapters) != chapters:
         errors.append(f"there must be exactly {chapters} chapters (got {len(draft.chapters)})")
+    templates = sorted({c.sceneTemplate for c in draft.chapters})
+    if len(templates) > 1 and not (draft.mixedSettingsReason or "").strip():
+        errors.append(
+            f"chapters use different sceneTemplates ({', '.join(templates)}); a story keeps one setting, so use the same "
+            "sceneTemplate for every chapter (vary artKit, timeOfDay and colours within it). Only if the topic truly "
+            "spans different settings, keep them and set mixedSettingsReason to one sentence saying why"
+        )
     source_text = content.as_prompt_text()
     source_numbers = _numbers(source_text)
     used_words = {c.titleWord.upper() for c in draft.chapters}

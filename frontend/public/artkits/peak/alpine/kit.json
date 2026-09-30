@@ -2,14 +2,38 @@
   "name": "alpine",
   "template": "peak",
   "textures": {
-    "range-far": "../painted/range-far.webp",
-    "summit": "../painted/summit.webp",
-    "range-mid": "../painted/range-mid.webp",
-    "slope-forest": "../painted/slope-forest.webp",
-    "pine": "../painted/pine.webp",
-    "pine-b": "../painted/pine-b.webp",
-    "ledge": "../painted/ledge.webp",
-    "cloud": "../painted/cloud.webp",
+    "range-far": [
+      "../hand/range-far.webp",
+      "../painted/range-far.webp"
+    ],
+    "summit": [
+      "../hand/summit.webp",
+      "../painted/summit.webp"
+    ],
+    "range-mid": [
+      "../hand/range-mid.webp",
+      "../painted/range-mid.webp"
+    ],
+    "slope-forest": [
+      "../hand/slope-forest.webp",
+      "../painted/slope-forest.webp"
+    ],
+    "pine": [
+      "../hand/pine.webp",
+      "../painted/pine.webp"
+    ],
+    "pine-b": [
+      "../hand/pine-b.webp",
+      "../painted/pine-b.webp"
+    ],
+    "ledge": [
+      "../hand/ledge.webp",
+      "../painted/ledge.webp"
+    ],
+    "cloud": [
+      "../hand/cloud.webp",
+      "../painted/cloud.webp"
+    ],
     "snow": "../painted/snow.webp"
   },
   "layers": [
@@ -19,71 +43,83 @@
       "z": -62,
       "x": 0,
       "bottom": 0.3,
-      "height": 0.2,
+      "height": 0.24,
       "stretch": true,
-      "fog": 0.55,
+      "fog": 0.5,
       "tint": 0.55,
       "rim": 0.2,
       "portrait": {
-        "height": 0.12,
-        "bottom": 0.36
+        "bottom": 0.38,
+        "height": 0.1
       }
     },
     {
       "id": "cloud-far",
       "texture": "cloud",
       "z": -56,
-      "x": 0.1,
-      "bottom": 0.3,
-      "height": 0.14,
-      "stretch": true,
-      "opacity": 0.45,
+      "x": -0.28,
+      "bottom": 0.36,
+      "height": 0.16,
+      "opacity": 0.6,
       "tint": 0.6,
-      "fog": 0.3
+      "fog": 0.3,
+      "maxWidth": 0.6,
+      "portrait": {
+        "x": -0.3,
+        "bottom": 0.42,
+        "height": 0.06,
+        "maxWidth": 1.0
+      }
     },
     {
       "id": "summit",
       "texture": "summit",
       "z": -48,
       "x": 0,
-      "bottom": 0.06,
-      "height": 0.78,
-      "maxWidth": 1.8,
-      "fog": 0.18,
+      "bottom": 0.2,
+      "height": 0.64,
+      "maxWidth": 0.9,
+      "fog": 0.12,
       "tint": 0.5,
-      "rim": 0.45,
+      "rim": 0.4,
       "portrait": {
         "bottom": 0.2,
-        "height": 0.42,
-        "maxWidth": 1.5
+        "height": 0.34,
+        "maxWidth": 1.15
       }
     },
     {
       "id": "cloud-mid",
       "texture": "cloud",
       "z": -40,
-      "x": -0.15,
-      "bottom": 0.14,
-      "height": 0.13,
-      "stretch": true,
+      "x": 0.26,
+      "bottom": 0.3,
+      "height": 0.2,
       "flip": true,
-      "opacity": 0.4,
+      "opacity": 0.85,
       "tint": 0.6,
-      "fog": 0.2
+      "fog": 0.2,
+      "maxWidth": 0.7,
+      "portrait": {
+        "x": 0.3,
+        "bottom": 0.36,
+        "height": 0.08,
+        "maxWidth": 1.2
+      }
     },
     {
       "id": "range-mid",
       "texture": "range-mid",
       "z": -32,
       "x": 0,
-      "bottom": -0.02,
+      "bottom": 0.06,
       "height": 0.42,
       "stretch": true,
-      "fog": 0.2,
+      "fog": 0.15,
       "tint": 0.45,
       "rim": 0.35,
       "portrait": {
-        "bottom": 0.1,
+        "bottom": 0.08,
         "height": 0.22
       }
     },
@@ -93,13 +129,13 @@
       "z": -20,
       "x": 0,
       "bottom": -0.06,
-      "height": 0.3,
+      "height": 0.34,
       "stretch": true,
-      "fog": 0.1,
+      "fog": 0.06,
       "tint": 0.35,
-      "rim": 0.25,
+      "rim": 0.08,
       "portrait": {
-        "bottom": 0.06,
+        "bottom": 0.0,
         "height": 0.18
       }
     },
@@ -107,9 +143,9 @@
       "id": "pine-l",
       "texture": "pine",
       "z": -9,
-      "x": -0.44,
+      "x": -0.46,
       "bottom": -0.02,
-      "height": 0.62,
+      "height": 0.66,
       "tint": 0.3,
       "rim": 0.3,
       "sway": 0.02,
@@ -125,7 +161,7 @@
       "z": -8,
       "x": 0.47,
       "bottom": -0.02,
-      "height": 0.52,
+      "height": 0.56,
       "tint": 0.3,
       "rim": 0.3,
       "sway": 0.02,
@@ -138,19 +174,19 @@
       "id": "ledge",
       "texture": "ledge",
       "z": -3.5,
-      "x": -0.2,
-      "anchorX": 0.5,
-      "bottom": -0.2,
-      "height": 0.78,
-      "maxWidth": 1.4,
+      "x": -0.5,
+      "anchorX": 0,
+      "bottom": -0.08,
+      "height": 0.56,
+      "maxWidth": 1.0,
       "shade": 0.85,
       "tint": 0.3,
       "rim": 0.2,
       "portrait": {
-        "x": -0.25,
-        "bottom": -0.1,
-        "height": 0.5,
-        "maxWidth": 1.7
+        "x": -0.5,
+        "bottom": -0.04,
+        "height": 0.26,
+        "maxWidth": 1.4
       }
     }
   ],

@@ -37,6 +37,7 @@ Return only one JSON object, no prose, no code fences."""
 
 FORMAT = """{
   "title": "short story title, 1 to 3 words",
+  "mixedSettingsReason": null,
   "subtitle": "one line, under 90 characters",
   "chapters": [
     {
@@ -89,8 +90,10 @@ SCENE CATALOG (pick the best-fitting kit for each chapter; if nothing fits well,
 {catalog_text()}
 Never show the wrong landmark: LANDMARK-SPECIFIC kits only when the topic is that place. Otherwise use the closest GENERIC
 kit and recolour it for the topic. Use the kit's painted time of day and background unless the source clearly calls for another. Pick colours that suit the
-topic and light: primaryColor is a dark base (never pure black), accentColor a warm or cool glow. No purple or violet. Vary kits, light and
-transitions across chapters so the story travels. titleLayout "vertical" only for lantern-dawn.
+topic and light: primaryColor is a dark base (never pure black), accentColor a warm or cool glow. No purple or violet. Keep ONE setting: every chapter uses the same sceneTemplate (a mountain story stays on "peak"), and variety comes from
+the kits of that template, time of day, colours and transitions. Mix templates only when the topic itself spans different
+settings (a river journey that ends in a desert), and then set "mixedSettingsReason" to one sentence. Vary kits, light and
+transitions across chapters so each chapter feels distinct. titleLayout "vertical" only for lantern-dawn.
 
 SOURCE IDS: {", ".join(content.sources)}
 SOURCE TEXT

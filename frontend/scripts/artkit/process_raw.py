@@ -2,7 +2,7 @@
 Turn the hand-painted sources in art-raw/ into kit layers for torii-night.
 
     python frontend/scripts/artkit/process_raw.py                 (all sets, from the repo root)
-    python frontend/scripts/artkit/process_raw.py --set giza      (just one set: kyoto | giza)
+    python frontend/scripts/artkit/process_raw.py --set giza      (just one set: kyoto | giza | peak)
 
 Per element:
   1. remove the sparkle watermark (fill its corner box with the background colour)
@@ -368,16 +368,110 @@ def run_giza() -> None:
     print("sheet ->", CAPTURES / "giza_processed.png")
 
 
+PEAK_OUT = ROOT / "frontend" / "public" / "artkits" / "peak" / "hand"
+
+
+def remove_sparkle(rgb: np.ndarray, box=WATERMARK_BOX) -> np.ndarray:
+    """Watermark that may sit on top of the art (snow): replace only pixels brighter than their
+    local median with that median, so the painting under the sparkle survives."""
+    h, w, _ = rgb.shape
+    x0, y0, x1, y1 = int(box[0] * w), int(box[1] * h), int(box[2] * w), int(box[3] * h)
+    out = rgb.copy()
+    region = out[y0:y1, x0:x1]
+    med = np.stack([ndimage.median_filter(region[..., c], size=21) for c in range(3)], axis=2)
+    mask = (luma(region) - luma(med)) > 0.02
+    mask = ndimage.binary_dilation(mask, iterations=2)
+    region[mask] = med[mask]
+    return out
+
+
+def soft_cutout(rgb: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Translucent art (clouds): alpha from the distance to the screen colour, then un-mix the
+    screen out of the colour, so soft edges stay soft instead of a hard matte."""
+    key = key_color(rgb)
+    rgb = remove_sparkle(rgb)
+    d = np.linalg.norm(rgb - key, axis=2)
+    a = np.clip((d - 0.12) / 0.75, 0.0, 1.0)
+    a = ndimage.gaussian_filter(a, 0.8)
+    c = (rgb - key[None, None, :] * (1 - a[..., None])) / np.maximum(a[..., None], 0.05)
+    c = np.clip(c, 0, 1)
+    # Residual green: clouds are neutral, so clamp green to the red/blue level.
+    c[..., 1] = np.minimum(c[..., 1], np.maximum(c[..., 0], c[..., 2]) * 1.02)
+    # Un-mixing overshoots into magenta in thin areas; clouds are near-neutral, so keep 15% of the chroma.
+    lum = luma(c)[..., None]
+    c = np.clip(lum + (c - lum) * 0.15, 0, 1)
+    a[a < 0.02] = 0
+    # Drop specks (watermark residue, noise) away from the cloud body.
+    labels, n = ndimage.label(a > 0.05)
+    if n > 1:
+        sizes = ndimage.sum(np.ones_like(a), labels, index=np.arange(1, n + 1))
+        keep = np.isin(labels, 1 + np.flatnonzero(sizes > 0.002 * a.size))
+        a = a * ndimage.binary_dilation(keep, iterations=6)
+    return c, a
+
+
+def run_peak() -> None:
+    """Peak art: art-raw/peak/*.png -> artkits/peak/hand/ (neutral mid tones; the kit's per-time sky
+    grades them). Code-painted versions in peak/painted/ stay as fallbacks; snow stays code-made."""
+    PEAK_OUT.mkdir(parents=True, exist_ok=True)
+    elements: dict[str, np.ndarray] = {}
+    # Only the forest has genuine green; everything else (snow, rock) is despilled all over.
+    for name in ["summit", "range-far", "range-mid", "slope-forest", "ledge"]:
+        raw = remove_sparkle(load(f"peak/{name}.png"))
+        rgb, a = cutout(raw, watermark=False, despill_all=name != "slope-forest")
+        elements[name] = trim(rgba_of(rgb, a))
+        print(f"cut {name}")
+    rgb, a = soft_cutout(load("peak/cloud.png"))
+    elements["cloud"] = trim(rgba_of(rgb, a))
+    print("cut cloud (soft alpha)")
+    sheet = remove_sparkle(load("peak/sheet-pines.png"))
+    mid = sheet.shape[1] // 2
+    for name, part in (("pine", sheet[:, :mid]), ("pine-b", sheet[:, mid:])):
+        rgb, a = cutout(part, watermark=False, despill_all=True)  # magenta sheet, no genuine pink
+        elements[name] = trim(rgba_of(rgb, a))
+        print(f"cut {name}")
+
+    # Neutral mid tones: every element is pulled halfway to the set median and then toward a
+    # mid luma, with no colour cast, so moonlight, alpenglow and day light all read on it.
+    measured = {k: stats(v) for k, v in elements.items()}
+    set_l = float(np.median([m[0] for m in measured.values()]))
+    set_s = float(np.median([m[1] for m in measured.values()]))
+    thumbs = []
+    for name, rgba in elements.items():
+        l, sat = measured[name]
+        target = 0.5 * (0.5 * (set_l + l)) + 0.5 * 0.56
+        rgb = rgba[..., :3] * np.clip(target / max(l, 1e-3), 0.7, 1.3)
+        lum = luma(rgb)[..., None]
+        rgb = lum + (rgb - lum) * np.clip(0.9 * set_s / max(sat, 1e-3), 0.7, 1.1)
+        graded = rgba.copy()
+        graded[..., :3] = np.clip(rgb, 0, 1)
+        img = to_image(graded)
+        img.save(PEAK_OUT / f"{name}.webp", "WEBP", quality=90, method=6)
+        print(f"{name:14s} {img.width}x{img.height}  L {l:.2f}->{target:.2f}  S {sat:.2f}")
+        t = img.copy()
+        t.thumbnail((360, 360))
+        thumbs.append(t)
+    cols = 4
+    rows = (len(thumbs) + cols - 1) // cols
+    sheet_img = Image.new("RGBA", (cols * 380, rows * 380), (70, 76, 92, 255))
+    for i, t in enumerate(thumbs):
+        sheet_img.alpha_composite(t, ((i % cols) * 380 + 10, (i // cols) * 380 + 10))
+    sheet_img.convert("RGB").save(CAPTURES / "peak_processed.png")
+    print("sheet ->", CAPTURES / "peak_processed.png")
+
+
 def main() -> None:
     import argparse
 
     ap = argparse.ArgumentParser(description="Process hand-painted art into kit layers.")
-    ap.add_argument("--set", choices=["kyoto", "giza", "all"], default="all", help="which art set to process")
+    ap.add_argument("--set", choices=["kyoto", "giza", "peak", "all"], default="all", help="which art set to process")
     which = ap.parse_args().set
     if which in ("kyoto", "all"):
         run_kyoto()
     if which in ("giza", "all"):
         run_giza()
+    if which in ("peak", "all"):
+        run_peak()
 
 
 if __name__ == "__main__":
