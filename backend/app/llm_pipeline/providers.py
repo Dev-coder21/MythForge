@@ -77,6 +77,7 @@ class GeminiProvider:
     model: str
     client: httpx.Client
     name: str = "gemini"
+    last_tokens: int = 0  # total tokens of the last call, from the API's usage report
 
     def complete_json(self, system: str, messages: list[Message], max_tokens: int) -> str:
         body = {
@@ -104,6 +105,7 @@ class GeminiProvider:
         except (KeyError, IndexError) as e:
             reason = data.get("promptFeedback", {}).get("blockReason") or data.get("candidates", [{}])[0].get("finishReason")
             raise LLMError(f"Gemini: no content returned ({reason or e})") from e
+        self.last_tokens = int(data.get("usageMetadata", {}).get("totalTokenCount", 0))
         return "".join(p.get("text", "") for p in parts)
 
 
@@ -113,6 +115,7 @@ class GroqProvider:
     model: str
     client: httpx.Client
     name: str = "groq"
+    last_tokens: int = 0  # total tokens of the last call, from the API's usage report
 
     def complete_json(self, system: str, messages: list[Message], max_tokens: int) -> str:
         body = {
@@ -134,7 +137,9 @@ class GroqProvider:
             return r.json().get("error", {}).get("failed_generation", "") or "(empty response)"
         _check(r, "Groq")
         try:
-            return r.json()["choices"][0]["message"]["content"]
+            data = r.json()
+            self.last_tokens = int(data.get("usage", {}).get("total_tokens", 0))
+            return data["choices"][0]["message"]["content"]
         except (KeyError, IndexError) as e:
             raise LLMError(f"Groq: unexpected response ({e})") from e
 
@@ -145,6 +150,7 @@ class OllamaProvider:
     model: str
     client: httpx.Client
     name: str = "ollama"
+    last_tokens: int = 0  # total tokens of the last call, from the API's usage report
 
     def complete_json(self, system: str, messages: list[Message], max_tokens: int) -> str:
         try:
@@ -161,7 +167,9 @@ class OllamaProvider:
         except httpx.ConnectError as e:
             raise LLMError(f"Ollama: not running at {self.url}") from e
         _check(r, "Ollama")
-        return r.json().get("message", {}).get("content", "")
+        data = r.json()
+        self.last_tokens = int(data.get("prompt_eval_count", 0)) + int(data.get("eval_count", 0))
+        return data.get("message", {}).get("content", "")
 
 
 @dataclass
@@ -177,6 +185,8 @@ class FallbackChain:
     clock: Callable[[], float] = time.monotonic
     _benched: dict[str, float] = field(default_factory=dict)
     last_model: str = ""  # "provider:model" of the last successful call
+    tokens: dict[str, int] = field(default_factory=dict)  # total tokens per provider:model (usage reports)
+    validation_log: list[list[str]] = field(default_factory=list)  # errors of each rejected draft (evaluation)
     # Live progress for the UI: (provider:model, message). Called on each attempt, wait and failure.
     on_event: Callable[[str, str], None] | None = None
 
@@ -200,6 +210,8 @@ class FallbackChain:
                 try:
                     out = p.complete_json(system, messages, max_tokens)
                     self.last_model = model_id(p)
+                    used = int(getattr(p, "last_tokens", 0) or 0)
+                    self.tokens[self.last_model] = self.tokens.get(self.last_model, 0) + used
                     return p.name, out
                 except RateLimitError as e:
                     if waits < self.max_rate_limit_waits and not e.daily:

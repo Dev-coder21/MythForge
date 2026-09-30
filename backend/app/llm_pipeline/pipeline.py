@@ -291,6 +291,7 @@ def _write_valid(content, chain, messages, chapters, max_tokens, budget):
         except SpecInvalid as e:
             last_errors = e.errors
             chain.notes.append(f"attempt {attempt} invalid: {len(e.errors)} problem(s)")
+            chain.validation_log.append(list(e.errors))
             messages = messages[:1] + [
                 {"role": "assistant", "content": raw[:6000]},
                 {"role": "user", "content": correction_prompt(e.errors)},
