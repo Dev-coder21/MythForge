@@ -1,0 +1,83 @@
+"""Background generation job: retrieve -> one LLM call (+ corrections) -> store the spec."""
+
+from __future__ import annotations
+
+import logging
+from collections.abc import Callable
+from datetime import UTC, datetime
+
+from sqlalchemy.orm import Session
+
+from app.core.config import get_settings
+from app.core.db import SessionLocal
+from app.llm_pipeline.pipeline import GenerationFailed, generate_spec
+from app.llm_pipeline.providers import FallbackChain, LLMError, build_chain
+from app.models import Chapter, GenerationJob, JobStage, Story, StoryStatus
+from app.retrieval import ThinContentError, gather_content
+from app.retrieval.http import RetrievalConfigError, make_client
+
+log = logging.getLogger("mythforge.generate")
+
+# Swappable in tests.
+session_factory: Callable[[], Session] = SessionLocal
+
+
+def default_chain() -> FallbackChain:
+    return build_chain(get_settings())
+
+
+chain_factory: Callable[[], FallbackChain] = default_chain
+
+
+def _stage(db: Session, job: GenerationJob, stage: JobStage, pct: int) -> None:
+    job.stage, job.progress_pct = stage, pct
+    db.commit()
+
+
+def run_generation(story_id: str, job_id: str) -> None:
+    db = session_factory()
+    try:
+        story = db.get(Story, story_id)
+        job = db.get(GenerationJob, job_id)
+        if story is None or job is None:
+            return
+        try:
+            _stage(db, job, JobStage.retrieving, 10)
+            with make_client() as client:
+                content = gather_content(story.topic, db, client)
+
+            _stage(db, job, JobStage.structuring, 40)
+            result = generate_spec(content, chain_factory())
+            job.provider = result.provider
+
+            _stage(db, job, JobStage.assembling, 90)
+            spec = result.spec.model_dump(mode="json")
+            spec["id"] = story.id  # the spec id is the story id, so /stories/{id} matches
+            story.spec_json = spec
+            story.title, story.subtitle, story.share_slug = spec["title"], spec["subtitle"], spec["slug"]
+            story.chapters = [
+                Chapter(
+                    chapter_index=c["index"], chapter_label=c["label"], heading=c["heading"], subheading=c["subheading"],
+                    body_copy=c["body"], scene_template_id=c["sceneTemplate"], scene_params=c["sceneParams"],
+                    source=c.get("source"),
+                    hero_image_url=(c.get("heroImage") or {}).get("url"),
+                    image_attribution=(c.get("heroImage") or {}).get("attribution"),
+                )
+                for c in spec["chapters"]
+            ]
+            story.status = StoryStatus.complete
+            job.stage, job.progress_pct = JobStage.done, 100
+        except (ThinContentError, RetrievalConfigError, GenerationFailed, LLMError) as e:
+            _fail(story, job, str(e))
+        except Exception as e:  # unexpected: keep the job honest, log the trace
+            log.exception("generation crashed")
+            _fail(story, job, f"Unexpected error: {e}")
+        job.completed_at = datetime.now(UTC)
+        db.commit()
+    finally:
+        db.close()
+
+
+def _fail(story: Story, job: GenerationJob, message: str) -> None:
+    story.status = StoryStatus.failed
+    job.stage, job.error_message = JobStage.error, message
