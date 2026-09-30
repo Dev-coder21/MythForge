@@ -15,9 +15,9 @@ class Settings(BaseSettings):
     # LLM: primary provider; the others with credentials are tried as fallbacks.
     llm_provider: Literal["gemini", "groq", "ollama"] = "gemini"
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-2.5-flash"
+    gemini_model: str = "gemini-flash-latest"
     groq_api_key: str = ""
-    groq_model: str = "llama-3.3-70b-versatile"
+    groq_model: str = "openai/gpt-oss-120b"
     ollama_url: str = "http://localhost:11434"
     ollama_model: str = ""  # empty = Ollama not used
 
