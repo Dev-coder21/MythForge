@@ -105,3 +105,48 @@ def test_landmark_layer_route(client, monkeypatch, tmp_path):
     assert client.get("/landmarks/0123456789abcdef.webp").status_code == 200
     assert client.get("/landmarks/..%2F..%2Fsecret.webp").status_code == 404
     assert client.get("/landmarks/ffffffffffffffff.webp").status_code == 404
+
+
+def _landmark_setup(monkeypatch, tmp_path, passed):
+    from app.imagegen import landmarks, story as lmstory
+    from app.imagegen.landmarks import Verdict
+    monkeypatch.setattr(landmarks, "CACHE_DIR", tmp_path)
+
+    def fake_process(raw, out, template):
+        out.write_bytes(b"RIFFxxxxWEBP")
+        return {"coverage": 0.3, "edgeTouch": 0.0, "screenLeft": 0.0}
+
+    monkeypatch.setattr(landmarks, "process_image", fake_process)
+    monkeypatch.setattr(lmstory, "lead_photo", lambda source, client: {"url": "https://upload/x.jpg", "full": "https://upload/x.jpg", "attribution": "Wikipedia lead image · Mount Fuji", "page": "p"})
+
+    class Images:
+        last_model = "cloudflare:flux"
+        on_event = None
+
+        def generate(self, prompt, seed):
+            return b"\x89PNG...."
+
+    monkeypatch.setattr(generation, "image_chain_factory", lambda: Images())
+    monkeypatch.setattr(generation, "landmark_checker", lambda *a: Verdict(passed, [] if passed else ["a church, not a crater"], "gemini:vision"))
+    monkeypatch.setattr(generation, "gather_content", lambda topic, db, c: CONTENT)
+    lm = {"name": "Mount Fuji crater", "description": "The summit crater at the top of the cone."}
+    three = draft([chapter(titleWord=w, landmark=lm if w == "FUJI" else None) for w in ("FUJI", "HONSHU", "CLIMBING")])
+    monkeypatch.setattr(generation, "chain_factory", lambda: chain(Scripted("gemini", three, '{"unsupported": []}')))
+
+
+def test_landmark_painted_into_story(client, monkeypatch, tmp_path):
+    _landmark_setup(monkeypatch, tmp_path, passed=True)
+    ids = client.post("/generate", json={"topic": "Mount Fuji"}).json()
+    spec = client.get(f"/stories/{ids['storyId']}").json()
+    lm = spec["chapters"][0]["landmark"]
+    assert lm["layer"]["url"].startswith("/api/landmarks/") and lm["check"]["passed"] and lm["reference"]["url"]
+    key = lm["layer"]["url"].rsplit("/", 1)[1]
+    assert client.get(f"/landmarks/{key}").status_code == 200
+
+
+def test_rejected_landmark_leaves_plain_template(client, monkeypatch, tmp_path):
+    _landmark_setup(monkeypatch, tmp_path, passed=False)
+    ids = client.post("/generate", json={"topic": "Mount Fuji"}).json()
+    lm = client.get(f"/stories/{ids['storyId']}").json()["chapters"][0]["landmark"]
+    assert "layer" not in lm or lm["layer"] is None
+    assert lm["check"]["passed"] is False and lm["check"]["attempts"] == 2 and "church" in lm["check"]["reasons"][0]

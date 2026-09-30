@@ -11,6 +11,11 @@ from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.core.db import SessionLocal
+import httpx
+
+from app.imagegen.check import gemini_vision_check
+from app.imagegen.providers import ImageChain, build_image_chain
+from app.imagegen.story import paint_story_landmarks
 from app.llm_pipeline.pipeline import GenerationFailed, generate_spec
 from app.llm_pipeline.providers import FallbackChain, LLMError, build_chain, build_checker_chain
 from app.models import Chapter, GenerationJob, JobStage, Story, StoryStatus
@@ -35,6 +40,14 @@ def default_checker(writer: str) -> FallbackChain:
 
 
 checker_factory: Callable[[str], FallbackChain] | None = default_checker
+
+
+def default_image_chain() -> ImageChain:
+    return build_image_chain(get_settings())
+
+
+image_chain_factory: Callable[[], ImageChain] = default_image_chain
+landmark_checker = gemini_vision_check
 
 
 def _stage(db: Session, job: GenerationJob, stage: JobStage, pct: int) -> None:
@@ -73,8 +86,17 @@ def run_generation(story_id: str, job_id: str) -> None:
             job.provider = chain.last_model or result.provider
             job.detail = None
 
-            _stage(db, job, JobStage.assembling, 90)
             spec = result.spec.model_dump(mode="json")
+            if any(c.get("landmark") for c in spec["chapters"]):
+                _stage(db, job, JobStage.painting, 80)
+                job.detail = "painting the landmark"
+                db.commit()
+                images = image_chain_factory()
+                images.on_event = on_event
+                with httpx.Client(timeout=60, headers={"User-Agent": get_settings().http_user_agent}) as http:
+                    spec = paint_story_landmarks(spec, images, landmark_checker, http, notes=chain.notes)
+                job.detail = None
+            _stage(db, job, JobStage.assembling, 90)
             spec["id"] = story.id  # the spec id is the story id, so /stories/{id} matches
             spec["slug"] = _unique_slug(db, spec["slug"], story.id)  # /story/:slug must name one story
             story.spec_json = spec

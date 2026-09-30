@@ -29,6 +29,7 @@ class JobStage(str, enum.Enum):
     retrieving = "retrieving"
     structuring = "structuring"
     checking = "checking"  # sentence-level fact check (and its correction round)
+    painting = "painting"  # AI-painted landmark layers + their vision check
     assembling = "assembling"
     done = "done"
     error = "error"

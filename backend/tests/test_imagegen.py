@@ -84,3 +84,13 @@ def test_cutout_problems():
     from app.imagegen.landmarks import cutout_problems
     assert cutout_problems({"coverage": 0.3, "edgeTouch": 0.0, "screenLeft": 0.0}) == []
     assert len(cutout_problems({"coverage": 0.95, "edgeTouch": 0.5, "screenLeft": 0.1})) == 3
+
+
+def test_vision_verdict_parsing_fails_closed():
+    from app.imagegen.check import parse_verdict
+    ok = parse_verdict('{"structure_matches": true, "text_or_watermark": false, "cutout_ok": true, "reasons": []}', "gemini:x")
+    assert ok.passed
+    wrong = parse_verdict('{"structure_matches": false, "text_or_watermark": false, "cutout_ok": true, "reasons": ["a church, not a mausoleum"]}', "g")
+    assert not wrong.passed and "church" in wrong.reasons[0]
+    assert not parse_verdict('{"structure_matches": true, "text_or_watermark": true, "cutout_ok": true}', "g").passed
+    assert not parse_verdict("not json", "g").passed
