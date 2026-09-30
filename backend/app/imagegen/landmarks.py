@@ -123,7 +123,9 @@ def paint_landmark(
             break
     meta = {"name": name, "description": description, "template": template, "prompt": prompt, "passed": passed,
             "reasons": reasons, "checkedBy": checked_by, "attempts": attempt, "provider": provider, "reference": reference}
-    meta_path.write_text(json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8")
+    # Cache real verdicts only: a check that could not run (quota, network) is retried next time.
+    if passed or not any("could not run" in r or "no vision model" in r for r in reasons):
+        meta_path.write_text(json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8")
     return LandmarkResult(key, passed, reasons, checked_by, attempt, provider, cached=False)
 
 

@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     landmark_images: bool = True  # set false to skip painting landmarks entirely
     # Python used for the art pipeline (rembg, scipy); the backend venv does not carry those heavy packages.
     art_python: str = "python"
-    vision_model: str = "gemini-flash-latest"  # checks painted landmarks against the Wikipedia photo
+    vision_model: str = "gemini-3.5-flash"  # checks painted landmarks; a different model from the writer, so their free quotas are separate
 
     # Keep requests small so free-tier limits hold.
     llm_max_output_tokens: int = 2000

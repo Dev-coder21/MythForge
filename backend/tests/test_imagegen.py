@@ -94,3 +94,24 @@ def test_vision_verdict_parsing_fails_closed():
     assert not wrong.passed and "church" in wrong.reasons[0]
     assert not parse_verdict('{"structure_matches": true, "text_or_watermark": true, "cutout_ok": true}', "g").passed
     assert not parse_verdict("not json", "g").passed
+
+
+def test_unrun_check_is_not_cached(tmp_path, monkeypatch):
+    from app.imagegen import landmarks as lm
+    monkeypatch.setattr(lm, "CACHE_DIR", tmp_path)
+
+    def fake_process(raw, out, template):
+        out.write_bytes(b"RIFFwebp")
+        return {"coverage": 0.3, "edgeTouch": 0, "screenLeft": 0}
+
+    monkeypatch.setattr(lm, "process_image", fake_process)
+
+    class Chain:
+        last_model = "cloudflare:flux"
+
+        def generate(self, prompt, seed):
+            return PNG
+
+    down = lambda *a: lm.Verdict(False, ["the vision check could not run (quota)"], "gemini:x")
+    r = lm.paint_landmark("Colosseum", "An elliptical stone amphitheatre with arched tiers.", "dune", Chain(), down, None)
+    assert not r.passed and not (tmp_path / r.key / "meta.json").exists()

@@ -84,7 +84,8 @@ def gemini_vision_check(layer: Path, name: str, description: str, reference: str
         if ref:
             parts.append({"inline_data": {"mime_type": "image/jpeg", "data": _jpeg_b64(ref)}})
         body = {"contents": [{"role": "user", "parts": parts}],
-                "generationConfig": {"responseMimeType": "application/json", "temperature": 0, "maxOutputTokens": 400}}
+                "generationConfig": {"responseMimeType": "application/json", "temperature": 0, "maxOutputTokens": 800,
+                                     "thinkingConfig": {"thinkingBudget": 0}}}
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
         try:
             r = client.post(url, json=body, headers={"x-goog-api-key": settings.gemini_api_key})
