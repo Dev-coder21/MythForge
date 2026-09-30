@@ -22,6 +22,10 @@ export function StoryInfoPanel({ spec, grounding }: StoryInfoPanelProps) {
   }, [open])
 
   const sources = [...new Set(spec.chapters.map((c) => c.source).filter((s): s is string => !!s))]
+  const landmarks = spec.chapters
+    .map((c) => c.landmark)
+    .filter((l): l is NonNullable<typeof l> => !!l && !!l.check)
+    .filter((l, i, all) => all.findIndex((o) => o.name === l.name) === i)
   const images = spec.chapters
     .map((c) => c.heroImage)
     .filter((i): i is NonNullable<typeof i> => !!i)
@@ -71,6 +75,37 @@ export function StoryInfoPanel({ spec, grounding }: StoryInfoPanelProps) {
             })}
           </ul>
         </section>
+
+        {landmarks.length > 0 && (
+          <section className="mt-7">
+            <h2 className="text-[11px] uppercase tracking-[0.25em] text-white/80">Landmark art</h2>
+            <ul className="mt-3 space-y-4 text-[12px] font-light leading-[1.6] text-white/70">
+              {landmarks.map((l) => (
+                <li key={l.name} className="flex gap-3">
+                  {l.reference && (
+                    <a href={l.reference.url} target="_blank" rel="noreferrer" className="shrink-0">
+                      <img src={l.reference.url} alt={`Wikipedia photo of ${l.name}`} className="h-14 w-14 object-cover" loading="lazy" />
+                    </a>
+                  )}
+                  <div>
+                    <p className="text-white/85">{l.name}</p>
+                    {l.layer ? (
+                      <p>
+                        AI-generated painting, checked by {modelLabel(l.check!.checkedBy)} against the Wikipedia photo
+                        {l.reference ? ' (left)' : ''}. Not a photograph.
+                      </p>
+                    ) : (
+                      <p>
+                        An AI painting was rejected by the check{l.check!.reasons[0] ? `: ${l.check!.reasons[0]}` : ''}. The scene is shown
+                        without it.
+                      </p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         <section className="mt-7">
           <h2 className="text-[11px] uppercase tracking-[0.25em] text-white/80">Images</h2>

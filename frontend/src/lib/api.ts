@@ -6,7 +6,7 @@ import type { StorySpec } from '@/spec'
 
 const BASE = '/api'
 
-export type JobStage = 'queued' | 'retrieving' | 'structuring' | 'checking' | 'assembling' | 'done' | 'error'
+export type JobStage = 'queued' | 'retrieving' | 'structuring' | 'checking' | 'painting' | 'assembling' | 'done' | 'error'
 
 export interface JobStatus {
   jobId: string

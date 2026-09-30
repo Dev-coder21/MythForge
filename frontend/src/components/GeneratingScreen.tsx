@@ -8,9 +8,10 @@ const STAGES: { id: JobStage; label: string; note: string }[] = [
   { id: 'retrieving', label: 'Fetching sources', note: 'Reading Wikipedia and finding openly licensed images on Wikimedia Commons.' },
   { id: 'structuring', label: 'Writing', note: 'One model drafts every chapter from the source text alone.' },
   { id: 'checking', label: 'Fact-checking', note: 'A second model checks each sentence against the sources.' },
+  { id: 'painting', label: 'Painting the landmark', note: 'An image model paints the named structure; a vision model checks it against the Wikipedia photo.' },
   { id: 'assembling', label: 'Building scenes', note: 'Choosing art, light and colour for each chapter.' },
 ]
-const ORDER: JobStage[] = ['queued', 'retrieving', 'structuring', 'checking', 'assembling', 'done']
+const ORDER: JobStage[] = ['queued', 'retrieving', 'structuring', 'checking', 'painting', 'assembling', 'done']
 
 const WAITING = [
   'Free AI tiers take their time. A story usually lands within one to three minutes.',
@@ -114,7 +115,7 @@ export function GeneratingScreen({ jobId, topic, onDone, onRetry, onChangeTopic 
         <FailurePanel message={lost ?? status?.error ?? 'The story could not be finished.'} onRetry={onRetry} onChangeTopic={onChangeTopic} />
       ) : (
         <>
-          <ol className="mt-8 grid gap-5 sm:grid-cols-4 sm:gap-6">
+          <ol className="mt-8 grid gap-5 sm:grid-cols-5 sm:gap-6">
             {STAGES.map((s) => {
               const idx = ORDER.indexOf(s.id)
               const state = idx < stageIdx ? 'done' : idx === stageIdx ? 'active' : 'pending'
@@ -160,7 +161,7 @@ export function modelLabel(id: string | null | undefined): string {
   if (!id) return ''
   const [provider = '', ...rest] = id.split(':')
   const model = rest.join(':').split('/').pop() ?? ''
-  const name = { groq: 'Groq', gemini: 'Gemini', ollama: 'Ollama' }[provider] ?? provider
+  const name = { groq: 'Groq', gemini: 'Gemini', ollama: 'Ollama', cloudflare: 'Cloudflare', huggingface: 'Hugging Face' }[provider] ?? provider
   return model ? `${name} · ${model}` : name
 }
 
@@ -172,6 +173,10 @@ function liveLine(s: JobStatus | null): string {
   if (wait) return `${who}: the free tier is busy, trying again in ${wait[1]}s.`
   if (s.detail?.startsWith('unavailable')) return `${who} is unavailable, switching to the next free model.`
   if (s.detail?.startsWith('rewriting')) return 'Rewriting sentences the fact check could not find in the sources.'
+  if (s.stage === 'painting') {
+    if (wait) return `${who}: the free image tier is busy, trying again in ${wait[1]}s.`
+    return who && s.detail === 'painting' ? `${who} is painting the landmark.` : 'Painting the landmark.'
+  }
   if (s.stage === 'assembling') return 'Saving the story.'
   if (who) return s.stage === 'checking' ? `${who} is checking the facts.` : `${who} is writing.`
   return 'Working.'
