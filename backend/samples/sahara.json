@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "id": "828af0ed-16e3-4929-a57c-dc2007a8d01b",
+  "topic": "Sahara Desert",
+  "title": "Sahara",
+  "subtitle": "Vast, varied, unyielding",
+  "slug": "sahara",
+  "chapters": [
+    {
+      "index": 1,
+      "label": "CHAPTER 01 · VAST EXTENT",
+      "titleWord": "SPREAD",
+      "heading": "9,200,000 square kilometres of sand and stone stretch under a relentless sky.",
+      "subheading": "The Sahara is the largest hot desert on Earth.",
+      "body": "The Sahara spans North Africa with an area of 9,200,000 square kilometres, making it the largest hot desert and the third-largest desert overall. It lies between the Red Sea, the Mediterranean and the Atlantic, bounded to the south by the Sahel savanna belt. Its sheer size could be seen from space with current technology.",
+      "sceneTemplate": "dune",
+      "sceneParams": {
+        "primaryColor": "#2b1a0f",
+        "accentColor": "#c49a6c",
+        "particleType": "dust",
+        "groundType": "sand",
+        "backgroundObject": "sun",
+        "propVariant": "erg",
+        "artKit": "erg",
+        "timeOfDay": "dusk",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Sahara",
+      "transition": "noise-dissolve",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/Moonlight_in_the_Sahara.jpg/1920px-Moonlight_in_the_Sahara.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Sergey Pesterev · CC BY-SA 4.0 · Wikimedia Commons",
+        "license": "CC BY-SA 4.0"
+      }
+    },
+    {
+      "index": 2,
+      "label": "CHAPTER 02 · GEOGRAPHIC TISSUE",
+      "titleWord": "MOSAIC",
+      "heading": "Rocky hamada, soaring dunes and hidden salt flats compose a diverse landscape.",
+      "subheading": "Ergs rise over 180 metres, mountains pierce the horizon.",
+      "body": "The Sahara includes hamada plateaus, ergs of dunes that exceed 180 metres, gravel plains, dry valleys and salt flats. Mountain massifs such as the Aïr, Ahaggar and Tibesti rise from the desert, the highest point being Emi Koussi, a shield volcano in the Tibesti range of northern Chad.",
+      "sceneTemplate": "dune",
+      "sceneParams": {
+        "primaryColor": "#3a2b1e",
+        "accentColor": "#d4a96c",
+        "particleType": "none",
+        "groundType": "sand",
+        "backgroundObject": "none",
+        "propVariant": "erg",
+        "artKit": "erg",
+        "timeOfDay": "day",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Sahara",
+      "transition": "ink-wipe",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c6/Caravan_in_the_desert.jpg/1920px-Caravan_in_the_desert.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Sergey Pesterev · CC BY-SA 4.0 · Wikimedia Commons",
+        "license": "CC BY-SA 4.0"
+      }
+    },
+    {
+      "index": 3,
+      "label": "CHAPTER 03 · ARID CLIMATE",
+      "titleWord": "HEAT",
+      "heading": "Subtropical high pressure creates a sun-baked world where rain is a rarity.",
+      "subheading": "The eastern Libyan Desert rivals the driest places on the planet.",
+      "body": "Located under the subtropical ridge, the Sahara experiences descending hot air that suppresses cloud formation. The eastern Libyan Desert receives virtually no rain, rivaling the Atacama. The prevailing continental tropical air mass brings extreme heat, low humidity and a strong thermal low near the surface during summer.",
+      "sceneTemplate": "dune",
+      "sceneParams": {
+        "primaryColor": "#1f120b",
+        "accentColor": "#b68a55",
+        "particleType": "dust",
+        "groundType": "sand",
+        "backgroundObject": "moon",
+        "propVariant": "erg",
+        "artKit": "erg",
+        "timeOfDay": "night",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Sahara",
+      "transition": "bloom-out",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a7/Sahara_satellite_hires.jpg/1920px-Sahara_satellite_hires.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "NASA · Public domain · Wikimedia Commons",
+        "license": "Public domain"
+      }
+    }
+  ],
+  "createdAt": "2026-09-30T09:15:03Z"
+}

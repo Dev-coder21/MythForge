@@ -14,7 +14,12 @@ from tests.test_pipeline import CONTENT, Scripted, chain, chapter, draft
 @pytest.fixture
 def client(db, monkeypatch):
     Session = sessionmaker(bind=db.get_bind(), expire_on_commit=False)
-    app.dependency_overrides[get_db] = lambda: db
+
+    def fresh_session():
+        with Session() as s:
+            yield s
+
+    app.dependency_overrides[get_db] = fresh_session
     monkeypatch.setattr(generation, "session_factory", Session)
     monkeypatch.setattr(generation, "make_client", lambda: contextlib.nullcontext(None))
     yield TestClient(app)

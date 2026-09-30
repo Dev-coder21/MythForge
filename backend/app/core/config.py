@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     ollama_model: str = ""  # empty = Ollama not used
 
     # Keep requests small so free-tier limits hold.
-    llm_max_output_tokens: int = 3000
+    llm_max_output_tokens: int = 2000
     llm_timeout_s: float = 90.0
     llm_max_rate_limit_waits: int = 2
     llm_max_backoff_s: float = 30.0
@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     # Retrieval
     wiki_lang: str = "en"
     min_content_words: int = 350
-    max_source_words: int = 1800
+    max_source_words: int = 1400
     cache_ttl_days: int = 7
     # Wikimedia's User-Agent policy requires a way to reach you (email or URL); requests without it get 403.
     http_contact: str = ""

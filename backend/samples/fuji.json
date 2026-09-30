@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "id": "31ab50bb-7300-465e-a88f-03fea85d5fe3",
+  "topic": "Mount Fuji",
+  "title": "Fuji",
+  "subtitle": "A silent cone, a cultural beacon, a restless fire",
+  "slug": "fuji",
+  "chapters": [
+    {
+      "index": 1,
+      "label": "CHAPTER 01 · CONICAL SILENCE",
+      "titleWord": "PEAK",
+      "heading": "At 3,776.24 m it pierces the sky.",
+      "subheading": "Japan's highest peak dominates the horizon.",
+      "body": "Mount Fuji is an active stratovolcano on Honshu. Its summit reaches 3,776.24 m, the highest point in Japan and the seventh-highest island peak on Earth. The cone is exceptionally symmetrical and is covered by snow for about five months each year. It lies about 100 km southwest of Tokyo and marks the border of Shizuoka and Yamanashi prefectures.",
+      "sceneTemplate": "threshold",
+      "sceneParams": {
+        "primaryColor": "#2b1e1a",
+        "accentColor": "#e0c9a8",
+        "particleType": "snow",
+        "groundType": "stone",
+        "backgroundObject": "sun",
+        "propVariant": "temple-dusk",
+        "artKit": "temple-dusk",
+        "timeOfDay": "dusk",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Mount Fuji",
+      "transition": "noise-dissolve",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c7/Grumman_E-2C_Hawkeyes_of_VAW-115_fly_past_Mount_Fuji_on_15_February_2007_%28070215-N-2604L-024%29.jpg/1920px-Grumman_E-2C_Hawkeyes_of_VAW-115_fly_past_Mount_Fuji_on_15_February_2007_%28070215-N-2604L-024%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "U.S. Navy photo by Lt. j.g. Andrew Leatherwood · Public domain · Wikimedia Commons",
+        "license": "Public domain"
+      }
+    },
+    {
+      "index": 2,
+      "label": "CHAPTER 02 · CULTURAL ICON",
+      "titleWord": "SHRINE",
+      "heading": "A cultural beacon listed as World Heritage in 2013.",
+      "subheading": "Artists and pilgrims have long revered its form.",
+      "body": "Mount Fuji is one of Japan's Three Holy Mountains and a Special Place of Scenic Beauty. UNESCO added it to the World Heritage List as a Cultural Site on June 22 2013, noting its influence on artists, poets, and centuries of pilgrimage. The locality includes 25 cultural sites such as the Fujisan Hongu Sengen Taisha shrine.",
+      "sceneTemplate": "threshold",
+      "sceneParams": {
+        "primaryColor": "#3a2b24",
+        "accentColor": "#f4e1c0",
+        "particleType": "none",
+        "groundType": "stone",
+        "backgroundObject": "none",
+        "propVariant": "lantern-dawn",
+        "artKit": "lantern-dawn",
+        "timeOfDay": "dawn",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Mount Fuji",
+      "transition": "ink-wipe",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Mount_Fuji_at_sunset%2C_March_2025.jpg/1920px-Mount_Fuji_at_sunset%2C_March_2025.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Romain Guy from San Francisco, USA · CC0 · Wikimedia Commons",
+        "license": "CC0"
+      }
+    },
+    {
+      "index": 3,
+      "label": "CHAPTER 03 · TECTONIC HEART",
+      "titleWord": "GEODE",
+      "heading": "Three plates meet beneath the silent cone.",
+      "subheading": "Tectonic forces shape the volcano.",
+      "body": "Mount Fuji sits at a triple junction where the Eurasian, North American, and Philippine Sea plates converge, with the Pacific Plate subducting beneath them, this tectonic setting creates the volcanic activity that built the cone. The volcano lies near three island arcs: the Southwestern Japan Arc, the Northeastern Japan Arc, and the Izu-Bonin-Mariana Arc.",
+      "sceneTemplate": "dune",
+      "sceneParams": {
+        "primaryColor": "#2c2a28",
+        "accentColor": "#c2b090",
+        "particleType": "dust",
+        "groundType": "sand",
+        "backgroundObject": "clouds",
+        "propVariant": "erg",
+        "artKit": "erg",
+        "timeOfDay": "day",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Mount Fuji",
+      "transition": "bloom-out",
+      "heroImage": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/d/df/Mount_Fuji_from_Mount_Aino.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "attribution": "Alpsdake · CC BY-SA 3.0 · Wikimedia Commons",
+        "license": "CC BY-SA 3.0"
+      }
+    }
+  ],
+  "createdAt": "2026-09-30T09:12:20Z"
+}

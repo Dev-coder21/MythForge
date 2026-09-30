@@ -8,6 +8,7 @@ errors, so the LLM pipeline's correction retries fix them.
 
 from __future__ import annotations
 
+import colorsys
 import re
 from typing import Annotated, Literal
 
@@ -37,7 +38,8 @@ CLICHES = (
     "hidden gem", "nestled", "tapestry", "testament to", "rich history", "step back in time",
     "journey through", "breathtaking", "awe-inspiring", "must-see", "bustling", "vibrant",
     "delve", "a feast for the senses", "stands the test of time", "time stood still", "lorem ipsum",
-    "untold story", "in the heart of",
+    "untold story", "in the heart of", "beyond imagination", "pulse of", "stretches to the horizon",
+    "echoes of", "shrouded in mystery", "whispers of", "timeless", "iconic",
 )
 
 
@@ -69,6 +71,15 @@ class _Model(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
+def purple_problem(hex_color: str) -> str | None:
+    """Design rule: no purple themes. Flags clearly purple/violet colours (neutral dark greys pass)."""
+    r, g, b = (int(hex_color[i : i + 2], 16) / 255 for i in (1, 3, 5))
+    h, l, s = colorsys.rgb_to_hls(r, g, b)
+    if 245 <= h * 360 <= 330 and s > 0.2 and l > 0.08:
+        return f"{hex_color} is purple; the palette rules out purple themes, pick a warm or neutral colour"
+    return None
+
+
 class SceneParams(_Model):
     primaryColor: HexColor
     accentColor: HexColor
@@ -80,6 +91,13 @@ class SceneParams(_Model):
     timeOfDay: TimeOfDay
     props: list[str] = Field(default_factory=list)
     particleDensity: float | None = Field(default=None, ge=0, le=1)
+
+    @field_validator("primaryColor", "accentColor")
+    @classmethod
+    def _no_purple(cls, v: str) -> str:
+        if problem := purple_problem(v):
+            raise ValueError(problem)
+        return v
 
 
 class ImageRef(_Model):

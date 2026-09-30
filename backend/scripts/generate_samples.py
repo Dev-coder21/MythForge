@@ -21,8 +21,13 @@ def main(topics: list[str]) -> None:
     chain = build_chain(get_settings())
     with SessionLocal() as db, make_client() as client:
         for topic in topics:
-            content = gather_content(topic, db, client)
-            result = generate_spec(content, chain)
+            try:
+                content = gather_content(topic, db, client)
+                result = generate_spec(content, chain)
+            except Exception as e:
+                print(f"{topic}: FAILED. {e}")
+                chain.notes.clear()
+                continue
             path = OUT / f"{result.spec.slug}.json"
             path.write_text(json.dumps(result.spec.model_dump(mode="json"), indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
             print(f"{topic}: {path.name} via {result.provider}, {result.attempts} attempt(s). {'; '.join(chain.notes)}")

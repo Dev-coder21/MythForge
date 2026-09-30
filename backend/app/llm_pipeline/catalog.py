@@ -17,19 +17,28 @@ class Kit:
     suits: str
     time_of_day: str
     background: str
+    # Landmark kits paint a real place; they may only be used when the topic is that place.
+    # Empty = generic (fits any topic of that kind, recoloured by the chapter palette).
+    landmark: str = ""
+    landmark_keys: tuple[str, ...] = ()
 
 
 KITS: tuple[Kit, ...] = (
     Kit("threshold", "torii-night", "a vermilion torii gate on a grassy mound, tall cedars, stone lanterns, a blossom branch, pampas grass",
-        "shrines, gateways, sacred places, forests, Japan, thresholds", "night", "moon"),
+        "shrines, gateways, sacred places, forests, Japan, thresholds", "night", "moon",
+        landmark="the Fushimi Inari torii in Kyoto", landmark_keys=("kyoto", "fushimi", "inari", "torii")),
     Kit("threshold", "temple-dusk", "a temple garden: stone wall, maples, a pond with lily pads, stepping stones, lanterns",
         "gardens, temples, courtyards, quiet places, water in a garden", "dusk", "sun"),
     Kit("threshold", "lantern-dawn", "two rows of stone lanterns receding along a path to a small gate in morning mist, cedars",
         "pilgrimage routes, long approaches, walls and roads, endings, reflection", "dawn", "stars"),
     Kit("dune", "giza", "layered sand dunes, the three Giza pyramids, a huge low sun, palms, sandstone rocks, heat shimmer",
-        "deserts, ancient monuments, pyramids, heat, vast open land", "dusk", "sun"),
+        "the Giza pyramids and ancient Egypt only", "dusk", "sun",
+        landmark="the Giza pyramids", landmark_keys=("giza", "pyramid", "khufu", "egypt", "pharaoh")),
+    Kit("dune", "erg", "open sand dunes, sandstone rocks, palms, a huge low sun, heat shimmer; no buildings",
+        "any desert, sand sea, oasis, arid land, heat, emptiness, caravans", "dusk", "sun"),
     Kit("dune", "giza-sphinx", "a great stone monument (the Sphinx) on the sand under a bright moon, pyramids behind, dunes",
-        "carved monuments, deserts at night, ancient statues, mysteries", "night", "moon"),
+        "the Great Sphinx and ancient Egypt only", "night", "moon",
+        landmark="the Great Sphinx of Giza", landmark_keys=("sphinx", "giza", "egypt", "pharaoh")),
     Kit("tide", "nile", "a wide river at dawn, a wooden sailing cargo boat, reeds and papyrus, palms, distant pyramids, mist",
         "rivers, trade, boats, journeys, water, transport", "dawn", "sun"),
 )
@@ -45,7 +54,8 @@ def catalog_text() -> str:
     for k in KITS:
         lines.append(
             f'- template "{k.template}", artKit "{k.name}": {k.depicts}. Best for: {k.suits}. '
-            f"Painted for {k.time_of_day} with {k.background}."
+            f"Painted for {k.time_of_day} with {k.background}. "
+            + (f"LANDMARK-SPECIFIC ({k.landmark}): only when the topic is that place." if k.landmark else "GENERIC.")
         )
     return "\n".join(lines)
 
@@ -57,3 +67,17 @@ def kit_problem(template: str, kit: str) -> str | None:
     if kit not in kits:
         return f'artKit "{kit}" does not exist for template "{template}"; use one of: {", ".join(sorted(kits))}'
     return None
+
+
+def landmark_problem(kit_name: str, topic: str) -> str | None:
+    kit = next((k for k in KITS if k.name == kit_name), None)
+    if kit is None or not kit.landmark:
+        return None
+    low = topic.lower()
+    if any(key in low for key in kit.landmark_keys):
+        return None
+    generic = ", ".join(f"{k.template}/{k.name}" for k in KITS if not k.landmark)
+    return (
+        f'artKit "{kit_name}" shows {kit.landmark}, which is not this topic; choose the closest GENERIC kit '
+        f"({generic}) and recolour it with primaryColor and accentColor"
+    )

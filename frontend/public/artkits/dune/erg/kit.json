@@ -1,0 +1,289 @@
+{
+  "name": "erg",
+  "template": "dune",
+  "textures": {
+    "dune-far": [
+      "../hand/dune-far.webp",
+      "../painted/dune-far.webp"
+    ],
+    "dune-mid": [
+      "../hand/dune-mid.webp",
+      "../painted/dune-mid.webp"
+    ],
+    "dune-near": [
+      "../hand/dune-near.webp",
+      "../painted/dune-near.webp"
+    ],
+    "rocks-sandstone": [
+      "../hand/rocks-sandstone.webp",
+      "../painted/rocks-sandstone.webp"
+    ],
+    "palm": [
+      "../hand/palm.webp",
+      "../painted/palm.webp"
+    ],
+    "palm-b": [
+      "../hand/palm-b.webp",
+      "../painted/palm-b.webp"
+    ],
+    "sand": "../painted/sand.webp"
+  },
+  "layers": [
+    {
+      "id": "dune-far",
+      "texture": "dune-far",
+      "z": -48,
+      "x": 0,
+      "bottom": 0.22,
+      "height": 0.16,
+      "stretch": true,
+      "fog": 0.35,
+      "tint": 0.15,
+      "rim": 0
+    },
+    {
+      "id": "dune-far-2",
+      "texture": "dune-mid",
+      "z": -40,
+      "x": -0.2,
+      "bottom": 0.2,
+      "height": 0.14,
+      "stretch": true,
+      "flip": true,
+      "fog": 0.28,
+      "tint": 0.2,
+      "rim": 0.1
+    },
+    {
+      "id": "rocks-far",
+      "texture": "rocks-sandstone",
+      "z": -36,
+      "x": -0.18,
+      "bottom": 0.24,
+      "height": 0.1,
+      "fog": 0.3,
+      "tint": 0.2,
+      "rim": 0.2,
+      "flip": true,
+      "portrait": {
+        "x": -0.3,
+        "height": 0.06
+      }
+    },
+    {
+      "id": "palm-far-l",
+      "texture": "palm",
+      "z": -30,
+      "x": -0.4,
+      "bottom": 0.22,
+      "height": 0.36,
+      "fog": 0.3,
+      "tint": 0.15,
+      "rim": 0.25,
+      "sway": 0.03,
+      "portrait": {
+        "x": -0.46,
+        "height": 0.2
+      }
+    },
+    {
+      "id": "palm-far-l2",
+      "texture": "palm-b",
+      "z": -29,
+      "x": -0.31,
+      "bottom": 0.22,
+      "height": 0.28,
+      "fog": 0.32,
+      "tint": 0.15,
+      "rim": 0.25,
+      "sway": 0.03,
+      "portrait": {
+        "hidden": true
+      }
+    },
+    {
+      "id": "dune-mid",
+      "texture": "dune-mid",
+      "z": -22,
+      "x": 0.1,
+      "bottom": 0.04,
+      "height": 0.3,
+      "stretch": true,
+      "fog": 0.08,
+      "tint": 0.15,
+      "rim": 0.25
+    },
+    {
+      "id": "rocks",
+      "texture": "rocks-sandstone",
+      "z": -14,
+      "x": 0.4,
+      "bottom": 0.08,
+      "height": 0.14,
+      "tint": 0.15,
+      "rim": 0.25,
+      "portrait": {
+        "x": 0.4,
+        "height": 0.07
+      }
+    },
+    {
+      "id": "dune-near",
+      "texture": "dune-near",
+      "z": -3.5,
+      "x": 0.05,
+      "bottom": -0.1,
+      "height": 0.52,
+      "stretch": true,
+      "shade": 0.9,
+      "tint": 0.15,
+      "rim": 0.15,
+      "portrait": {
+        "bottom": -0.04,
+        "height": 0.34
+      }
+    },
+    {
+      "id": "palm-near",
+      "texture": "palm",
+      "z": -2,
+      "x": 0.55,
+      "anchorX": 0.72,
+      "bottom": -0.08,
+      "height": 0.92,
+      "shade": 0.6,
+      "tint": 0.15,
+      "rim": 0.25,
+      "sway": 0.05,
+      "portrait": {
+        "hidden": true
+      }
+    }
+  ],
+  "camera": {
+    "fov": 36,
+    "position": [
+      [
+        0,
+        0.35,
+        14
+      ],
+      [
+        0.05,
+        0.95,
+        13.2
+      ],
+      [
+        0.1,
+        1.8,
+        12.3
+      ],
+      [
+        0.15,
+        2.6,
+        11.4
+      ]
+    ],
+    "lookAt": [
+      [
+        0,
+        1.05,
+        -20
+      ],
+      [
+        0.05,
+        1.6,
+        -20
+      ],
+      [
+        0.1,
+        2.2,
+        -20
+      ],
+      [
+        0.15,
+        2.6,
+        -20
+      ]
+    ]
+  },
+  "celestial": {
+    "u": 0.43,
+    "v": 0.42,
+    "uPortrait": 0.44,
+    "vPortrait": 0.44,
+    "size": 0.19,
+    "driftU": 0,
+    "driftV": -0.06,
+    "intensity": 2.8,
+    "halo": 0.03
+  },
+  "title": {
+    "v": 0.22,
+    "vPortrait": 0.255,
+    "fitPortrait": 0.66
+  },
+  "sky": {
+    "top": "#2a3b5c",
+    "mid": "#c56a3c",
+    "horizon": "#ffc77a",
+    "fog": "#d9945e",
+    "tint": "#f3b474",
+    "rim": "#ffd08c",
+    "sun": "#ffd79a"
+  },
+  "heat": {
+    "v": 0.3,
+    "h": 0.07,
+    "strength": 0.0035
+  },
+  "fog": [
+    {
+      "z": -34,
+      "opacity": 0.26,
+      "height": 0.5,
+      "speed": 0.012,
+      "scale": 1.4
+    },
+    {
+      "z": -12,
+      "opacity": 0.1,
+      "height": 0.28,
+      "speed": 0.03,
+      "scale": 2.2
+    }
+  ],
+  "particles": [
+    {
+      "texture": "sand",
+      "cells": 4,
+      "count": 110,
+      "zMin": -22,
+      "zMax": -5,
+      "size": 0.55,
+      "speed": 0.4,
+      "fall": 0.03,
+      "opacity": 0.55,
+      "windX": 0.9
+    },
+    {
+      "texture": "sand",
+      "cells": 4,
+      "count": 30,
+      "zMin": -2,
+      "zMax": 3,
+      "size": 0.32,
+      "speed": 0.6,
+      "fall": 0.04,
+      "opacity": 0.45,
+      "windX": 1.4
+    }
+  ],
+  "shafts": {
+    "count": 6,
+    "opacity": 0.05,
+    "length": 1,
+    "spread": 1.3,
+    "angle": -1.57
+  }
+}

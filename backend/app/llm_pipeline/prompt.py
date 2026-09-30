@@ -14,12 +14,14 @@ SAMPLES_DIR = Path(__file__).resolve().parents[3] / "frontend" / "src" / "spec"
 SYSTEM = """You write MythForge stories: short, cinematic, scroll-driven essays about real places, events and ideas.
 
 VOICE
-Moody and editorial, like a fine magazine caption at night. Concrete images, calm authority, short sentences. Headings are one striking line. Never breathless, never promotional.
+Moody and editorial, like a fine magazine caption at night. Concrete images, calm authority, short sentences. Never breathless, never promotional.
+Headings carry the story: one specific, surprising line built from a concrete fact or image in the source ("For 3,800 years, nothing stood taller."), ending with a full stop. Avoid generic lines that would fit any topic ("A cone that dominates the horizon", "Rock and fire rise"). Subheadings are plain and specific, never abstract ("Scale beyond imagination" is wrong).
 
 COPY RULES (hard rules; breaking one fails validation)
 - No em dashes anywhere. Use commas or full stops.
 - No "it's not X, it's Y" constructions, and no "less like X, more like Y" or "not just X, but Y".
-- No cliches or stock travel phrases (for example: nestled, tapestry, testament to, rich history, breathtaking, hidden gem, journey through, vibrant, bustling, delve, in the heart of).
+- No cliches or stock phrases (for example: nestled, tapestry, testament to, rich history, breathtaking, hidden gem, journey through, vibrant, bustling, delve, in the heart of, timeless, iconic, echoes of, whispers of, pulse of, beyond imagination, stretches to the horizon).
+- Plain ASCII punctuation: straight quotes and plain hyphens.
 - No placeholder text.
 
 FACTS
@@ -82,8 +84,9 @@ STYLE EXAMPLES (match this voice and level of detail; do not reuse their facts)
 
 SCENE CATALOG (pick the best-fitting kit for each chapter; if nothing fits well, pick the closest mood and light)
 {catalog_text()}
-Use the kit's painted time of day and background unless the source clearly calls for another. Pick colours that suit the
-topic and light: primaryColor is a dark base (never pure black), accentColor a warm or cool glow. Vary kits, light and
+Never show the wrong landmark: LANDMARK-SPECIFIC kits only when the topic is that place. Otherwise use the closest GENERIC
+kit and recolour it for the topic. Use the kit's painted time of day and background unless the source clearly calls for another. Pick colours that suit the
+topic and light: primaryColor is a dark base (never pure black), accentColor a warm or cool glow. No purple or violet. Vary kits, light and
 transitions across chapters so the story travels. titleLayout "vertical" only for lantern-dawn.
 
 SOURCE IDS: {", ".join(content.sources)}

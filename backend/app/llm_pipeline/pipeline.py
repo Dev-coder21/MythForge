@@ -17,7 +17,7 @@ from datetime import UTC, datetime
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from app.core.config import get_settings
-from app.llm_pipeline.catalog import kit_problem
+from app.llm_pipeline.catalog import kit_problem, landmark_problem
 from app.llm_pipeline.prompt import SYSTEM, build_prompt, correction_prompt
 from app.llm_pipeline.providers import FallbackChain
 from app.retrieval import RetrievedContent
@@ -87,6 +87,31 @@ def slugify(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-") or "story"
 
 
+# Typographic look-alikes models emit; replaced with plain characters (em dashes stay, so the rule can flag them).
+_PLAIN = str.maketrans({
+    "‐": "-", "‑": "-", "‒": "-", "–": "-", "−": "-",
+    "‘": "'", "’": "'", "“": '"', "”": '"',
+    " ": " ", " ": " ", " ": " ", "…": "...",
+})
+
+
+def normalize_text(value):
+    """Plain punctuation in every string of a parsed draft."""
+    if isinstance(value, str):
+        return value.translate(_PLAIN)
+    if isinstance(value, list):
+        return [normalize_text(v) for v in value]
+    if isinstance(value, dict):
+        return {k: normalize_text(v) for k, v in value.items()}
+    return value
+
+
+def _heading(text: str) -> str:
+    """House style (see the hand-written samples): headings end with a full stop."""
+    text = text.strip()
+    return text if text[-1:] in ".?!" else text + "."
+
+
 def _parse_json(raw: str) -> dict:
     text = raw.strip()
     fence = re.match(r"^```(?:json)?\s*(.*?)\s*```$", text, re.DOTALL)
@@ -96,7 +121,7 @@ def _parse_json(raw: str) -> dict:
     if start < 0 or end < start:
         raise SpecInvalid(["the response was not a JSON object"])
     try:
-        return json.loads(text[start : end + 1])
+        return normalize_text(json.loads(text[start : end + 1]))
     except json.JSONDecodeError as e:
         raise SpecInvalid([f"the response was not valid JSON ({e.msg} at line {e.lineno})"]) from e
 
@@ -131,7 +156,7 @@ def assemble(draft: Draft, topic: str, content: RetrievedContent) -> StorySpec:
             "index": i,
             "label": f"CHAPTER {i:02d} · {c.labelName.strip().upper()}",
             "titleWord": c.titleWord.strip().upper(),
-            "heading": c.heading,
+            "heading": _heading(c.heading),
             "subheading": c.subheading,
             "body": c.body,
             "sceneTemplate": c.sceneTemplate,
@@ -180,6 +205,8 @@ def validate_draft(raw: str, topic: str, content: RetrievedContent, chapters: in
     for i, c in enumerate(draft.chapters):
         where = f"chapters.{i}"
         if problem := kit_problem(c.sceneTemplate, c.artKit):
+            errors.append(f"{where}: {problem}")
+        if problem := landmark_problem(c.artKit, topic):
             errors.append(f"{where}: {problem}")
         if c.source not in content.sources:
             errors.append(f'{where}.source: "{c.source}" is not one of the SOURCE ids ({", ".join(content.sources)})')

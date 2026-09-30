@@ -66,3 +66,9 @@ def test_label_format(sample):
     bad["chapters"][0]["label"] = "Chapter 1 - The Gate"
     with pytest.raises(ValidationError, match="label"):
         StorySpec.model_validate(bad)
+
+
+def test_purple_rule_flags_violet_not_dark_neutrals():
+    from app.schemas.story import purple_problem
+    assert purple_problem("#9a8bd3") and purple_problem("#6a2c91")
+    assert purple_problem("#1e1c2a") is None and purple_problem("#f0a24a") is None and purple_problem("#0b1026") is None

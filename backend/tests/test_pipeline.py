@@ -50,7 +50,7 @@ def chapter(**over):
 
 def draft(chapters=None):
     return json.dumps({"title": "Fuji", "subtitle": "A volcano held still by snow and patience",
-                       "chapters": chapters or [chapter(), chapter(titleWord="ASH", artKit="torii-night", timeOfDay="night")]})
+                       "chapters": chapters or [chapter(), chapter(titleWord="ASH", artKit="temple-dusk", timeOfDay="dusk")]})
 
 
 class Scripted:
@@ -86,6 +86,9 @@ def test_valid_draft_assembles_full_spec():
     ({"source": "wikipedia:Mars"}, "not one of the SOURCE ids"),
     ({"body": BODY.replace("1707", "1708")}, "1708"),
     ({"heading": "A mountain — of weather"}, "em dash"),
+    ({"artKit": "torii-night"}, "not this topic"),
+    ({"accentColor": "#9a8bd3"}, "purple"),
+    ({"subheading": "Scale beyond imagination"}, "beyond imagination"),
 ])
 def test_invalid_drafts_are_explained(over, needle):
     with pytest.raises(SpecInvalid) as e:
@@ -93,9 +96,24 @@ def test_invalid_drafts_are_explained(over, needle):
     assert needle in " ".join(e.value.errors).lower() or needle in " ".join(e.value.errors)
 
 
+def test_normalizes_typography_and_heading_stop():
+    body = BODY.replace("and last", "and last").replace("second,", "second‑hand,")
+    spec = validate_draft(draft([chapter(body=body, heading="A mountain’s own weather"), chapter(titleWord="ASH")]),
+                          "Mount Fuji", CONTENT, 2)
+    c = spec.chapters[0]
+    assert c.heading == "A mountain's own weather." and " " not in c.body and "second-hand" in c.body
+
+
+def test_landmark_kit_allowed_for_its_own_topic():
+    giza = RetrievedContent(topic="Giza pyramid complex", pages=CONTENT.pages, images=[])
+    validate_draft(draft([chapter(sceneTemplate="dune", artKit="giza"), chapter(titleWord="ASH", artKit="erg", sceneTemplate="dune")]),
+                   "Giza pyramid complex", giza, 2)
+
+
 def test_prompt_contains_rules_sources_and_catalog():
     p = build_prompt(CONTENT)
     assert "wikipedia:Mount Fuji" in p and "lantern-dawn" in p and "3,776.24" in p
+    assert "LANDMARK-SPECIFIC (the Giza pyramids)" in p and '"erg"' in p
 
 
 # retries
@@ -123,6 +141,15 @@ def test_rate_limit_backs_off_then_succeeds():
     c = FallbackChain([p], sleep=slept.append)
     assert c.complete_json("s", [], 10) == ("gemini", "ok")
     assert slept == [7]
+
+
+def test_overloaded_provider_waits_then_retries():
+    calls = iter([httpx.Response(503, json={"error": "high demand"}), httpx.Response(
+        200, json={"candidates": [{"content": {"parts": [{"text": "{}"}]}}]})])
+    client = httpx.Client(transport=httpx.MockTransport(lambda req: next(calls)))
+    slept = []
+    c = FallbackChain([GeminiProvider("k", "m", client)], sleep=slept.append)
+    assert c.complete_json("s", [], 10) == ("gemini", "{}") and slept == [8.0]
 
 
 def test_falls_back_to_next_provider():

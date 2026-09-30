@@ -57,6 +57,9 @@ def _retry_after(response: httpx.Response) -> float | None:
 def _check(response: httpx.Response, provider: str) -> None:
     if response.status_code == 429:
         raise RateLimitError(f"{provider}: rate limited (free-tier quota reached)", _retry_after(response))
+    if response.status_code in (500, 502, 503, 504):
+        # Overloaded or briefly down: worth a short wait before falling back.
+        raise RateLimitError(f"{provider}: temporarily unavailable (HTTP {response.status_code})", _retry_after(response) or 8.0)
     if response.status_code >= 400:
         raise LLMError(f"{provider}: HTTP {response.status_code}: {response.text[:300]}")
 
@@ -105,17 +108,23 @@ class GroqProvider:
     name: str = "groq"
 
     def complete_json(self, system: str, messages: list[Message], max_tokens: int) -> str:
+        body = {
+            "model": self.model,
+            "messages": [{"role": "system", "content": system}, *messages],
+            "response_format": {"type": "json_object"},
+            "temperature": 0.8,
+            "max_tokens": max_tokens,
+        }
+        if "gpt-oss" in self.model:
+            body["reasoning_effort"] = "low"  # reasoning tokens share max_tokens and the free per-minute budget
         r = self.client.post(
             "https://api.groq.com/openai/v1/chat/completions",
             headers={"Authorization": f"Bearer {self.api_key}"},
-            json={
-                "model": self.model,
-                "messages": [{"role": "system", "content": system}, *messages],
-                "response_format": {"type": "json_object"},
-                "temperature": 0.8,
-                "max_tokens": max_tokens,
-            },
+            json=body,
         )
+        if r.status_code == 400 and "json_validate_failed" in r.text:
+            # Groq rejected malformed JSON server-side; hand it back so the pipeline asks for a correction.
+            return r.json().get("error", {}).get("failed_generation", "") or "(empty response)"
         _check(r, "Groq")
         try:
             return r.json()["choices"][0]["message"]["content"]
