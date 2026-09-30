@@ -26,3 +26,16 @@ mythforge-starter.zip
 backend/*.db
 
 backend/posters/
+
+# Test and tool caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.tsbuildinfo
+
+# Model caches (rembg / onnx downloads) and large reference media
+.u2net/
+*.onnx
+*.mov
+*.sqlite
+*.sqlite3
