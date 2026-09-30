@@ -339,5 +339,24 @@
       "opacity": 0.55,
       "windX": 1.6
     }
-  ]
+  ],
+  "hero": {
+    "z": -36,
+    "x": 0.3,
+    "bottom": 0.4,
+    "height": 0.26,
+    "maxWidth": 0.45,
+    "fog": 0.2,
+    "tint": 0.45,
+    "rim": 0.35,
+    "replace": [
+      "cloud-mid"
+    ],
+    "portrait": {
+      "x": 0.2,
+      "bottom": 0.3,
+      "height": 0.16,
+      "maxWidth": 0.7
+    }
+  }
 }

@@ -15,7 +15,7 @@ import { SkyLayer } from '../layers/SkyLayer'
 import { TitleLayer } from '../layers/TitleLayer'
 import { useChapter } from '../store'
 import type { Kit } from './kit'
-import { KitLayers, useKit, useKitGlowRefs, useKitTextures } from './KitLayers'
+import { KitLayers, withHero, useKit, useKitGlowRefs, useKitTextures } from './KitLayers'
 import { THRESHOLD_CAMERA, THRESHOLD_LAYOUT as L, thresholdPalette } from './threshold.defaults'
 
 export interface TemplateProps {
@@ -59,7 +59,10 @@ export function LayeredScene({ chapter, index, reducedMotion, extras }: LayeredS
   const state = useChapter()
   const ns = (folder: string) => `Ch${index + 1} / ${folder}`
   const basePalette = useMemo(() => thresholdPalette(params), [params])
-  const kit = useKit(chapter.sceneTemplate, params.artKit)
+  const baseKit = useKit(chapter.sceneTemplate, params.artKit)
+  // An AI-painted landmark (checked against the Wikipedia photo) takes the kit's hero slot.
+  const heroUrl = chapter.landmark?.layer?.url
+  const kit = useMemo(() => withHero(baseKit, heroUrl), [baseKit, heroUrl])
   const kitTextures = useKitTextures(chapter.sceneTemplate, params.artKit, kit)
   const glowRefs = useKitGlowRefs(kit)
   // A kit may set its own light for the location (desert haze, river dawn...), per time of day if it has several.

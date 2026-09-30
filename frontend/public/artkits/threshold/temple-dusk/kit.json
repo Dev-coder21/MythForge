@@ -56,35 +56,403 @@
     ]
   },
   "layers": [
-    { "id": "far-ridge", "texture": "hill", "z": -40, "x": -0.1, "bottom": 0.16, "height": 0.3, "stretch": true, "fog": 0.62, "tint": 0.5, "rim": 0.12 },
-    { "id": "far-maple", "texture": "maple", "z": -32, "x": 0.36, "bottom": 0.2, "height": 0.42, "fog": 0.55, "tint": 0.4, "rim": 0.15 },
-    { "id": "far-cedar", "texture": "cedar-a", "z": -32, "x": -0.44, "bottom": 0.2, "height": 0.5, "fog": 0.56, "tint": 0.4, "rim": 0.3 },
-    { "id": "cedar-back", "texture": "cedar-b", "z": -24, "x": 0.26, "bottom": 0.2, "height": 0.62, "rim": 0.2, "fog": 0.4, "tint": 0.4, "portrait": {"x": 0.3, "height": 0.4} },
-    { "id": "wall", "texture": "wall", "z": -20, "x": 0.05, "bottom": 0.22, "height": 0.15, "rim": 0.6, "fog": 0.28, "tint": 0.4, "portrait": {"height": 0.08, "tileX": 10}, "tileX": 10 },
-    { "id": "maple-left", "texture": "maple", "z": -14, "x": -0.38, "bottom": 0.12, "height": 0.78, "rim": 0.35, "fog": 0.12, "tint": 0.35, "sway": 0.04, "portrait": {"x": -0.46, "height": 0.46} },
-    { "id": "maple-right", "texture": "maple", "z": -12, "x": 0.47, "bottom": 0.1, "height": 0.6, "rim": 0.35, "tint": 0.35, "sway": 0.04, "fog": 0.08, "portrait": {"x": 0.5, "height": 0.34} },
-    { "id": "ground", "texture": "hill", "z": -11, "x": 0, "bottom": -0.14, "height": 0.42, "stretch": true, "rim": 0.12, "fog": 0.08, "tint": 0.4 },
-    { "id": "pond", "texture": "pond", "z": -9, "x": 0.12, "bottom": 0.13, "height": 0.22, "rim": 0.2, "tint": 0.3, "portrait": {"x": 0.08, "bottom": 0.2, "height": 0.11}, "water": {"mask": "pond-water", "opacity": 0.6} },
-    { "id": "lantern-left", "texture": "lantern", "z": -8.5, "x": -0.14, "bottom": 0.15, "height": 0.2, "rim": 0.6, "tint": 0.4, "light": {"u": 0.5, "v": 0.63, "color": "#ffb35a", "intensity": 1.8, "radius": 1.4, "flicker": 0.3, "glow": 0.4}, "portrait": {"x": -0.32, "height": 0.1} },
-    { "id": "lantern-right", "texture": "lantern", "z": -8.5, "x": 0.36, "bottom": 0.15, "height": 0.18, "rim": 0.6, "tint": 0.4, "light": {"u": 0.5, "v": 0.63, "color": "#ffb35a", "intensity": 1.5, "radius": 1.4, "flicker": 0.3, "glow": 0.4}, "portrait": {"x": 0.36, "height": 0.09} },
-    { "id": "rocks-mid", "texture": "rocks", "z": -8, "x": 0.46, "bottom": 0.08, "height": 0.11, "rim": 0.7, "tint": 0.4, "portrait": {"height": 0.06} },
-    { "id": "bush-mid", "texture": "bush", "z": -8, "x": -0.44, "bottom": 0.06, "height": 0.16, "rim": 0.7, "tint": 0.4, "sway": 0.08, "portrait": {"height": 0.08} },
-    { "id": "floor-near", "texture": "hill", "z": -4.5, "x": 0, "bottom": -0.14, "height": 0.28, "stretch": true, "rim": 0.12, "shade": 0.55, "tint": 0.4, "portrait": {"bottom": -0.02, "height": 0.2} },
-    { "id": "stones", "texture": "stones", "z": -3.2, "x": -0.1, "bottom": -0.16, "height": 0.46, "rim": 0.25, "shade": 1, "tint": 0.3, "portrait": {"x": -0.04, "bottom": -0.06, "height": 0.24}, "anchorX": 0.5 },
-    { "id": "grass-fore", "texture": "grass", "z": 2, "x": 0, "bottom": -0.14, "height": 0.34, "stretch": true, "sway": 0.6, "rim": 0, "shade": 0.6, "tint": 0.4, "portrait": {"height": 0.22} },
-    { "id": "branch-fore", "texture": "branch", "z": 3.5, "x": -0.53, "anchorX": 0, "bottom": 0.7, "height": 0.36, "sway": 0.18, "rim": 0.5, "tint": 0.4, "portrait": {"hidden": true} }
+    {
+      "id": "far-ridge",
+      "texture": "hill",
+      "z": -40,
+      "x": -0.1,
+      "bottom": 0.16,
+      "height": 0.3,
+      "stretch": true,
+      "fog": 0.62,
+      "tint": 0.5,
+      "rim": 0.12
+    },
+    {
+      "id": "far-maple",
+      "texture": "maple",
+      "z": -32,
+      "x": 0.36,
+      "bottom": 0.2,
+      "height": 0.42,
+      "fog": 0.55,
+      "tint": 0.4,
+      "rim": 0.15
+    },
+    {
+      "id": "far-cedar",
+      "texture": "cedar-a",
+      "z": -32,
+      "x": -0.44,
+      "bottom": 0.2,
+      "height": 0.5,
+      "fog": 0.56,
+      "tint": 0.4,
+      "rim": 0.3
+    },
+    {
+      "id": "cedar-back",
+      "texture": "cedar-b",
+      "z": -24,
+      "x": 0.26,
+      "bottom": 0.2,
+      "height": 0.62,
+      "rim": 0.2,
+      "fog": 0.4,
+      "tint": 0.4,
+      "portrait": {
+        "x": 0.3,
+        "height": 0.4
+      }
+    },
+    {
+      "id": "wall",
+      "texture": "wall",
+      "z": -20,
+      "x": 0.05,
+      "bottom": 0.22,
+      "height": 0.15,
+      "rim": 0.6,
+      "fog": 0.28,
+      "tint": 0.4,
+      "portrait": {
+        "height": 0.08,
+        "tileX": 10
+      },
+      "tileX": 10
+    },
+    {
+      "id": "maple-left",
+      "texture": "maple",
+      "z": -14,
+      "x": -0.38,
+      "bottom": 0.12,
+      "height": 0.78,
+      "rim": 0.35,
+      "fog": 0.12,
+      "tint": 0.35,
+      "sway": 0.04,
+      "portrait": {
+        "x": -0.46,
+        "height": 0.46
+      }
+    },
+    {
+      "id": "maple-right",
+      "texture": "maple",
+      "z": -12,
+      "x": 0.47,
+      "bottom": 0.1,
+      "height": 0.6,
+      "rim": 0.35,
+      "tint": 0.35,
+      "sway": 0.04,
+      "fog": 0.08,
+      "portrait": {
+        "x": 0.5,
+        "height": 0.34
+      }
+    },
+    {
+      "id": "ground",
+      "texture": "hill",
+      "z": -11,
+      "x": 0,
+      "bottom": -0.14,
+      "height": 0.42,
+      "stretch": true,
+      "rim": 0.12,
+      "fog": 0.08,
+      "tint": 0.4
+    },
+    {
+      "id": "pond",
+      "texture": "pond",
+      "z": -9,
+      "x": 0.12,
+      "bottom": 0.13,
+      "height": 0.22,
+      "rim": 0.2,
+      "tint": 0.3,
+      "portrait": {
+        "x": 0.08,
+        "bottom": 0.2,
+        "height": 0.11
+      },
+      "water": {
+        "mask": "pond-water",
+        "opacity": 0.6
+      }
+    },
+    {
+      "id": "lantern-left",
+      "texture": "lantern",
+      "z": -8.5,
+      "x": -0.14,
+      "bottom": 0.15,
+      "height": 0.2,
+      "rim": 0.6,
+      "tint": 0.4,
+      "light": {
+        "u": 0.5,
+        "v": 0.63,
+        "color": "#ffb35a",
+        "intensity": 1.8,
+        "radius": 1.4,
+        "flicker": 0.3,
+        "glow": 0.4
+      },
+      "portrait": {
+        "x": -0.32,
+        "height": 0.1
+      }
+    },
+    {
+      "id": "lantern-right",
+      "texture": "lantern",
+      "z": -8.5,
+      "x": 0.36,
+      "bottom": 0.15,
+      "height": 0.18,
+      "rim": 0.6,
+      "tint": 0.4,
+      "light": {
+        "u": 0.5,
+        "v": 0.63,
+        "color": "#ffb35a",
+        "intensity": 1.5,
+        "radius": 1.4,
+        "flicker": 0.3,
+        "glow": 0.4
+      },
+      "portrait": {
+        "x": 0.36,
+        "height": 0.09
+      }
+    },
+    {
+      "id": "rocks-mid",
+      "texture": "rocks",
+      "z": -8,
+      "x": 0.46,
+      "bottom": 0.08,
+      "height": 0.11,
+      "rim": 0.7,
+      "tint": 0.4,
+      "portrait": {
+        "height": 0.06
+      }
+    },
+    {
+      "id": "bush-mid",
+      "texture": "bush",
+      "z": -8,
+      "x": -0.44,
+      "bottom": 0.06,
+      "height": 0.16,
+      "rim": 0.7,
+      "tint": 0.4,
+      "sway": 0.08,
+      "portrait": {
+        "height": 0.08
+      }
+    },
+    {
+      "id": "floor-near",
+      "texture": "hill",
+      "z": -4.5,
+      "x": 0,
+      "bottom": -0.14,
+      "height": 0.28,
+      "stretch": true,
+      "rim": 0.12,
+      "shade": 0.55,
+      "tint": 0.4,
+      "portrait": {
+        "bottom": -0.02,
+        "height": 0.2
+      }
+    },
+    {
+      "id": "stones",
+      "texture": "stones",
+      "z": -3.2,
+      "x": -0.1,
+      "bottom": -0.16,
+      "height": 0.46,
+      "rim": 0.25,
+      "shade": 1,
+      "tint": 0.3,
+      "portrait": {
+        "x": -0.04,
+        "bottom": -0.06,
+        "height": 0.24
+      },
+      "anchorX": 0.5
+    },
+    {
+      "id": "grass-fore",
+      "texture": "grass",
+      "z": 2,
+      "x": 0,
+      "bottom": -0.14,
+      "height": 0.34,
+      "stretch": true,
+      "sway": 0.6,
+      "rim": 0,
+      "shade": 0.6,
+      "tint": 0.4,
+      "portrait": {
+        "height": 0.22
+      }
+    },
+    {
+      "id": "branch-fore",
+      "texture": "branch",
+      "z": 3.5,
+      "x": -0.53,
+      "anchorX": 0,
+      "bottom": 0.7,
+      "height": 0.36,
+      "sway": 0.18,
+      "rim": 0.5,
+      "tint": 0.4,
+      "portrait": {
+        "hidden": true
+      }
+    }
   ],
-  "camera": { "fov": 38, "position": [[-1.6,1.5,13.5],[-0.6,1.45,12.6],[0.6,1.4,11.6],[1.6,1.35,10.6]], "lookAt": [[-0.8,2.2,-20],[-0.1,2.1,-20],[0.7,2,-20],[1.6,1.9,-20]] },
-  "celestial": { "u": 0.3, "v": 0.4, "uPortrait": 0.5, "vPortrait": 0.52, "size": 0.11, "driftU": 0.02, "driftV": -0.06, "intensity": 2.6, "halo": 0.03 },
-  "title": { "v": 0.09, "vPortrait": 0.2 },
+  "camera": {
+    "fov": 38,
+    "position": [
+      [
+        -1.6,
+        1.5,
+        13.5
+      ],
+      [
+        -0.6,
+        1.45,
+        12.6
+      ],
+      [
+        0.6,
+        1.4,
+        11.6
+      ],
+      [
+        1.6,
+        1.35,
+        10.6
+      ]
+    ],
+    "lookAt": [
+      [
+        -0.8,
+        2.2,
+        -20
+      ],
+      [
+        -0.1,
+        2.1,
+        -20
+      ],
+      [
+        0.7,
+        2,
+        -20
+      ],
+      [
+        1.6,
+        1.9,
+        -20
+      ]
+    ]
+  },
+  "celestial": {
+    "u": 0.3,
+    "v": 0.4,
+    "uPortrait": 0.5,
+    "vPortrait": 0.52,
+    "size": 0.11,
+    "driftU": 0.02,
+    "driftV": -0.06,
+    "intensity": 2.6,
+    "halo": 0.03
+  },
+  "title": {
+    "v": 0.09,
+    "vPortrait": 0.2
+  },
   "fog": [
-    { "z": -26, "opacity": 0.16, "height": 0.45, "speed": 0.02, "scale": 1.8 },
-    { "z": -12, "opacity": 0.08, "height": 0.32, "speed": 0.035, "scale": 2.4 },
-    { "z": -4, "opacity": 0.04, "height": 0.2, "speed": 0.05, "scale": 3.2 }
+    {
+      "z": -26,
+      "opacity": 0.16,
+      "height": 0.45,
+      "speed": 0.02,
+      "scale": 1.8
+    },
+    {
+      "z": -12,
+      "opacity": 0.08,
+      "height": 0.32,
+      "speed": 0.035,
+      "scale": 2.4
+    },
+    {
+      "z": -4,
+      "opacity": 0.04,
+      "height": 0.2,
+      "speed": 0.05,
+      "scale": 3.2
+    }
   ],
   "particles": [
-    { "texture": "leaves", "cells": 4, "count": 110, "zMin": -24, "zMax": -8, "size": 0.32, "speed": 0.6, "fall": 0.3, "opacity": 0.9 },
-    { "texture": "leaves", "cells": 4, "count": 36, "zMin": -2, "zMax": 4, "size": 0.2, "speed": 0.8, "fall": 0.45, "opacity": 0.75 }
+    {
+      "texture": "leaves",
+      "cells": 4,
+      "count": 110,
+      "zMin": -24,
+      "zMax": -8,
+      "size": 0.32,
+      "speed": 0.6,
+      "fall": 0.3,
+      "opacity": 0.9
+    },
+    {
+      "texture": "leaves",
+      "cells": 4,
+      "count": 36,
+      "zMin": -2,
+      "zMax": 4,
+      "size": 0.2,
+      "speed": 0.8,
+      "fall": 0.45,
+      "opacity": 0.75
+    }
   ],
-  "shafts": { "count": 8, "opacity": 0.1, "length": 1.2, "spread": 0.55, "angle": -0.75 }
+  "shafts": {
+    "count": 8,
+    "opacity": 0.1,
+    "length": 1.2,
+    "spread": 0.55,
+    "angle": -0.75
+  },
+  "hero": {
+    "z": -22,
+    "x": 0.12,
+    "bottom": 0.2,
+    "height": 0.52,
+    "maxWidth": 0.7,
+    "fog": 0.12,
+    "tint": 0.35,
+    "rim": 0.3,
+    "replace": [],
+    "portrait": {
+      "x": 0.05,
+      "bottom": 0.26,
+      "height": 0.3,
+      "maxWidth": 0.95
+    }
+  }
 }

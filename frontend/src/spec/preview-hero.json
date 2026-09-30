@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "id": "hero-preview",
+  "topic": "Hero preview",
+  "title": "Hero",
+  "subtitle": "Development preview of landmark hero slots.",
+  "slug": "hero-preview",
+  "createdAt": "2026-09-30T00:00:00Z",
+  "chapters": [
+    {
+      "index": 1,
+      "label": "CHAPTER 01 · ERG",
+      "titleWord": "ERG",
+      "heading": "Snow holds the high ground long after the valley thaws.",
+      "subheading": "Peak template preview",
+      "body": "A development preview of the Peak scene, used to tune the layers, the camera climb and the light for each time of day. It is not a story and never appears in the gallery or in production builds of the site.",
+      "sceneTemplate": "dune",
+      "sceneParams": {
+        "primaryColor": "#3a2418",
+        "accentColor": "#ff8a3c",
+        "particleType": "dust",
+        "groundType": "stone",
+        "backgroundObject": "sun",
+        "propVariant": "erg",
+        "artKit": "erg",
+        "timeOfDay": "dusk",
+        "props": [],
+        "particleDensity": 0.5
+      },
+      "titleLayout": "horizontal",
+      "transition": "noise-dissolve",
+      "landmark": {
+        "name": "Test structure",
+        "description": "A synthetic test shape used to check hero slot placement.",
+        "layer": {
+          "url": "/dev/hero-test.webp",
+          "attribution": "test"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "label": "CHAPTER 02 · GARDEN",
+      "titleWord": "GARDEN",
+      "heading": "Snow holds the high ground long after the valley thaws.",
+      "subheading": "Peak template preview",
+      "body": "A development preview of the Peak scene, used to tune the layers, the camera climb and the light for each time of day. It is not a story and never appears in the gallery or in production builds of the site.",
+      "sceneTemplate": "threshold",
+      "sceneParams": {
+        "primaryColor": "#2a1c12",
+        "accentColor": "#f0a24a",
+        "particleType": "dust",
+        "groundType": "stone",
+        "backgroundObject": "sun",
+        "propVariant": "temple-dusk",
+        "artKit": "temple-dusk",
+        "timeOfDay": "dusk",
+        "props": [],
+        "particleDensity": 0.5
+      },
+      "titleLayout": "horizontal",
+      "transition": "ink-wipe",
+      "landmark": {
+        "name": "Test structure",
+        "description": "A synthetic test shape used to check hero slot placement.",
+        "layer": {
+          "url": "/dev/hero-test.webp",
+          "attribution": "test"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "label": "CHAPTER 03 · ALPINE",
+      "titleWord": "ALPINE",
+      "heading": "Snow holds the high ground long after the valley thaws.",
+      "subheading": "Peak template preview",
+      "body": "A development preview of the Peak scene, used to tune the layers, the camera climb and the light for each time of day. It is not a story and never appears in the gallery or in production builds of the site.",
+      "sceneTemplate": "peak",
+      "sceneParams": {
+        "primaryColor": "#1e3450",
+        "accentColor": "#f4f8ff",
+        "particleType": "dust",
+        "groundType": "stone",
+        "backgroundObject": "clouds",
+        "propVariant": "alpine",
+        "artKit": "alpine",
+        "timeOfDay": "day",
+        "props": [],
+        "particleDensity": 0.5
+      },
+      "titleLayout": "horizontal",
+      "transition": "bloom-out",
+      "landmark": {
+        "name": "Test structure",
+        "description": "A synthetic test shape used to check hero slot placement.",
+        "layer": {
+          "url": "/dev/hero-test.webp",
+          "attribution": "test"
+        }
+      }
+    }
+  ]
+}

@@ -34,36 +34,457 @@
     ]
   },
   "layers": [
-    { "id": "far-ridge", "texture": "hill", "z": -44, "x": 0, "bottom": 0.2, "height": 0.26, "stretch": true, "fog": 0.35, "tint": 0.3, "rim": 0.12 },
-    { "id": "far-cedar-l", "texture": "cedar-a", "z": -38, "x": -0.2, "bottom": 0.3, "height": 0.36, "fog": 0.4, "tint": 0.3, "rim": 0.3 },
-    { "id": "far-cedar-r", "texture": "cedar-b", "z": -38, "x": 0.21, "bottom": 0.3, "height": 0.38, "fog": 0.4, "tint": 0.3, "rim": 0.3 },
-    { "id": "torii-far", "texture": "torii", "z": -34, "x": 0, "bottom": 0.33, "height": 0.16, "fog": 0.3, "rim": 0.4, "tint": 0.3 },
-    { "id": "cedar-left", "texture": "cedar-a", "z": -20, "x": -0.4, "bottom": 0.18, "height": 0.8, "rim": 0.5, "fog": 0.3, "tint": 0.3, "portrait": {"x": -0.5, "height": 0.5} },
-    { "id": "cedar-right", "texture": "cedar-b", "z": -20, "x": 0.41, "bottom": 0.18, "height": 0.82, "rim": 0.5, "fog": 0.3, "tint": 0.3, "portrait": {"x": 0.5, "height": 0.52} },
-    { "id": "ground", "texture": "hill", "z": -14, "x": 0, "bottom": -0.12, "height": 0.44, "stretch": true, "rim": 0.12, "fog": 0.12, "tint": 0.3 },
-    { "id": "lantern-0-l", "texture": "lantern", "z": -8, "x": -0.18037518037518036, "bottom": 0.2, "height": 0.14430014430014432, "rim": 0.6, "fog": 0, "tint": 0.3, "light": {"u": 0.5, "v": 0.63, "color": "#ffc27a", "intensity": 1.1, "radius": 1.5, "flicker": 0.25, "glow": 0.35}, "portrait": {"x": -0.22546897546897543, "height": 0.08946608946608947, "bottom": 0.23} },
-    { "id": "lantern-0-r", "texture": "lantern", "z": -8, "x": 0.18037518037518036, "bottom": 0.2, "height": 0.14430014430014432, "rim": 0.6, "fog": 0, "tint": 0.3, "light": {"u": 0.5, "v": 0.63, "color": "#ffc27a", "intensity": 1.1, "radius": 1.5, "flicker": 0.25, "glow": 0.35}, "portrait": {"x": 0.22546897546897543, "height": 0.08946608946608947, "bottom": 0.23} },
-    { "id": "lantern-1-l", "texture": "lantern", "z": -12, "x": -0.15262515262515264, "bottom": 0.245, "height": 0.12210012210012211, "rim": 0.6, "fog": 0.12, "tint": 0.3, "light": {"u": 0.5, "v": 0.63, "color": "#ffc27a", "intensity": 0.8500000000000001, "radius": 1.5, "flicker": 0.25, "glow": 0.35}, "portrait": {"x": -0.1907814407814408, "height": 0.07570207570207571, "bottom": 0.275} },
-    { "id": "lantern-1-r", "texture": "lantern", "z": -12, "x": 0.15262515262515264, "bottom": 0.245, "height": 0.12210012210012211, "rim": 0.6, "fog": 0.12, "tint": 0.3, "light": {"u": 0.5, "v": 0.63, "color": "#ffc27a", "intensity": 0.8500000000000001, "radius": 1.5, "flicker": 0.25, "glow": 0.35}, "portrait": {"x": 0.1907814407814408, "height": 0.07570207570207571, "bottom": 0.275} },
-    { "id": "lantern-2-l", "texture": "lantern", "z": -17, "x": -0.12800819252432155, "bottom": 0.285, "height": 0.10240655401945724, "rim": 0.6, "fog": 0.24, "tint": 0.3, "portrait": {"x": -0.16001024065540193, "height": 0.06349206349206349, "bottom": 0.31499999999999995} },
-    { "id": "lantern-2-r", "texture": "lantern", "z": -17, "x": 0.12800819252432155, "bottom": 0.285, "height": 0.10240655401945724, "rim": 0.6, "fog": 0.24, "tint": 0.3, "portrait": {"x": 0.16001024065540193, "height": 0.06349206349206349, "bottom": 0.31499999999999995} },
-    { "id": "lantern-3-l", "texture": "lantern", "z": -23, "x": -0.10725010725010725, "bottom": 0.315, "height": 0.0858000858000858, "rim": 0.6, "fog": 0.36, "tint": 0.3, "portrait": {"x": -0.13406263406263408, "height": 0.053196053196053195, "bottom": 0.345} },
-    { "id": "lantern-3-r", "texture": "lantern", "z": -23, "x": 0.10725010725010725, "bottom": 0.315, "height": 0.0858000858000858, "rim": 0.6, "fog": 0.36, "tint": 0.3, "portrait": {"x": 0.13406263406263408, "height": 0.053196053196053195, "bottom": 0.345} },
-    { "id": "lantern-4-l", "texture": "lantern", "z": -30, "x": -0.09018759018759018, "bottom": 0.34, "height": 0.07215007215007216, "rim": 0.6, "fog": 0.48, "tint": 0.3, "portrait": {"x": -0.11273448773448771, "height": 0.044733044733044736, "bottom": 0.37} },
-    { "id": "lantern-4-r", "texture": "lantern", "z": -30, "x": 0.09018759018759018, "bottom": 0.34, "height": 0.07215007215007216, "rim": 0.6, "fog": 0.48, "tint": 0.3, "portrait": {"x": 0.11273448773448771, "height": 0.044733044733044736, "bottom": 0.37} },
-    { "id": "path", "texture": "stones", "z": -7, "x": 0, "bottom": 0.08, "height": 0.14, "rim": 0.5, "tint": 0.3, "portrait": {"height": 0.07} },
-    { "id": "floor-near", "texture": "hill", "z": -4.5, "x": 0, "bottom": -0.06, "height": 0.32, "stretch": true, "rim": 0.12, "shade": 0.55, "tint": 0.3, "portrait": {"bottom": 0.02, "height": 0.24} },
-    { "id": "bush-near", "texture": "bush", "z": -3, "x": 0.52, "anchorX": 0.7, "bottom": -0.02, "height": 0.26, "rim": 0.6, "shade": 0.5, "sway": 0.08, "tint": 0.3, "portrait": {"height": 0.13} },
-    { "id": "grass-fore", "texture": "grass", "z": 2, "x": 0, "bottom": -0.14, "height": 0.3, "stretch": true, "sway": 0.4, "rim": 0, "shade": 0.6, "tint": 0.3, "portrait": {"height": 0.2} }
+    {
+      "id": "far-ridge",
+      "texture": "hill",
+      "z": -44,
+      "x": 0,
+      "bottom": 0.2,
+      "height": 0.26,
+      "stretch": true,
+      "fog": 0.35,
+      "tint": 0.3,
+      "rim": 0.12
+    },
+    {
+      "id": "far-cedar-l",
+      "texture": "cedar-a",
+      "z": -38,
+      "x": -0.2,
+      "bottom": 0.3,
+      "height": 0.36,
+      "fog": 0.4,
+      "tint": 0.3,
+      "rim": 0.3
+    },
+    {
+      "id": "far-cedar-r",
+      "texture": "cedar-b",
+      "z": -38,
+      "x": 0.21,
+      "bottom": 0.3,
+      "height": 0.38,
+      "fog": 0.4,
+      "tint": 0.3,
+      "rim": 0.3
+    },
+    {
+      "id": "torii-far",
+      "texture": "torii",
+      "z": -34,
+      "x": 0,
+      "bottom": 0.33,
+      "height": 0.16,
+      "fog": 0.3,
+      "rim": 0.4,
+      "tint": 0.3
+    },
+    {
+      "id": "cedar-left",
+      "texture": "cedar-a",
+      "z": -20,
+      "x": -0.4,
+      "bottom": 0.18,
+      "height": 0.8,
+      "rim": 0.5,
+      "fog": 0.3,
+      "tint": 0.3,
+      "portrait": {
+        "x": -0.5,
+        "height": 0.5
+      }
+    },
+    {
+      "id": "cedar-right",
+      "texture": "cedar-b",
+      "z": -20,
+      "x": 0.41,
+      "bottom": 0.18,
+      "height": 0.82,
+      "rim": 0.5,
+      "fog": 0.3,
+      "tint": 0.3,
+      "portrait": {
+        "x": 0.5,
+        "height": 0.52
+      }
+    },
+    {
+      "id": "ground",
+      "texture": "hill",
+      "z": -14,
+      "x": 0,
+      "bottom": -0.12,
+      "height": 0.44,
+      "stretch": true,
+      "rim": 0.12,
+      "fog": 0.12,
+      "tint": 0.3
+    },
+    {
+      "id": "lantern-0-l",
+      "texture": "lantern",
+      "z": -8,
+      "x": -0.18037518037518036,
+      "bottom": 0.2,
+      "height": 0.14430014430014432,
+      "rim": 0.6,
+      "fog": 0,
+      "tint": 0.3,
+      "light": {
+        "u": 0.5,
+        "v": 0.63,
+        "color": "#ffc27a",
+        "intensity": 1.1,
+        "radius": 1.5,
+        "flicker": 0.25,
+        "glow": 0.35
+      },
+      "portrait": {
+        "x": -0.22546897546897543,
+        "height": 0.08946608946608947,
+        "bottom": 0.23
+      }
+    },
+    {
+      "id": "lantern-0-r",
+      "texture": "lantern",
+      "z": -8,
+      "x": 0.18037518037518036,
+      "bottom": 0.2,
+      "height": 0.14430014430014432,
+      "rim": 0.6,
+      "fog": 0,
+      "tint": 0.3,
+      "light": {
+        "u": 0.5,
+        "v": 0.63,
+        "color": "#ffc27a",
+        "intensity": 1.1,
+        "radius": 1.5,
+        "flicker": 0.25,
+        "glow": 0.35
+      },
+      "portrait": {
+        "x": 0.22546897546897543,
+        "height": 0.08946608946608947,
+        "bottom": 0.23
+      }
+    },
+    {
+      "id": "lantern-1-l",
+      "texture": "lantern",
+      "z": -12,
+      "x": -0.15262515262515264,
+      "bottom": 0.245,
+      "height": 0.12210012210012211,
+      "rim": 0.6,
+      "fog": 0.12,
+      "tint": 0.3,
+      "light": {
+        "u": 0.5,
+        "v": 0.63,
+        "color": "#ffc27a",
+        "intensity": 0.8500000000000001,
+        "radius": 1.5,
+        "flicker": 0.25,
+        "glow": 0.35
+      },
+      "portrait": {
+        "x": -0.1907814407814408,
+        "height": 0.07570207570207571,
+        "bottom": 0.275
+      }
+    },
+    {
+      "id": "lantern-1-r",
+      "texture": "lantern",
+      "z": -12,
+      "x": 0.15262515262515264,
+      "bottom": 0.245,
+      "height": 0.12210012210012211,
+      "rim": 0.6,
+      "fog": 0.12,
+      "tint": 0.3,
+      "light": {
+        "u": 0.5,
+        "v": 0.63,
+        "color": "#ffc27a",
+        "intensity": 0.8500000000000001,
+        "radius": 1.5,
+        "flicker": 0.25,
+        "glow": 0.35
+      },
+      "portrait": {
+        "x": 0.1907814407814408,
+        "height": 0.07570207570207571,
+        "bottom": 0.275
+      }
+    },
+    {
+      "id": "lantern-2-l",
+      "texture": "lantern",
+      "z": -17,
+      "x": -0.12800819252432155,
+      "bottom": 0.285,
+      "height": 0.10240655401945724,
+      "rim": 0.6,
+      "fog": 0.24,
+      "tint": 0.3,
+      "portrait": {
+        "x": -0.16001024065540193,
+        "height": 0.06349206349206349,
+        "bottom": 0.31499999999999995
+      }
+    },
+    {
+      "id": "lantern-2-r",
+      "texture": "lantern",
+      "z": -17,
+      "x": 0.12800819252432155,
+      "bottom": 0.285,
+      "height": 0.10240655401945724,
+      "rim": 0.6,
+      "fog": 0.24,
+      "tint": 0.3,
+      "portrait": {
+        "x": 0.16001024065540193,
+        "height": 0.06349206349206349,
+        "bottom": 0.31499999999999995
+      }
+    },
+    {
+      "id": "lantern-3-l",
+      "texture": "lantern",
+      "z": -23,
+      "x": -0.10725010725010725,
+      "bottom": 0.315,
+      "height": 0.0858000858000858,
+      "rim": 0.6,
+      "fog": 0.36,
+      "tint": 0.3,
+      "portrait": {
+        "x": -0.13406263406263408,
+        "height": 0.053196053196053195,
+        "bottom": 0.345
+      }
+    },
+    {
+      "id": "lantern-3-r",
+      "texture": "lantern",
+      "z": -23,
+      "x": 0.10725010725010725,
+      "bottom": 0.315,
+      "height": 0.0858000858000858,
+      "rim": 0.6,
+      "fog": 0.36,
+      "tint": 0.3,
+      "portrait": {
+        "x": 0.13406263406263408,
+        "height": 0.053196053196053195,
+        "bottom": 0.345
+      }
+    },
+    {
+      "id": "lantern-4-l",
+      "texture": "lantern",
+      "z": -30,
+      "x": -0.09018759018759018,
+      "bottom": 0.34,
+      "height": 0.07215007215007216,
+      "rim": 0.6,
+      "fog": 0.48,
+      "tint": 0.3,
+      "portrait": {
+        "x": -0.11273448773448771,
+        "height": 0.044733044733044736,
+        "bottom": 0.37
+      }
+    },
+    {
+      "id": "lantern-4-r",
+      "texture": "lantern",
+      "z": -30,
+      "x": 0.09018759018759018,
+      "bottom": 0.34,
+      "height": 0.07215007215007216,
+      "rim": 0.6,
+      "fog": 0.48,
+      "tint": 0.3,
+      "portrait": {
+        "x": 0.11273448773448771,
+        "height": 0.044733044733044736,
+        "bottom": 0.37
+      }
+    },
+    {
+      "id": "path",
+      "texture": "stones",
+      "z": -7,
+      "x": 0,
+      "bottom": 0.08,
+      "height": 0.14,
+      "rim": 0.5,
+      "tint": 0.3,
+      "portrait": {
+        "height": 0.07
+      }
+    },
+    {
+      "id": "floor-near",
+      "texture": "hill",
+      "z": -4.5,
+      "x": 0,
+      "bottom": -0.06,
+      "height": 0.32,
+      "stretch": true,
+      "rim": 0.12,
+      "shade": 0.55,
+      "tint": 0.3,
+      "portrait": {
+        "bottom": 0.02,
+        "height": 0.24
+      }
+    },
+    {
+      "id": "bush-near",
+      "texture": "bush",
+      "z": -3,
+      "x": 0.52,
+      "anchorX": 0.7,
+      "bottom": -0.02,
+      "height": 0.26,
+      "rim": 0.6,
+      "shade": 0.5,
+      "sway": 0.08,
+      "tint": 0.3,
+      "portrait": {
+        "height": 0.13
+      }
+    },
+    {
+      "id": "grass-fore",
+      "texture": "grass",
+      "z": 2,
+      "x": 0,
+      "bottom": -0.14,
+      "height": 0.3,
+      "stretch": true,
+      "sway": 0.4,
+      "rim": 0,
+      "shade": 0.6,
+      "tint": 0.3,
+      "portrait": {
+        "height": 0.2
+      }
+    }
   ],
-  "camera": { "fov": 34, "position": [[0,1.3,14],[0,1.28,13.2],[0,1.26,12.4],[0,1.24,11.6]], "lookAt": [[0,2.2,-20],[0,2.15,-20],[0,2.1,-20],[0,2.05,-20]] },
-  "title": { "v": 0.13, "vPortrait": 0.2, "x": 0.33, "xPortrait": 0.3, "height": 0.6 },
+  "camera": {
+    "fov": 34,
+    "position": [
+      [
+        0,
+        1.3,
+        14
+      ],
+      [
+        0,
+        1.28,
+        13.2
+      ],
+      [
+        0,
+        1.26,
+        12.4
+      ],
+      [
+        0,
+        1.24,
+        11.6
+      ]
+    ],
+    "lookAt": [
+      [
+        0,
+        2.2,
+        -20
+      ],
+      [
+        0,
+        2.15,
+        -20
+      ],
+      [
+        0,
+        2.1,
+        -20
+      ],
+      [
+        0,
+        2.05,
+        -20
+      ]
+    ]
+  },
+  "title": {
+    "v": 0.13,
+    "vPortrait": 0.2,
+    "x": 0.33,
+    "xPortrait": 0.3,
+    "height": 0.6
+  },
   "fog": [
-    { "z": -28, "opacity": 0.18, "height": 0.55, "speed": 0.015, "scale": 1.6 },
-    { "z": -18, "opacity": 0.1, "height": 0.4, "speed": 0.025, "scale": 2.2 },
-    { "z": -6, "opacity": 0.05, "height": 0.28, "speed": 0.035, "scale": 3 }
+    {
+      "z": -28,
+      "opacity": 0.18,
+      "height": 0.55,
+      "speed": 0.015,
+      "scale": 1.6
+    },
+    {
+      "z": -18,
+      "opacity": 0.1,
+      "height": 0.4,
+      "speed": 0.025,
+      "scale": 2.2
+    },
+    {
+      "z": -6,
+      "opacity": 0.05,
+      "height": 0.28,
+      "speed": 0.035,
+      "scale": 3
+    }
   ],
   "particles": [
-    { "texture": "leaves", "cells": 4, "count": 24, "zMin": -22, "zMax": -8, "size": 0.26, "speed": 0.4, "fall": 0.2, "opacity": 0.7 }
-  ]
+    {
+      "texture": "leaves",
+      "cells": 4,
+      "count": 24,
+      "zMin": -22,
+      "zMax": -8,
+      "size": 0.26,
+      "speed": 0.4,
+      "fall": 0.2,
+      "opacity": 0.7
+    }
+  ],
+  "hero": {
+    "z": -34,
+    "x": 0,
+    "bottom": 0.3,
+    "height": 0.38,
+    "maxWidth": 0.6,
+    "fog": 0.25,
+    "tint": 0.4,
+    "rim": 0.25,
+    "replace": [
+      "torii-far"
+    ],
+    "portrait": {
+      "bottom": 0.33,
+      "height": 0.2,
+      "maxWidth": 0.9
+    }
+  }
 }

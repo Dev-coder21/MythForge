@@ -285,5 +285,23 @@
     "length": 1,
     "spread": 1.3,
     "angle": -1.57
+  },
+  "hero": {
+    "z": -34,
+    "x": 0.1,
+    "bottom": 0.2,
+    "height": 0.66,
+    "maxWidth": 0.8,
+    "fog": 0.15,
+    "tint": 0.2,
+    "rim": 0.3,
+    "replace": [
+      "rocks-far"
+    ],
+    "portrait": {
+      "bottom": 0.24,
+      "height": 0.28,
+      "maxWidth": 0.95
+    }
   }
 }

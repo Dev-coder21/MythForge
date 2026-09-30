@@ -15,7 +15,10 @@ export const STORIES: Record<string, () => Promise<StorySpec>> = {
   kyoto: async () => sampleKyoto,
   giza: async () => (await import('./sample-giza.json')).default as StorySpec,
   // Dev-only template preview (tuning, npm run shots / fps); stripped from production builds.
-  ...(import.meta.env.DEV ? { 'peak-preview': async () => (await import('./preview-peak.json')).default as StorySpec } : {}),
+  ...(import.meta.env.DEV ? {
+        'peak-preview': async () => (await import('./preview-peak.json')).default as StorySpec,
+        'hero-preview': async () => (await import('./preview-hero.json')).default as StorySpec,
+      } : {}),
 }
 
 /** Stories to offer readers (previews excluded). */

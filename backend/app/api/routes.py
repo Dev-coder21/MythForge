@@ -17,6 +17,7 @@ from sqlalchemy.orm import Session
 from app.api import generation
 from app.core.config import BACKEND_DIR
 from app.core.db import get_db
+from app.imagegen.landmarks import layer_path as landmark_layer_path
 from app.llm_pipeline.catalog import KITS
 from app.models import GenerationJob, Story, StoryStatus
 
@@ -153,6 +154,15 @@ def get_poster(story_id: str) -> FileResponse:
     if not re.fullmatch(r"[0-9a-f-]{36}", story_id) or not path.exists():
         raise HTTPException(404, "No poster yet.")
     return FileResponse(path, media_type="image/jpeg", headers={"Cache-Control": "no-cache"})
+
+
+@router.get("/landmarks/{key}.webp")
+def get_landmark_layer(key: str) -> FileResponse:
+    """An AI-painted landmark cutout that passed its quality check (cached per landmark)."""
+    path = landmark_layer_path(key)
+    if path is None:
+        raise HTTPException(404, "No landmark layer with that key.")
+    return FileResponse(path, media_type="image/webp", headers={"Cache-Control": "public, max-age=31536000, immutable"})
 
 
 @router.get("/templates")

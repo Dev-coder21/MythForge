@@ -95,3 +95,13 @@ def test_duplicate_topics_get_unique_slugs(client, monkeypatch):
         ids = client.post("/generate", json={"topic": "Mount Fuji"}).json()
         slugs.append(client.get(f"/generate/{ids['jobId']}/status").json()["storySlug"])
     assert slugs == ["fuji", "fuji-2"]
+
+
+def test_landmark_layer_route(client, monkeypatch, tmp_path):
+    from app.imagegen import landmarks
+    monkeypatch.setattr(landmarks, "CACHE_DIR", tmp_path)
+    (tmp_path / "0123456789abcdef").mkdir()
+    (tmp_path / "0123456789abcdef" / "layer.webp").write_bytes(b"RIFFxxxxWEBP")
+    assert client.get("/landmarks/0123456789abcdef.webp").status_code == 200
+    assert client.get("/landmarks/..%2F..%2Fsecret.webp").status_code == 404
+    assert client.get("/landmarks/ffffffffffffffff.webp").status_code == 404

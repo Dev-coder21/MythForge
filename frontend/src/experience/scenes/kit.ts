@@ -176,6 +176,20 @@ export interface KitRiver {
   portrait?: { bottom?: number; height?: number }
 }
 
+/**
+ * Where an AI-painted landmark (chapter.landmark.layer) goes in this kit: a normal layer
+ * placement at a depth behind the mid layers, so nearer layers and the title frame it.
+ * `replace` hides kit layers the landmark stands in for (a far gate, a rock outcrop).
+ */
+export interface KitHero extends KitPlacement {
+  z: number
+  fog?: number
+  tint?: number
+  rim?: number
+  replace?: string[]
+  portrait?: Partial<KitPlacement>
+}
+
 export interface Kit {
   name: string
   template: string
@@ -192,6 +206,7 @@ export interface Kit {
   skyByTime?: Partial<Record<'dawn' | 'day' | 'dusk' | 'night', KitSky>>
   heat?: KitHeat
   river?: KitRiver
+  hero?: KitHero
 }
 
 export const kitUrl = (template: string, kit: string, file = 'kit.json') =>

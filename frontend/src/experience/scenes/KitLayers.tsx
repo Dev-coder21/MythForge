@@ -36,6 +36,22 @@ export interface KitLook {
   sun: string
 }
 
+/**
+ * Put a chapter's AI-painted landmark into the kit's hero slot: one extra layer at the
+ * slot's depth (drawn and fogged like any kit layer), hiding the layers it replaces.
+ * Kits without a slot, or chapters without a painted layer, are returned unchanged.
+ */
+export function withHero(kit: Kit, layerUrl: string | undefined): Kit {
+  const hero = kit.hero
+  if (!hero || !layerUrl) return kit
+  const { replace = [], ...placement } = hero
+  const layers = kit.layers.filter((l) => !replace.includes(l.id))
+  // Insert before the first nearer layer; the kit's own order is kept (it is not always sorted by z).
+  const at = layers.findIndex((l) => l.z > hero.z)
+  layers.splice(at < 0 ? layers.length : at, 0, { ...placement, id: 'hero', texture: 'hero' } as Kit['layers'][number])
+  return { ...kit, textures: { ...kit.textures, hero: layerUrl }, layers }
+}
+
 /** Fetch and parse a kit manifest (suspends). */
 export function useKit(template: string, name: string): Kit {
   const raw = useLoader(FileLoader, kitUrl(template, name)) as string
@@ -75,7 +91,8 @@ export function useKitTextures(template: string, name: string, kit: Kit): Record
   const sources = useMemo(
     () =>
       Object.entries(kit.textures).map(
-        ([id, src]) => [id, (Array.isArray(src) ? src : [src]).map((f) => kitUrl(template, name, f))] as const,
+        ([id, src]) =>
+          [id, (Array.isArray(src) ? src : [src]).map((f) => (/^(\/|https?:)/.test(f) ? f : kitUrl(template, name, f)))] as const,
       ),
     [kit, template, name],
   )
