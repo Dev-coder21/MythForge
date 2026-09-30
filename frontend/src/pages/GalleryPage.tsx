@@ -83,7 +83,7 @@ export function GalleryPage() {
         {state.status === 'loading' && (
           <div className="grid gap-5 md:grid-cols-2 md:gap-6" aria-busy="true" aria-label="Loading stories">
             {[0, 1].map((i) => (
-              <div key={i} className="aspect-[16/10] animate-pulse bg-white/[0.06]" />
+              <div key={i} className="aspect-[4/5] animate-pulse bg-white/[0.06] sm:aspect-[16/10]" />
             ))}
           </div>
         )}
@@ -139,7 +139,7 @@ function StoryCard({ card }: { card: Card }) {
   const [failed, setFailed] = useState(false)
   const showPoster = card.poster && !failed
   return (
-    <Link to={`/story/${card.slug}`} className="group relative block aspect-[16/10] overflow-hidden" style={{ backgroundColor: card.primary }}>
+    <Link to={`/story/${card.slug}`} className="group relative block aspect-[4/5] overflow-hidden sm:aspect-[16/10]" style={{ backgroundColor: card.primary }}>
       {showPoster ? (
         <img src={card.poster!} alt="" loading="lazy" onError={() => setFailed(true)} className="absolute inset-0 h-full w-full object-cover" />
       ) : (

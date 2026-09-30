@@ -34,7 +34,7 @@ export function StoryInfoPanel({ spec, grounding }: StoryInfoPanelProps) {
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-controls="story-info"
-        className="fixed right-5 top-[72px] z-40 border-b border-white/30 pb-0.5 text-[10px] uppercase tracking-[0.3em] text-white/60 transition-colors hover:text-white md:right-10 md:top-[88px]"
+        className="fixed bottom-[64px] right-5 z-40 border-b border-white/30 pb-0.5 text-[10px] uppercase tracking-[0.3em] text-white/60 transition-colors hover:text-white md:bottom-auto md:right-10 md:top-[88px]"
       >
         {open ? 'Close' : 'Sources'}
       </button>
@@ -42,7 +42,7 @@ export function StoryInfoPanel({ spec, grounding }: StoryInfoPanelProps) {
       <aside
         id="story-info"
         hidden={!open}
-        className="fixed inset-x-3 top-[100px] z-40 max-h-[calc(100svh-180px)] overflow-y-auto bg-[#0b0d13]/95 px-5 py-6 text-white md:inset-x-auto md:right-10 md:top-[120px] md:w-[380px]"
+        className="fixed inset-x-3 bottom-[96px] z-40 max-h-[calc(100svh-180px)] overflow-y-auto bg-[#0b0d13]/95 px-5 py-6 text-white md:inset-x-auto md:bottom-auto md:right-10 md:top-[120px] md:w-[380px]"
       >
         <p className="text-[10px] uppercase tracking-[0.3em] text-white/45">About this story</p>
 

@@ -3,6 +3,7 @@
  *
  *   npm run setup   # once: backend venv + pip install, frontend npm install
  *   npm run dev     # both servers, prefixed logs; Ctrl+C stops both
+ *   npm run dev -- --reload   # also restart the backend on Python changes
  *
  * The frontend reaches the backend through Vite's /api proxy, so only :5173 needs opening
  * (also from a phone on the same network).
@@ -79,6 +80,9 @@ function stopAll(code = 0) {
 process.on('SIGINT', () => stopAll(0))
 process.on('SIGTERM', () => stopAll(0))
 
-start('api', venvPython, ['-m', 'uvicorn', 'app.main:app', '--reload', '--port', '8000', '--timeout-graceful-shutdown', '3'], backend)
+// Auto-reload is opt-in (npm run dev -- --reload): on Windows uvicorn's reloader can hang under piped
+// output and keep serving the old code, which is worse than restarting by hand after backend edits.
+const reload = process.argv.includes('--reload') ? ['--reload', '--timeout-graceful-shutdown', '3'] : []
+start('api', venvPython, ['-m', 'uvicorn', 'app.main:app', '--port', '8000', ...reload], backend)
 start('web', 'npm', ['run', 'dev', '--', '--host'], frontend)
 console.log('MythForge: http://localhost:5173  (API on :8000, proxied at /api)')

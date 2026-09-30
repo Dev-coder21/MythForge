@@ -3,6 +3,7 @@
  *
  *   npm run shots                                  # every chapter + both transitions
  *   npm run shots -- --points 1:0,2:0.3 --widths 1440 --story giza
+ *   npm run shots -- --page /gallery              # a non-story page: one full-page shot per width
  *
  * A point is chapter:progress (chapter is 1-based, progress 0–1 through its
  * scroll segment; 0.93 lands mid-transition into the next chapter). A bare
@@ -28,8 +29,9 @@ const args = Object.fromEntries(
   }, []),
 )
 const story = args.story
-const base = args.url ?? 'http://localhost:5173/'
-const url = story ? `${base}?story=${story}` : base
+const pagePath = args.page
+const base = (args.url ?? 'http://localhost:5173').replace(/\/$/, '')
+const url = pagePath ? base + pagePath : `${base}/story/${story ?? 'kyoto'}`
 const DEFAULT_POINTS = '1:0,1:0.3,1:0.6,1:0.93,2:0.03,2:0.3,2:0.6,2:0.93,3:0.03,3:0.3,3:0.6'
 const points = (args.points ?? DEFAULT_POINTS).split(',').map((p) => {
   const [c, v] = p.includes(':') ? p.split(':') : ['1', p]
@@ -81,6 +83,19 @@ try {
 
     await page.goto(url, { waitUntil: 'load' })
     await page.evaluate(() => document.fonts.ready)
+
+    if (pagePath) {
+      await page.waitForTimeout(6000) // backdrop art loads and fades in; gallery posters load
+      const name = pagePath.replace(/[^\w]+/g, '_').replace(/^_|_$/g, '') || 'home'
+      const file = join(outDir, `page_${name}_${width}.png`)
+      await page.screenshot({ path: file, fullPage: true })
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
+      console.log(`saved ${file}${overflow > 0 ? `  <-- horizontal overflow ${overflow}px` : ''}`)
+      if (overflow > 0) overlaps.push(`${width}px horizontal scroll`)
+      if (errors.length) console.warn(`[${width}px] page errors:\n  ${[...new Set(errors)].join('\n  ')}`)
+      await page.close()
+      continue
+    }
     await page.waitForSelector('canvas')
     await page.waitForTimeout(3500) // intro: letters rise, hero fades in
 
