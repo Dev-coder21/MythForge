@@ -207,7 +207,7 @@ def write_report(data: dict) -> None:
         f"- **Average grounding score:** {pct(h['avgGrounding'])} (over {h['groundingChecked']} fact-checked stories)",
         f"- **Template fit rate:** {pct(h['templateFitRate'])}",
         f"- **Valid on the first draft:** {pct(h['firstTryRate'])}",
-        f"- **Average time per story:** {h['avgSeconds'] if h['avgSeconds'] is not None else 'n/a'} s (includes free-tier rate-limit waits)",
+        f"- **Average time per story:** {round(h['avgSeconds']) if h['avgSeconds'] is not None else 'n/a'} s (includes free-tier rate-limit waits)",
         f"- **Average tokens per story:** {round(h['avgTokens']) if h['avgTokens'] else 'n/a'} (writer + fact checker, from API usage reports)",
         "",
         "## Results",
@@ -256,7 +256,29 @@ def findings(data: dict) -> list[str]:
 
 
 # Written by hand after reviewing results.json (kept here so --report reproduces them).
-FINDINGS: list[str] = []
+FINDINGS: list[str] = [
+    "**The fact check almost never disagrees, which says more about the checker than the stories.** Nine of the ten "
+    "checked stories scored 100%. The only flags were on Fushimi Inari-taisha: an invented image in a heading "
+    "(\"A white bird lands on the rice field.\") and an unsupported claim in its subheading. Headings and subheadings "
+    "are never removed, so both stayed. Every check was done by one small model (gpt-oss-20b), and the same kind of "
+    "evocative, loosely sourced heading appears in other stories that passed. A 98.8% average should be read as a ceiling.",
+    "**Rivers other than the Nile have no fitting scene.** The only river kit is the Nile landmark, so the Amazon story "
+    "landed in a Japanese temple garden and the Mekong in the mountains. Both template misses (fit 82%, 9 of 11) are "
+    "rivers. A generic river kit for the Tide template would close most of the gap.",
+    "**First drafts almost never pass, and two rules cause nearly all retries.** Only 1 of 11 successful stories was "
+    "valid on the first draft. Of 38 rule violations caught across 15 rejected drafts, 24 were the source-bound title "
+    "word and 10 were numbers in headings. Mount Kilimanjaro failed outright on those two after both corrections. "
+    "Em dashes, cliches and the purple rule were never triggered: the prompt already prevents them. Giving the model "
+    "a short list of allowed title words up front would likely halve the calls.",
+    "**The whole run used the fallback models.** Earlier testing that day had used up the Gemini and gpt-oss-120b daily "
+    "quotas, so all 11 stories were written by qwen3.8-27b (the Groq fallback) and checked by gpt-oss-20b. The numbers "
+    "describe the fallback path, not the intended default. Free-tier capacity is roughly a dozen stories per day at "
+    "about 15,000 tokens each, and the off-theme case (History of jazz) stopped on the daily quota; it runs on --resume.",
+    "**A checker that returns an empty reply skips the fact check instead of trying the next model.** The Mekong story "
+    "was saved without a score because gpt-oss-20b returned no JSON; that counts as a parse error rather than a provider "
+    "failure, so the chain never moved on. The thin-topic guard worked as intended: the invented topic was rejected in "
+    "under a second with a helpful message and no model calls.",
+]
 
 
 if __name__ == "__main__":

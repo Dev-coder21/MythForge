@@ -49,6 +49,22 @@ also works from a phone on your network. Ctrl+C stops both servers.
 
 See `CLAUDE.md` and `docs/` for the architecture and the design rules.
 
+## Evaluation
+
+`backend/eval/` runs the full pipeline on 12 golden topics (mountains, deserts, rivers, temples) plus two hard
+cases, one topic at a time within free-tier limits (`python -m eval.run`, resumable with `--resume`). Latest run,
+see [backend/eval/report.md](backend/eval/report.md) for the table and findings:
+
+| Metric | Result |
+|---|---|
+| Success rate | 92% (11 of 12) |
+| Average grounding score | 99% over 10 fact-checked stories (the checker is lenient; see findings) |
+| Template fit | 82% (both misses are rivers other than the Nile) |
+| Valid on the first draft | 9% (title-word and number-in-heading rules drive retries) |
+| Average time per story | 54 s, about 15,000 tokens |
+
+The invented topic was rejected as intended. The off-theme case stopped on a daily quota and runs on the next `--resume`.
+
 ## Privacy
 
 MythForge runs on your machine. The topic you type is sent to Wikipedia, Wikimedia Commons and the

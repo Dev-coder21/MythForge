@@ -1,0 +1,857 @@
+{
+  "startedAt": "2026-09-30T16:12:30+00:00",
+  "results": {
+    "Mount Kilimanjaro": {
+      "topic": "Mount Kilimanjaro",
+      "family": "mountain",
+      "fits": [
+        "peak"
+      ],
+      "expect": "story",
+      "sourceWords": 1391,
+      "status": "failed",
+      "reason": "The model could not write a valid story after 2 corrections. Last problems: chapters.1.heading: no numbers or dates in headings, in digits or words; move the figure into the body",
+      "seconds": 104.9,
+      "rejectedDrafts": 3,
+      "violations": [
+        "title word",
+        "title word",
+        "number in heading",
+        "title word",
+        "number in heading",
+        "number in heading"
+      ],
+      "violationDetails": [
+        "chapters.0.titleWord: SILENCE does not appear in the topic or SOURCE TEXT; pick one of: KIBO, WESTERN, LEMOSHO, MAWENZI, TANZANIA, BREACH, PEAK, NATIONAL",
+        "chapters.1.titleWord: LAYERING does not appear in the topic or SOURCE TEXT; pick one of: KIBO, WESTERN, LEMOSHO, MAWENZI, TANZANIA, BREACH, PEAK, NATIONAL",
+        "chapters.1.heading: no numbers or dates in headings, in digits or words; move the figure into the body",
+        "chapters.2.titleWord: COLDNESS does not appear in the topic or SOURCE TEXT; pick one of: KIBO, WESTERN, LEMOSHO, MAWENZI, TANZANIA, BREACH, PEAK, NATIONAL",
+        "chapters.1.heading: no numbers or dates in headings, in digits or words; move the figure into the body",
+        "chapters.1.heading: no numbers or dates in headings, in digits or words; move the figure into the body"
+      ],
+      "tokens": {
+        "groq:qwen/qwen3.8-27b": 17186
+      },
+      "tokensTotal": 17186,
+      "notes": [
+        "gemini failed, trying the next provider",
+        "groq failed, trying the next provider",
+        "attempt 1 invalid: 4 problem(s)",
+        "groq: rate limited, waiting 19s",
+        "groq: rate limited, waiting 24s",
+        "attempt 2 invalid: 1 problem(s)",
+        "groq: rate limited, waiting 27s",
+        "groq: rate limited, waiting 23s",
+        "attempt 3 invalid: 1 problem(s)"
+      ]
+    },
+    "Mount Fuji": {
+      "topic": "Mount Fuji",
+      "family": "mountain",
+      "fits": [
+        "peak"
+      ],
+      "expect": "story",
+      "sourceWords": 1452,
+      "status": "success",
+      "reason": "",
+      "title": "Fuji",
+      "headings": [
+        "A snow-capped eye on the horizon.",
+        "The last breath of fire.",
+        "Carved into the memory of ink."
+      ],
+      "templates": [
+        "peak",
+        "peak",
+        "peak"
+      ],
+      "kits": [
+        "alpine",
+        "alpine",
+        "alpine"
+      ],
+      "timesOfDay": [
+        "dawn",
+        "night",
+        "dusk"
+      ],
+      "templateFit": true,
+      "attempts": 2,
+      "grounding": {
+        "score": 1.0,
+        "checkedBy": "groq:openai/gpt-oss-20b",
+        "sentences": 19,
+        "unsupported": [],
+        "writtenBy": "groq:qwen/qwen3.8-27b",
+        "removed": [],
+        "kept": []
+      },
+      "writtenBy": "groq:qwen/qwen3.8-27b",
+      "checkedBy": "groq:openai/gpt-oss-20b",
+      "seconds": 50.4,
+      "rejectedDrafts": 1,
+      "violations": [
+        "title word",
+        "title word"
+      ],
+      "violationDetails": [
+        "chapters.1.titleWord: ERUPTION does not appear in the topic or SOURCE TEXT; pick one of: FUJI, MOUNT, JAPANESE, JAPAN, LAKE, TOKYO, GOTEMBA, PLATE",
+        "chapters.2.titleWord: LEGACY does not appear in the topic or SOURCE TEXT; pick one of: FUJI, MOUNT, JAPANESE, JAPAN, LAKE, TOKYO, GOTEMBA, PLATE"
+      ],
+      "tokens": {
+        "groq:qwen/qwen3.8-27b": 11647,
+        "groq:openai/gpt-oss-20b": 3324
+      },
+      "tokensTotal": 14971,
+      "notes": [
+        "gemini failed, trying the next provider",
+        "groq failed, trying the next provider",
+        "attempt 1 invalid: 2 problem(s)",
+        "groq: rate limited, waiting 23s",
+        "groq: rate limited, waiting 20s"
+      ]
+    },
+    "Matterhorn": {
+      "topic": "Matterhorn",
+      "family": "mountain",
+      "fits": [
+        "peak"
+      ],
+      "expect": "story",
+      "sourceWords": 1508,
+      "status": "success",
+      "reason": "",
+      "title": "Matterhorn",
+      "headings": [
+        "The sun lifts the horn from the mist.",
+        "Ice clings to the steep faces.",
+        "Night drapes the horn in silence."
+      ],
+      "templates": [
+        "peak",
+        "peak",
+        "peak"
+      ],
+      "kits": [
+        "alpine",
+        "alpine",
+        "alpine"
+      ],
+      "timesOfDay": [
+        "dawn",
+        "day",
+        "night"
+      ],
+      "templateFit": true,
+      "attempts": 2,
+      "grounding": {
+        "score": 1.0,
+        "checkedBy": "groq:openai/gpt-oss-20b",
+        "sentences": 15,
+        "unsupported": [],
+        "writtenBy": "groq:qwen/qwen3.8-27b",
+        "removed": [],
+        "kept": []
+      },
+      "writtenBy": "groq:qwen/qwen3.8-27b",
+      "checkedBy": "groq:openai/gpt-oss-20b",
+      "seconds": 11.0,
+      "rejectedDrafts": 1,
+      "violations": [
+        "title word"
+      ],
+      "violationDetails": [
+        "chapters.2.titleWord: RAVEN does not appear in the topic or SOURCE TEXT; pick one of: MATTERHORN, SILVIUS, GERMAN, MONS, THEODUL, ALPS, MATTERTAL, CERVIN"
+      ],
+      "tokens": {
+        "groq:openai/gpt-oss-120b": 4456,
+        "groq:qwen/qwen3.8-27b": 5336,
+        "groq:openai/gpt-oss-20b": 2448
+      },
+      "tokensTotal": 12240,
+      "notes": [
+        "gemini failed, trying the next provider",
+        "attempt 1 invalid: 1 problem(s)",
+        "groq failed, trying the next provider"
+      ]
+    },
+    "Sahara Desert": {
+      "topic": "Sahara Desert",
+      "family": "desert",
+      "fits": [
+        "dune"
+      ],
+      "expect": "story",
+      "sourceWords": 1444,
+      "status": "success",
+      "reason": "",
+      "title": "The Sand Sea",
+      "headings": [
+        "A shadow covers a third of the continent.",
+        "The sky holds its breath above the sand.",
+        "Sand remembers the time it was grass."
+      ],
+      "templates": [
+        "dune",
+        "dune",
+        "dune"
+      ],
+      "kits": [
+        "erg",
+        "erg",
+        "erg"
+      ],
+      "timesOfDay": [
+        "dusk",
+        "day",
+        "night"
+      ],
+      "templateFit": true,
+      "attempts": 2,
+      "grounding": {
+        "score": 1.0,
+        "checkedBy": "groq:openai/gpt-oss-20b",
+        "sentences": 21,
+        "unsupported": [],
+        "writtenBy": "groq:qwen/qwen3.8-27b",
+        "removed": [],
+        "kept": []
+      },
+      "writtenBy": "groq:qwen/qwen3.8-27b",
+      "checkedBy": "groq:openai/gpt-oss-20b",
+      "seconds": 99.0,
+      "rejectedDrafts": 1,
+      "violations": [
+        "title word",
+        "title word",
+        "title word"
+      ],
+      "violationDetails": [
+        "chapters.0.titleWord: VASTNESS does not appear in the topic or SOURCE TEXT; pick one of: SAHARA, NORTH, MOUNTAINS, AFRICA, DESERT, AFRICAN, SEA, SAHEL",
+        "chapters.1.titleWord: STILLNESS does not appear in the topic or SOURCE TEXT; pick one of: SAHARA, NORTH, MOUNTAINS, AFRICA, DESERT, AFRICAN, SEA, SAHEL",
+        "chapters.2.titleWord: MEMORY does not appear in the topic or SOURCE TEXT; pick one of: SAHARA, NORTH, MOUNTAINS, AFRICA, DESERT, AFRICAN, SEA, SAHEL"
+      ],
+      "tokens": {
+        "groq:qwen/qwen3.8-27b": 18235,
+        "groq:openai/gpt-oss-20b": 6359
+      },
+      "tokensTotal": 24594,
+      "notes": [
+        "gemini failed, trying the next provider",
+        "groq failed, trying the next provider",
+        "attempt 1 invalid: 3 problem(s)",
+        "groq: rate limited, waiting 42s",
+        "grounding: 1 unsupported sentence(s), asking for a correction",
+        "groq: rate limited, waiting 46s"
+      ]
+    },
+    "Namib Desert": {
+      "topic": "Namib Desert",
+      "family": "desert",
+      "fits": [
+        "dune"
+      ],
+      "expect": "story",
+      "sourceWords": 1605,
+      "status": "success",
+      "reason": "",
+      "title": "Old Sand",
+      "headings": [
+        "The oldest desert on Earth.",
+        "Cold water meets hot air.",
+        "Walls of orange sand rise high."
+      ],
+      "templates": [
+        "dune",
+        "dune",
+        "dune"
+      ],
+      "kits": [
+        "erg",
+        "erg",
+        "erg"
+      ],
+      "timesOfDay": [
+        "dusk",
+        "dawn",
+        "day"
+      ],
+      "templateFit": true,
+      "attempts": 2,
+      "grounding": {
+        "score": 1.0,
+        "checkedBy": "groq:openai/gpt-oss-20b",
+        "sentences": 18,
+        "unsupported": [],
+        "writtenBy": "groq:qwen/qwen3.8-27b",
+        "removed": [],
+        "kept": []
+      },
+      "writtenBy": "groq:qwen/qwen3.8-27b",
+      "checkedBy": "groq:openai/gpt-oss-20b",
+      "seconds": 48.4,
+      "rejectedDrafts": 1,
+      "violations": [
+        "title word",
+        "number in heading",
+        "title word",
+        "number in heading"
+      ],
+      "violationDetails": [
+        "chapters.0.titleWord: ETERNAL does not appear in the topic or SOURCE TEXT; pick one of: NAMIB, DESERT, RIVER, AFRICA, NAMIBIA, SOUTH, ATLANTIC, ANGOLA",
+        "chapters.0.heading: no numbers or dates in headings, in digits or words; move the figure into the body",
+        "chapters.2.titleWord: OSSOS does not appear in the topic or SOURCE TEXT; pick one of: NAMIB, DESERT, RIVER, AFRICA, NAMIBIA, SOUTH, ATLANTIC, ANGOLA",
+        "chapters.2.heading: no numbers or dates in headings, in digits or words; move the figure into the body"
+      ],
+      "tokens": {
+        "groq:qwen/qwen3.8-27b": 11826,
+        "groq:openai/gpt-oss-20b": 2965
+      },
+      "tokensTotal": 14791,
+      "notes": [
+        "gemini failed, trying the next provider",
+        "groq failed, trying the next provider",
+        "attempt 1 invalid: 4 problem(s)",
+        "groq: rate limited, waiting 40s",
+        "groq: rate limited, waiting 2s"
+      ]
+    },
+    "Atacama Desert": {
+      "topic": "Atacama Desert",
+      "family": "desert",
+      "fits": [
+        "dune"
+      ],
+      "expect": "story",
+      "sourceWords": 1455,
+      "status": "success",
+      "reason": "",
+      "title": "The Dry Edge",
+      "headings": [
+        "The mountains keep the water away.",
+        "The silence here is deep.",
+        "The stars burn sharper here."
+      ],
+      "templates": [
+        "dune",
+        "dune",
+        "dune"
+      ],
+      "kits": [
+        "erg",
+        "erg",
+        "erg"
+      ],
+      "timesOfDay": [
+        "dusk",
+        "night",
+        "dawn"
+      ],
+      "templateFit": true,
+      "attempts": 2,
+      "grounding": {
+        "score": 1.0,
+        "checkedBy": "groq:openai/gpt-oss-20b",
+        "sentences": 22,
+        "unsupported": [],
+        "writtenBy": "groq:qwen/qwen3.8-27b",
+        "removed": [],
+        "kept": []
+      },
+      "writtenBy": "groq:qwen/qwen3.8-27b",
+      "checkedBy": "groq:openai/gpt-oss-20b",
+      "seconds": 51.1,
+      "rejectedDrafts": 1,
+      "violations": [
+        "title word",
+        "number in heading",
+        "title word"
+      ],
+      "violationDetails": [
+        "chapters.1.titleWord: ANCIENT does not appear in the topic or SOURCE TEXT; pick one of: ATACAMA, DESERT, CHILE, ANDES, PACIFIC, PERU, CHILEAN, SOUTH",
+        "chapters.1.heading: no numbers or dates in headings, in digits or words; move the figure into the body",
+        "chapters.2.titleWord: STARGAZING does not appear in the topic or SOURCE TEXT; pick one of: ATACAMA, DESERT, CHILE, ANDES, PACIFIC, PERU, CHILEAN, SOUTH"
+      ],
+      "tokens": {
+        "groq:qwen/qwen3.8-27b": 11741,
+        "groq:openai/gpt-oss-20b": 3357
+      },
+      "tokensTotal": 15098,
+      "notes": [
+        "gemini failed, trying the next provider",
+        "groq failed, trying the next provider",
+        "attempt 1 invalid: 3 problem(s)",
+        "groq: rate limited, waiting 42s"
+      ]
+    },
+    "Nile": {
+      "topic": "Nile",
+      "family": "river",
+      "fits": [
+        "tide"
+      ],
+      "expect": "story",
+      "sourceWords": 1470,
+      "status": "success",
+      "reason": "",
+      "title": "Nile",
+      "headings": [
+        "The longest water on this planet.",
+        "A name for the dark soil.",
+        "Cut deep below the sea level."
+      ],
+      "templates": [
+        "tide",
+        "tide",
+        "tide"
+      ],
+      "kits": [
+        "nile",
+        "nile",
+        "nile"
+      ],
+      "timesOfDay": [
+        "dawn",
+        "dusk",
+        "night"
+      ],
+      "templateFit": true,
+      "attempts": 1,
+      "grounding": {
+        "score": 1.0,
+        "checkedBy": "groq:openai/gpt-oss-20b",
+        "sentences": 16,
+        "unsupported": [],
+        "writtenBy": "groq:qwen/qwen3.8-27b",
+        "removed": [],
+        "kept": []
+      },
+      "writtenBy": "groq:qwen/qwen3.8-27b",
+      "checkedBy": "groq:openai/gpt-oss-20b",
+      "seconds": 6.7,
+      "rejectedDrafts": 0,
+      "violations": [],
+      "violationDetails": [],
+      "tokens": {
+        "groq:qwen/qwen3.8-27b": 4410,
+        "groq:openai/gpt-oss-20b": 2262
+      },
+      "tokensTotal": 6672,
+      "notes": [
+        "gemini failed, trying the next provider",
+        "groq failed, trying the next provider"
+      ]
+    },
+    "Amazon River": {
+      "topic": "Amazon River",
+      "family": "river",
+      "fits": [
+        "tide"
+      ],
+      "expect": "story",
+      "sourceWords": 1437,
+      "status": "success",
+      "reason": "",
+      "title": "Dark Waters",
+      "headings": [
+        "The water moved west for ages.",
+        "Fire turned the soil to black earth.",
+        "Freshwater pushed out into the ocean."
+      ],
+      "templates": [
+        "threshold",
+        "threshold",
+        "threshold"
+      ],
+      "kits": [
+        "temple-dusk",
+        "temple-dusk",
+        "lantern-dawn"
+      ],
+      "timesOfDay": [
+        "dusk",
+        "night",
+        "dawn"
+      ],
+      "templateFit": false,
+      "attempts": 2,
+      "grounding": {
+        "score": 1.0,
+        "checkedBy": "groq:openai/gpt-oss-20b",
+        "sentences": 20,
+        "unsupported": [],
+        "writtenBy": "groq:qwen/qwen3.8-27b",
+        "removed": [],
+        "kept": []
+      },
+      "writtenBy": "groq:qwen/qwen3.8-27b",
+      "checkedBy": "groq:openai/gpt-oss-20b",
+      "seconds": 55.0,
+      "rejectedDrafts": 1,
+      "violations": [
+        "mixed settings",
+        "wrong kit or landmark",
+        "title word",
+        "number in heading",
+        "title word",
+        "title word"
+      ],
+      "violationDetails": [
+        "chapters use different sceneTemplates (threshold, tide); a story keeps one setting, so use the same sceneTemplate for every chapter (vary artKit, timeOfDay and colours within it). Only if the topic tr",
+        "chapters.0: artKit \"nile\" shows the Nile at Giza, which is not this topic; choose the closest GENERIC kit (threshold/temple-dusk, threshold/lantern-dawn, dune/erg, peak/alpine) and recolour it with pr",
+        "chapters.0.titleWord: REVERSAL does not appear in the topic or SOURCE TEXT; pick one of: AMAZON, RIVER, ORELLANA, SOUTH, AMAZONAS, SPANISH, FRANCISCO, ANDES",
+        "chapters.0.heading: no numbers or dates in headings, in digits or words; move the figure into the body",
+        "chapters.1.titleWord: TERRAPRETA does not appear in the topic or SOURCE TEXT; pick one of: AMAZON, RIVER, ORELLANA, SOUTH, AMAZONAS, SPANISH, FRANCISCO, ANDES",
+        "chapters.2.titleWord: MARDULCE does not appear in the topic or SOURCE TEXT; pick one of: AMAZON, RIVER, ORELLANA, SOUTH, AMAZONAS, SPANISH, FRANCISCO, ANDES"
+      ],
+      "tokens": {
+        "groq:qwen/qwen3.8-27b": 10428,
+        "groq:openai/gpt-oss-20b": 2966
+      },
+      "tokensTotal": 13394,
+      "notes": [
+        "gemini failed, trying the next provider",
+        "groq failed, trying the next provider",
+        "attempt 1 invalid: 6 problem(s)",
+        "groq: rate limited, waiting 42s"
+      ]
+    },
+    "Mekong": {
+      "topic": "Mekong",
+      "family": "river",
+      "fits": [
+        "tide"
+      ],
+      "expect": "story",
+      "sourceWords": 1534,
+      "status": "success",
+      "reason": "",
+      "title": "Mekong",
+      "headings": [
+        "High where the air thins and breaks.",
+        "A course that spans the continent.",
+        "The land advances into the sea."
+      ],
+      "templates": [
+        "peak",
+        "peak",
+        "peak"
+      ],
+      "kits": [
+        "alpine",
+        "alpine",
+        "alpine"
+      ],
+      "timesOfDay": [
+        "dawn",
+        "day",
+        "dusk"
+      ],
+      "templateFit": false,
+      "attempts": 2,
+      "grounding": {
+        "score": null,
+        "skipped": "grounding check returned unreadable JSON (Expecting value: line 1 column 1 (char 0))",
+        "writtenBy": "groq:qwen/qwen3.8-27b"
+      },
+      "writtenBy": "groq:qwen/qwen3.8-27b",
+      "checkedBy": null,
+      "seconds": 52.6,
+      "rejectedDrafts": 1,
+      "violations": [
+        "title word",
+        "number in heading"
+      ],
+      "violationDetails": [
+        "chapters.0.titleWord: ORIGIN does not appear in the topic or SOURCE TEXT; pick one of: MEKONG, RIVER, ASIA, FROM, CHINA, KHMER, KHONG, THAI",
+        "chapters.1.heading: no numbers or dates in headings, in digits or words; move the figure into the body"
+      ],
+      "tokens": {
+        "groq:qwen/qwen3.8-27b": 12929,
+        "groq:openai/gpt-oss-20b": 0
+      },
+      "tokensTotal": 12929,
+      "notes": [
+        "gemini failed, trying the next provider",
+        "groq failed, trying the next provider",
+        "attempt 1 invalid: 2 problem(s)",
+        "groq: rate limited, waiting 42s",
+        "grounding check skipped: grounding check returned unreadable JSON (Expecting value: line 1 column 1 (char 0))"
+      ]
+    },
+    "Kinkaku-ji": {
+      "topic": "Kinkaku-ji",
+      "family": "temple",
+      "fits": [
+        "threshold"
+      ],
+      "expect": "story",
+      "sourceWords": 1314,
+      "status": "success",
+      "reason": "",
+      "title": "Golden Reflections",
+      "headings": [
+        "A garden bought for a shogun's ambition.",
+        "The gold caught fire in the dead of night.",
+        "Gold leaf returns to the water's surface."
+      ],
+      "templates": [
+        "threshold",
+        "threshold",
+        "threshold"
+      ],
+      "kits": [
+        "lantern-dawn",
+        "temple-dusk",
+        "temple-dusk"
+      ],
+      "timesOfDay": [
+        "dawn",
+        "night",
+        "dusk"
+      ],
+      "templateFit": true,
+      "attempts": 2,
+      "grounding": {
+        "score": 1.0,
+        "checkedBy": "groq:openai/gpt-oss-20b",
+        "sentences": 19,
+        "unsupported": [],
+        "writtenBy": "groq:qwen/qwen3.8-27b",
+        "removed": [],
+        "kept": []
+      },
+      "writtenBy": "groq:qwen/qwen3.8-27b",
+      "checkedBy": "groq:openai/gpt-oss-20b",
+      "seconds": 57.0,
+      "rejectedDrafts": 1,
+      "violations": [
+        "wrong kit or landmark",
+        "number in heading"
+      ],
+      "violationDetails": [
+        "chapters.1: artKit \"torii-night\" shows the Fushimi Inari torii in Kyoto, which is not this topic; choose the closest GENERIC kit (threshold/temple-dusk, threshold/lantern-dawn, dune/erg, peak/alpine) ",
+        "chapters.1.heading: no numbers or dates in headings, in digits or words; move the figure into the body"
+      ],
+      "tokens": {
+        "groq:qwen/qwen3.8-27b": 11301,
+        "groq:openai/gpt-oss-20b": 3242
+      },
+      "tokensTotal": 14543,
+      "notes": [
+        "gemini failed, trying the next provider",
+        "groq failed, trying the next provider",
+        "attempt 1 invalid: 2 problem(s)",
+        "groq: rate limited, waiting 45s",
+        "groq: rate limited, waiting 2s"
+      ]
+    },
+    "Fushimi Inari-taisha": {
+      "topic": "Fushimi Inari-taisha",
+      "family": "temple",
+      "fits": [
+        "threshold"
+      ],
+      "expect": "story",
+      "sourceWords": 1011,
+      "status": "success",
+      "reason": "",
+      "title": "Inari Gates",
+      "headings": [
+        "A white bird lands on the rice field.",
+        "Gates form a long tunnel.",
+        "Messengers of the kami carry keys."
+      ],
+      "templates": [
+        "threshold",
+        "threshold",
+        "threshold"
+      ],
+      "kits": [
+        "torii-night",
+        "torii-night",
+        "lantern-dawn"
+      ],
+      "timesOfDay": [
+        "night",
+        "night",
+        "dawn"
+      ],
+      "templateFit": true,
+      "attempts": 2,
+      "grounding": {
+        "score": 0.882,
+        "checkedBy": "groq:openai/gpt-oss-20b",
+        "sentences": 17,
+        "unsupported": [
+          {
+            "id": "c1.heading.1",
+            "field": "heading",
+            "text": "A white bird lands on the rice field.",
+            "reason": "source does not state bird lands on rice field"
+          },
+          {
+            "id": "c1.subheading.1",
+            "field": "subheading",
+            "text": "The Hata clan brings the deity from the peninsula.",
+            "reason": "source does not say Hata clan brought deity"
+          }
+        ],
+        "writtenBy": "groq:qwen/qwen3.8-27b",
+        "removed": [],
+        "kept": [
+          "c1.heading.1",
+          "c1.subheading.1"
+        ]
+      },
+      "writtenBy": "groq:qwen/qwen3.8-27b",
+      "checkedBy": "groq:openai/gpt-oss-20b",
+      "seconds": 106.6,
+      "rejectedDrafts": 1,
+      "violations": [
+        "title word",
+        "title word"
+      ],
+      "violationDetails": [
+        "chapters.1.titleWord: PASSAGE does not appear in the topic or SOURCE TEXT; pick one of: INARI, FUSHIMI, JAPAN, HATA, KYOTO, FOX, INARIYAMA, JAPANESE",
+        "chapters.2.titleWord: ASCENT does not appear in the topic or SOURCE TEXT; pick one of: INARI, FUSHIMI, JAPAN, HATA, KYOTO, FOX, INARIYAMA, JAPANESE"
+      ],
+      "tokens": {
+        "groq:qwen/qwen3.8-27b": 17168,
+        "groq:openai/gpt-oss-20b": 5856
+      },
+      "tokensTotal": 23024,
+      "notes": [
+        "gemini failed, trying the next provider",
+        "groq failed, trying the next provider",
+        "attempt 1 invalid: 2 problem(s)",
+        "groq: rate limited, waiting 45s",
+        "groq: rate limited, waiting 2s",
+        "grounding: 4 unsupported sentence(s), asking for a correction",
+        "groq: rate limited, waiting 47s",
+        "grounding: removed 0 sentence(s)"
+      ]
+    },
+    "Petra": {
+      "topic": "Petra",
+      "family": "desert",
+      "fits": [
+        "dune"
+      ],
+      "expect": "story",
+      "sourceWords": 1465,
+      "status": "success",
+      "reason": "",
+      "title": "Rose City",
+      "headings": [
+        "The path narrows to a single line of light.",
+        "Stone that looks like it melted into the rock.",
+        "The largest monument, lit only by its entrance."
+      ],
+      "templates": [
+        "dune",
+        "dune",
+        "dune"
+      ],
+      "kits": [
+        "erg",
+        "erg",
+        "erg"
+      ],
+      "timesOfDay": [
+        "dusk",
+        "dawn",
+        "night"
+      ],
+      "templateFit": true,
+      "attempts": 2,
+      "grounding": {
+        "score": 1.0,
+        "checkedBy": "groq:openai/gpt-oss-20b",
+        "sentences": 20,
+        "unsupported": [],
+        "writtenBy": "groq:qwen/qwen3.8-27b",
+        "removed": [],
+        "kept": []
+      },
+      "writtenBy": "groq:qwen/qwen3.8-27b",
+      "checkedBy": "groq:openai/gpt-oss-20b",
+      "seconds": 53.8,
+      "rejectedDrafts": 1,
+      "violations": [
+        "title word",
+        "title word",
+        "title word"
+      ],
+      "violationDetails": [
+        "chapters.0.titleWord: SIQ does not appear in the topic or SOURCE TEXT; pick one of: PETRA, JORDAN, NEW, WORLD, GREEK, NABATAEAN, NABATAEANS, TREASURY",
+        "chapters.1.titleWord: KHARZNEH does not appear in the topic or SOURCE TEXT; pick one of: PETRA, JORDAN, NEW, WORLD, GREEK, NABATAEAN, NABATAEANS, TREASURY",
+        "chapters.2.titleWord: AD-DEIR does not appear in the topic or SOURCE TEXT; pick one of: PETRA, JORDAN, NEW, WORLD, GREEK, NABATAEAN, NABATAEANS, TREASURY"
+      ],
+      "tokens": {
+        "groq:qwen/qwen3.8-27b": 11658,
+        "groq:openai/gpt-oss-20b": 3008
+      },
+      "tokensTotal": 14666,
+      "notes": [
+        "gemini failed, trying the next provider",
+        "groq failed, trying the next provider",
+        "attempt 1 invalid: 3 problem(s)",
+        "groq: rate limited, waiting 44s"
+      ]
+    },
+    "Zorvath Pass of Queldmoor": {
+      "topic": "Zorvath Pass of Queldmoor",
+      "family": "hard",
+      "fits": [],
+      "expect": "reject",
+      "status": "rejected",
+      "reason": "Wikipedia has no article that matches \"Zorvath Pass of Queldmoor\". Try the common English name of a place, event or idea.",
+      "seconds": 0.5,
+      "rejectedDrafts": 0,
+      "violations": [],
+      "violationDetails": [],
+      "tokens": {},
+      "tokensTotal": 0,
+      "notes": []
+    },
+    "History of jazz": {
+      "topic": "History of jazz",
+      "family": "hard",
+      "fits": [],
+      "expect": "story",
+      "sourceWords": 1464,
+      "status": "quota",
+      "reason": "All LLM providers failed: Groq: daily free-tier quota used up (still limited after 0 waits). Free tiers reset over time; wait a minute and try again, or add another provider key.",
+      "seconds": 57.0,
+      "rejectedDrafts": 2,
+      "violations": [
+        "other",
+        "title word",
+        "title word",
+        "number in heading"
+      ],
+      "violationDetails": [
+        "chapters.1.particleType: Input should be 'petals', 'snow', 'embers', 'fireflies', 'dust', 'rain' or 'none'",
+        "chapters.1.titleWord: PHRASE does not appear in the topic or SOURCE TEXT; pick one of: JAZZ, AFRICAN, AMERICAN, NEW, ORLEANS, EUROPEAN, CHICAGO, DIXIELAND",
+        "chapters.2.titleWord: SOLO does not appear in the topic or SOURCE TEXT; pick one of: JAZZ, AFRICAN, AMERICAN, NEW, ORLEANS, EUROPEAN, CHICAGO, DIXIELAND",
+        "chapters.2.heading: no numbers or dates in headings, in digits or words; move the figure into the body"
+      ],
+      "tokens": {
+        "groq:qwen/qwen3.8-27b": 10297
+      },
+      "tokensTotal": 10297,
+      "notes": [
+        "gemini failed, trying the next provider",
+        "groq failed, trying the next provider",
+        "attempt 1 invalid: 1 problem(s)",
+        "groq: rate limited, waiting 11s",
+        "groq: rate limited, waiting 37s",
+        "attempt 2 invalid: 3 problem(s)",
+        "groq failed, trying the next provider"
+      ]
+    }
+  },
+  "updatedAt": "2026-09-30T16:41:21+00:00"
+}
