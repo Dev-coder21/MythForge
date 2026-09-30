@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "id": "902e4928-2310-4aaa-9e82-65ca429c1fc1",
+  "topic": "Great Wall of China",
+  "title": "Stone Line",
+  "subtitle": "Echoes of a border that never rested",
+  "slug": "stone-line",
+  "chapters": [
+    {
+      "index": 1,
+      "label": "CHAPTER 01 · ORIGINS",
+      "titleWord": "FOUND",
+      "heading": "Stone and earth rose where states clashed.",
+      "subheading": "Early fortifications in a fractured land.",
+      "body": "By the 7th century BC Chinese states already knew how to raise walls. During the Spring and Autumn period between the 8th and 5th centuries BC, Zheng, Chu, Qin and others built stone and rammed earth ramparts to stop swords and spears. After Qin unified the realm in 221 BC, the First Emperor ordered old walls torn down and new fortifications linked across the northern frontier.",
+      "sceneTemplate": "threshold",
+      "sceneParams": {
+        "primaryColor": "#2b1f1a",
+        "accentColor": "#cfa15e",
+        "particleType": "dust",
+        "groundType": "stone",
+        "backgroundObject": "stars",
+        "propVariant": "lantern-dawn",
+        "artKit": "lantern-dawn",
+        "timeOfDay": "dawn",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "vertical",
+      "source": "wikipedia:Great Wall of China",
+      "transition": "noise-dissolve",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Badaling_China_Great-Wall-of-China-01.jpg/1920px-Badaling_China_Great-Wall-of-China-01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "CEphoto, Uwe Aranas · CC BY-SA 3.0 · Wikimedia Commons",
+        "license": "CC BY-SA 3.0"
+      }
+    },
+    {
+      "index": 2,
+      "label": "CHAPTER 02 · MING REFORGE",
+      "titleWord": "MIGHT",
+      "heading": "Bricks replaced earth, towers pierced the horizon.",
+      "subheading": "A stronger line in the desert.",
+      "body": "The Ming dynasty rebuilt the wall after the Battle of Tumu. Brick and stone replaced rammed earth, creating a stronger barrier along the desert’s southern edge. Up to 25,000 watchtowers rose, Qi Jiguang oversaw 1,200 towers from Shanhaiguan to Changping between 1567 and 1570, and many earthen sections were faced with brick.",
+      "sceneTemplate": "dune",
+      "sceneParams": {
+        "primaryColor": "#3a2b1f",
+        "accentColor": "#e8b45a",
+        "particleType": "dust",
+        "groundType": "sand",
+        "backgroundObject": "sun",
+        "propVariant": "giza",
+        "artKit": "giza",
+        "timeOfDay": "dusk",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Great Wall of China",
+      "transition": "ink-wipe",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/20090529_Great_Wall_8185.jpg/1920px-20090529_Great_Wall_8185.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Jakub Hałun · CC BY-SA 3.0 · Wikimedia Commons",
+        "license": "CC BY-SA 3.0"
+      }
+    },
+    {
+      "index": 3,
+      "label": "CHAPTER 03 · QING AFTERMATH",
+      "titleWord": "SHADOW",
+      "heading": "The wall ceased to mark the empire’s edge.",
+      "subheading": "Borders moved beyond stone.",
+      "body": "During the Qing period the empire expanded beyond the wall. Work on the wall for defense stopped, though projects like the Willow Palisade followed a similar line. The Manchus crossed the wall in 1644 after Beijing fell, ending its role as a barrier to conquest.",
+      "sceneTemplate": "threshold",
+      "sceneParams": {
+        "primaryColor": "#1e1c2a",
+        "accentColor": "#9a8bd3",
+        "particleType": "none",
+        "groundType": "stone",
+        "backgroundObject": "moon",
+        "propVariant": "temple-dusk",
+        "artKit": "temple-dusk",
+        "timeOfDay": "night",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Great Wall of China",
+      "transition": "bloom-out",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fa/Great_Wall_of_China_July_2006.JPG/1920px-Great_Wall_of_China_July_2006.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Velatrix · CC0 · Wikimedia Commons",
+        "license": "CC0"
+      }
+    }
+  ],
+  "createdAt": "2026-09-30T08:56:53Z"
+}
