@@ -894,7 +894,11 @@
     return finish(c, { seed, rim: 1, rimWidth: 5, key: 0.45, mottle: 0.14, rimColor: [255, 200, 160] })
   }
 
-  window.ARTKIT = {
+  // Shared painting helpers for other templates' painter files (painters-*.js).
+  window.ARTKIT_LIB = { mulberry32, makeNoise, makeCanvas, hsl, clamp, lerp, dab, blade, blobPath, finish }
+  // Painters by template id; generate.mjs --template picks one.
+  window.ARTKIT = window.ARTKIT || {}
+  window.ARTKIT.threshold = {
     hill: () => hill(11),
     grass: () => grass(23),
     'cedar-a': () => cedar(31, false),
