@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react'
 import type { SceneTemplateId } from '@/spec'
 import { Dune } from './Dune'
+import { Peak } from './Peak'
 import { Tide } from './Tide'
 import { LayeredScene, Threshold, type TemplateProps } from './Threshold'
 
@@ -13,6 +14,7 @@ const TEMPLATES: Partial<Record<SceneTemplateId, ComponentType<TemplateProps>>> 
   threshold: Threshold,
   dune: Dune,
   tide: Tide,
+  peak: Peak,
 }
 
 export function templateFor(id: SceneTemplateId): ComponentType<TemplateProps> {

@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 import { usePageMeta } from '@/lib/usePageMeta'
-import { STORIES } from '@/spec'
+import { PUBLIC_STORIES } from '@/spec'
 
 /** Unknown story slug (or any missing page): say so plainly and offer what exists. */
 export function NotFound({ slug }: { slug?: string }) {
@@ -16,7 +16,7 @@ export function NotFound({ slug }: { slug?: string }) {
           {slug ? `There is no story called “${slug}”.` : 'There is nothing at this address.'} These are ready to read:
         </p>
         <ul className="mt-6 flex flex-wrap gap-x-8 gap-y-3 text-[12px] tracking-[0.3em]">
-          {Object.keys(STORIES).map((s) => (
+          {PUBLIC_STORIES.map((s) => (
             <li key={s}>
               <Link className="border-b border-white/40 pb-1 uppercase hover:border-white" to={`/story/${s}`}>
                 {s}

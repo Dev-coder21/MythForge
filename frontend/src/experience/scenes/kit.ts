@@ -188,6 +188,8 @@ export interface Kit {
   celestial?: KitCelestial
   title?: KitTitle
   sky?: KitSky
+  /** Per time-of-day light (the spec's timeOfDay picks one); falls back to `sky`. */
+  skyByTime?: Partial<Record<'dawn' | 'day' | 'dusk' | 'night', KitSky>>
   heat?: KitHeat
   river?: KitRiver
 }

@@ -12,7 +12,7 @@ import { chromium } from 'playwright'
 
 const storyArg = process.argv.indexOf('--story')
 const story = storyArg > 0 ? process.argv[storyArg + 1] : undefined
-const url = `http://localhost:5173/${story ? '?story=' + story : ''}`
+const url = `http://localhost:5173/story/${story ?? 'kyoto'}`
 const b = await chromium.launch({ channel: 'msedge', headless: true, args: ['--use-angle=d3d11', '--enable-gpu', '--ignore-gpu-blocklist'] })
 for (const [w, h] of [[1440, 900], [390, 844]]) {
   const p = await b.newPage({ viewport: { width: w, height: h } })

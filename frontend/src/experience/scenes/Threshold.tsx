@@ -62,9 +62,9 @@ export function LayeredScene({ chapter, index, reducedMotion, extras }: LayeredS
   const kit = useKit(chapter.sceneTemplate, params.artKit)
   const kitTextures = useKitTextures(chapter.sceneTemplate, params.artKit, kit)
   const glowRefs = useKitGlowRefs(kit)
-  // A kit may set its own light for the location (desert haze, river dawn...).
+  // A kit may set its own light for the location (desert haze, river dawn...), per time of day if it has several.
   const palette = useMemo(() => {
-    const s = kit.sky
+    const s = kit.skyByTime?.[params.timeOfDay] ?? kit.sky
     if (!s) return basePalette
     return {
       ...basePalette,
@@ -76,7 +76,7 @@ export function LayeredScene({ chapter, index, reducedMotion, extras }: LayeredS
       kitRim: s.rim ?? basePalette.kitRim,
       moon: s.sun ?? basePalette.moon,
     }
-  }, [basePalette, kit])
+  }, [basePalette, kit, params.timeOfDay])
   const camera = useThree((s) => s.camera) as PerspectiveCamera
   const aspect = useThree((s) => s.size.width / s.size.height)
 
