@@ -7,6 +7,7 @@ anything short of a clear pass (or no vision model at all) means no hero layer.
 from __future__ import annotations
 
 import base64
+import time
 import io
 import json
 from pathlib import Path
@@ -16,7 +17,7 @@ from PIL import Image
 
 from app.core.config import get_settings
 from app.imagegen.landmarks import Verdict
-from app.llm_pipeline.providers import _check
+from app.llm_pipeline.providers import RateLimitError, _check
 
 PROMPT = """You check an AI painting of a landmark before it goes into an illustrated story.
 Image 1 is the painting, cut out and placed on a plain grey background. {ref_line}
@@ -86,11 +87,24 @@ def gemini_vision_check(layer: Path, name: str, description: str, reference: str
         body = {"contents": [{"role": "user", "parts": parts}],
                 "generationConfig": {"responseMimeType": "application/json", "temperature": 0, "maxOutputTokens": 800,
                                      "thinkingConfig": {"thinkingBudget": 0}}}
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-        try:
-            r = client.post(url, json=body, headers={"x-goog-api-key": settings.gemini_api_key})
-            _check(r, "Gemini vision")
-            text = "".join(p.get("text", "") for p in r.json()["candidates"][0]["content"]["parts"])
-        except Exception as e:  # quota, network, malformed: fail closed
-            return Verdict(False, [f"the vision check could not run ({str(e)[:120]})"], checked_by)
-    return parse_verdict(text, checked_by)
+        # Overloaded (5xx) or rate limited: one short wait, then the next vision model (own free quota).
+        last_error = ""
+        for m in [model] + [x for x in settings.vision_fallback_models.split(",") if x.strip() and x.strip() != model]:
+            m = m.strip()
+            checked_by = f"gemini:{m}"
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent"
+            for attempt in range(2):
+                try:
+                    r = client.post(url, json=body, headers={"x-goog-api-key": settings.gemini_api_key})
+                    _check(r, "Gemini vision")
+                    text = "".join(p.get("text", "") for p in r.json()["candidates"][0]["content"]["parts"])
+                    return parse_verdict(text, checked_by)
+                except RateLimitError as e:
+                    last_error = str(e)
+                    if e.daily or attempt:
+                        break
+                    time.sleep(min(e.retry_after or 8.0, 20.0))
+                except Exception as e:  # malformed reply, network: try the next model
+                    last_error = str(e)
+                    break
+        return Verdict(False, [f"the vision check could not run ({last_error[:120]})"], checked_by)
