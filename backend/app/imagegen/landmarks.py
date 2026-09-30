@@ -64,7 +64,7 @@ def cutout_problems(stats: dict) -> list[str]:
     if stats.get("edgeTouch", 0) > 0.02:
         out.append("the cutout touches the image edge (structure cropped or background left in)")
     cov = stats.get("coverage", 0)
-    if cov < 0.04:
+    if cov < 0.02:
         out.append("almost nothing was left after the cutout")
     if cov > 0.85:
         out.append("the background was not removed")

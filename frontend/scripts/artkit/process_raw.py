@@ -470,14 +470,26 @@ def process_landmark(src: Path, dst: Path, template: str) -> dict:
     or screen colour left inside the matte."""
     rgb = np.asarray(Image.open(src).convert("RGB")).astype(np.float32) / 255.0
     key = key_color(rgb)
-    rgb_c, a = cutout(rgb, watermark=False, despill_all=True)
+    # Image models paint pale, off-key screens; despilling the whole image would tint white stone
+    # lavender, so only the edge band is despilled.
+    rgb_c, a = cutout(rgb, watermark=False, despill_all=False)
     h, w = a.shape
     solid = a > 0.5
     coverage = float(solid.mean())
     edge = np.concatenate([solid[0], solid[-1], solid[:, 0], solid[:, -1]])
     touches = float(edge.mean())
     inside = rgb[solid]
-    spill = float((np.linalg.norm(inside - key, axis=1) < 0.25).mean()) if inside.size else 1.0
+    # Leftover screen = close to the key AND clearly green (or magenta) dominant, so pale stone
+    # that happens to sit near a pale key is not miscounted.
+    if inside.size:
+        near = np.linalg.norm(inside - key, axis=1) < 0.12
+        if key[1] > max(key[0], key[2]):
+            dominant = inside[:, 1] > np.maximum(inside[:, 0], inside[:, 2]) + 0.06
+        else:
+            dominant = np.minimum(inside[:, 0], inside[:, 2]) > inside[:, 1] + 0.06
+        spill = float((near & dominant).mean())
+    else:
+        spill = 1.0
     rgba = trim(rgba_of(rgb_c, a))
     l, sat = stats(rgba)
     look = LANDMARK_LOOK.get(template, "neutral")
