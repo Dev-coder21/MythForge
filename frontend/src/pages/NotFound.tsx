@@ -1,7 +1,10 @@
+import { Link } from 'react-router'
+import { usePageMeta } from '@/lib/usePageMeta'
 import { STORIES } from '@/spec'
 
 /** Unknown story slug (or any missing page): say so plainly and offer what exists. */
 export function NotFound({ slug }: { slug?: string }) {
+  usePageMeta('Not found', 'This page or story does not exist on MythForge.')
   return (
     <main className="flex min-h-screen items-center bg-[#0b0e16] px-6 text-white md:px-16">
       <div className="max-w-xl">
@@ -15,11 +18,21 @@ export function NotFound({ slug }: { slug?: string }) {
         <ul className="mt-6 flex flex-wrap gap-x-8 gap-y-3 text-[12px] tracking-[0.3em]">
           {Object.keys(STORIES).map((s) => (
             <li key={s}>
-              <a className="border-b border-white/40 pb-1 uppercase hover:border-white" href={`?story=${s}`}>
+              <Link className="border-b border-white/40 pb-1 uppercase hover:border-white" to={`/story/${s}`}>
                 {s}
-              </a>
+              </Link>
             </li>
           ))}
+          <li>
+            <Link className="border-b border-white/40 pb-1 uppercase hover:border-white" to="/gallery">
+              Gallery
+            </Link>
+          </li>
+          <li>
+            <Link className="border-b border-white/40 pb-1 uppercase hover:border-white" to="/">
+              New story
+            </Link>
+          </li>
         </ul>
       </div>
     </main>

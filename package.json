@@ -1,0 +1,9 @@
+{
+  "name": "mythforge",
+  "private": true,
+  "description": "Run the MythForge backend and frontend together for local development.",
+  "scripts": {
+    "setup": "node scripts/dev.mjs --setup",
+    "dev": "node scripts/dev.mjs"
+  }
+}

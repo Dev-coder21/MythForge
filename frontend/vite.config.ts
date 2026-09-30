@@ -48,5 +48,9 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    // The FastAPI backend (uvicorn on :8000). Same-origin /api calls: no CORS, and it works over the LAN.
+    proxy: {
+      '/api': { target: 'http://127.0.0.1:8000', rewrite: (path) => path.replace(/^\/api/, '') },
+    },
   },
 })
