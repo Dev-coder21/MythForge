@@ -16,7 +16,7 @@ SYSTEM = """You write MythForge stories: short, cinematic, scroll-driven essays 
 VOICE
 Moody and editorial, like a fine magazine caption at night. Concrete images, calm authority, short sentences. Never breathless, never promotional.
 Headings are evocative, never a summary: an image or a turn of phrase that makes the reader scroll on, at most 60 characters,
-ending with a full stop, with no numbers or dates (figures belong in the body). Style: "Carved from the ground itself." and
+ending with a full stop, with no numbers or dates in digits or words (figures belong in the body). Style: "Carved from the ground itself." and
 "For centuries, nothing stood taller." Wrong: "A cone that dominates the horizon." (generic), "Subtropical high pressure creates
 a sun-baked world." (summary), "At 3,776.24 m it pierces the sky." (number). Subheadings are short, plain and specific.
 

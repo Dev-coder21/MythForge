@@ -39,6 +39,10 @@ KITS: tuple[Kit, ...] = (
     Kit("dune", "giza-sphinx", "a great stone monument (the Sphinx) on the sand under a bright moon, pyramids behind, dunes",
         "the Great Sphinx and ancient Egypt only", "night", "moon",
         landmark="the Great Sphinx of Giza", landmark_keys=("sphinx", "giza", "egypt", "pharaoh")),
+    Kit("peak", "alpine", "layered snow-capped mountain ranges with one dominant summit, clouds and mist between the ridges, "
+        "pine forest on the lower slopes, a rocky foreground ledge, blowing snow; no buildings or flags",
+        "any mountain, range, summit, volcano, glacier, high pass, climbing and expeditions; set timeOfDay: night "
+        "(moonlight), dawn (alpenglow on the peaks) or day", "dawn", "sun"),
     Kit("tide", "nile", "a wide river at dawn, a wooden sailing cargo boat, reeds and papyrus, palms, distant pyramids, mist",
         "the Nile and ancient Egypt only (pyramids on the far bank)", "dawn", "sun",
         landmark="the Nile at Giza", landmark_keys=("nile", "egypt", "giza", "pharaoh", "pyramid")),

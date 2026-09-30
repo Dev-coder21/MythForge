@@ -247,7 +247,7 @@ def test_grounding_failure_does_not_fail_generation():
 
 
 def test_draft_heading_rules():
-    for heading, needle in (("At 3,776 m it rises.", "no numbers"), ("A" * 61, "under 60")):
+    for heading, needle in (("At 3,776 m it rises.", "no numbers"), ("Eight thousand metres of stone.", "no numbers"), ("A" * 61, "under 60")):
         with pytest.raises(SpecInvalid) as e:
             validate_draft(draft([chapter(heading=heading), chapter(titleWord="HONSHU")]), "Mount Fuji", CONTENT, 2)
         assert needle in " ".join(e.value.errors)
@@ -305,3 +305,31 @@ def test_duplicate_title_word_error_suggests_source_words():
         validate_draft(draft([chapter(titleWord="FUJI"), chapter(titleWord="FUJI")]), "Mount Fuji", CONTENT, 2)
     msg = " ".join(e.value.errors)
     assert "used twice" in msg and "HONSHU" in msg
+
+
+def test_peak_kit_is_generic_and_valid_for_any_mountain():
+    from app.llm_pipeline.catalog import catalog_text, kit_problem, landmark_problem
+    assert kit_problem("peak", "alpine") is None and landmark_problem("alpine", "K2") is None
+    text = catalog_text()
+    assert 'template "peak", artKit "alpine"' in text and "volcano" in text
+
+
+def test_correction_quota_failure_keeps_first_report_and_removes():
+    padded = draft([chapter(body=f"{BODY} {INVENTED}"), chapter(titleWord="HONSHU")])
+    writer = Scripted("groq", padded, RateLimitError("daily", daily=True))
+    checker = Scripted("groq", '{"unsupported": [{"id": "c1.body.3", "reason": "not in source"}]}')
+    checker.model = "qwen"
+    r = generate_spec(CONTENT, chain(writer), chapters=2, checker_for=lambda w: chain(checker))
+    assert r.grounding["removed"] == ["c1.body.3"] and r.grounding["score"] < 1
+    assert INVENTED not in r.spec.chapters[0].body
+
+
+def test_rate_limit_window_detection():
+    from app.llm_pipeline.providers import _check
+    tpm = httpx.Response(429, text="Rate limit reached on tokens per minute (TPM): Limit 8000. Upgrade to Dev Tier today")
+    tpd = httpx.Response(429, text="Rate limit reached on tokens per day (TPD): Limit 200000")
+    gem = httpx.Response(429, text='{"quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier"}')
+    for resp, daily in ((tpm, False), (tpd, True), (gem, True)):
+        with pytest.raises(RateLimitError) as e:
+            _check(resp, "X")
+        assert e.value.daily is daily

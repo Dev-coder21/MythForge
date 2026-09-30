@@ -152,6 +152,14 @@ def _numbers(text: str) -> set[str]:
     return found
 
 
+# Spelled-out figures count as numbers too ("Eight thousand metres of stone").
+_NUMBER_WORDS = re.compile(
+    r"\b(two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|"
+    r"eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundreds?|thousands?|millions?|billions?)\b",
+    re.IGNORECASE,
+)
+
+
 def _title_candidates(source_text: str, used: set[str], n: int = 8) -> list[str]:
     """Frequent capitalised source words (names, places) of 3 to 10 letters that no chapter uses yet."""
     counts: dict[str, int] = {}
@@ -245,8 +253,8 @@ def validate_draft(raw: str, topic: str, content: RetrievedContent, chapters: in
         heading = c.heading.strip()
         if len(heading) > RULES["generatedHeadingMax"]:
             errors.append(f"{where}.heading: {len(heading)} characters; keep it under {RULES['generatedHeadingMax']}, evocative, not a summary")
-        if RULES["generatedHeadingNoDigits"] and re.search(r"\d", heading):
-            errors.append(f"{where}.heading: no numbers or dates in headings; move the figure into the body")
+        if RULES["generatedHeadingNoDigits"] and (re.search(r"\d", heading) or _NUMBER_WORDS.search(heading)):
+            errors.append(f"{where}.heading: no numbers or dates in headings, in digits or words; move the figure into the body")
         if c.titleWord.upper() in seen_words:
             errors.append(
                 f"{where}.titleWord: {c.titleWord} is used twice; every chapter needs its own word, "
@@ -311,13 +319,17 @@ def generate_spec(content: RetrievedContent, chain: FallbackChain, chapters: int
                 if on_stage:
                     on_stage("correcting")
                 fix = messages + [{"role": "user", "content": grounding_correction_prompt(report)}]
+                # The rewrite and its re-check are best effort: if either fails (invalid draft, free-tier
+                # quota), keep the checked first version and remove its unsupported sentences instead.
                 try:
-                    fixed, provider, _, _ = _write_valid(content, chain, fix, chapters, max_tokens, 2)
+                    fixed, fixed_provider, _, _ = _write_valid(content, chain, fix, chapters, max_tokens, 2)
                     if on_stage:
                         on_stage("checking")
-                    spec, report = fixed, check_grounding(fixed, content, checker)
+                    spec, report, provider = fixed, check_grounding(fixed, content, checker), fixed_provider
                 except SpecInvalid:
                     chain.notes.append("grounding correction did not validate; keeping the first version")
+                except (LLMError, ValueError) as e:
+                    chain.notes.append(f"grounding correction unavailable ({e}); keeping the first version")
             spec, kept = remove_unsupported(spec, report)
             if report.unsupported:
                 chain.notes.append(f"grounding: removed {len(report.unsupported) - len(kept)} sentence(s)")

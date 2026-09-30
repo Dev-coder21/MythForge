@@ -58,7 +58,10 @@ def _retry_after(response: httpx.Response) -> float | None:
 
 def _check(response: httpx.Response, provider: str) -> None:
     if response.status_code == 429:
-        daily = bool(re.search(r"per ?day|PerDay|daily", response.text, re.IGNORECASE))
+        # Daily quotas can't be waited out; per-minute ones can. Groq/Gemini name the window in the message.
+        text = response.text
+        per_minute = re.search(r"per ?minute|PerMinute|\bTPM\b|\bRPM\b", text, re.IGNORECASE)
+        daily = not per_minute and bool(re.search(r"per ?day|PerDay|\bTPD\b|\bRPD\b", text, re.IGNORECASE))
         kind = "daily free-tier quota used up" if daily else "rate limited (free-tier quota reached)"
         raise RateLimitError(f"{provider}: {kind}", _retry_after(response), daily=daily)
     if response.status_code in (500, 502, 503, 504):
