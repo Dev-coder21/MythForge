@@ -1,0 +1,222 @@
+"""
+One LLM call returns the whole story draft; it is validated in layers and
+corrected up to twice:
+  1. JSON parse             2. draft schema (enums, shapes)
+  3. assembled StorySpec (copy rules: em dashes, cliches, "not X, it's Y"...)
+  4. grounding: real kits, sources that were retrieved, numbers found in the source
+"""
+
+from __future__ import annotations
+
+import json
+import re
+import uuid
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
+
+from app.core.config import get_settings
+from app.llm_pipeline.catalog import kit_problem
+from app.llm_pipeline.prompt import SYSTEM, build_prompt, correction_prompt
+from app.llm_pipeline.providers import FallbackChain
+from app.retrieval import RetrievedContent
+from app.schemas.story import (
+    BackgroundObject,
+    GroundType,
+    ParticleType,
+    SceneTemplateId,
+    StorySpec,
+    TimeOfDay,
+    TitleLayout,
+    TransitionType,
+)
+
+MAX_CORRECTIONS = 2
+
+
+class DraftChapter(BaseModel):
+    """What the model writes per chapter; the server adds index, label prefix and ids."""
+
+    model_config = ConfigDict(extra="ignore")
+    labelName: str
+    titleWord: str
+    heading: str
+    subheading: str
+    body: str
+    source: str
+    sceneTemplate: SceneTemplateId
+    artKit: str
+    timeOfDay: TimeOfDay
+    backgroundObject: BackgroundObject
+    particleType: ParticleType
+    groundType: GroundType
+    primaryColor: str
+    accentColor: str
+    particleDensity: float = Field(default=0.4, ge=0, le=1)
+    transition: TransitionType
+    titleLayout: TitleLayout = "horizontal"
+
+
+class Draft(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    title: str
+    subtitle: str
+    chapters: list[DraftChapter] = Field(min_length=1)
+
+
+class SpecInvalid(Exception):
+    def __init__(self, errors: list[str]):
+        super().__init__("; ".join(errors))
+        self.errors = errors
+
+
+class GenerationFailed(Exception):
+    """The model could not produce a valid spec within the correction budget."""
+
+
+@dataclass
+class GenerationResult:
+    spec: StorySpec
+    provider: str
+    attempts: int
+    notes: list[str] = field(default_factory=list)
+
+
+def slugify(text: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-") or "story"
+
+
+def _parse_json(raw: str) -> dict:
+    text = raw.strip()
+    fence = re.match(r"^```(?:json)?\s*(.*?)\s*```$", text, re.DOTALL)
+    if fence:
+        text = fence.group(1)
+    start, end = text.find("{"), text.rfind("}")
+    if start < 0 or end < start:
+        raise SpecInvalid(["the response was not a JSON object"])
+    try:
+        return json.loads(text[start : end + 1])
+    except json.JSONDecodeError as e:
+        raise SpecInvalid([f"the response was not valid JSON ({e.msg} at line {e.lineno})"]) from e
+
+
+def _pydantic_errors(e: ValidationError, prefix: str = "") -> list[str]:
+    out = []
+    for err in e.errors():
+        loc = ".".join(str(x) for x in err["loc"])
+        out.append(f"{prefix}{loc}: {err['msg'].removeprefix('Value error, ')}")
+    return out
+
+
+_NUMBER = re.compile(r"\d[\d,.]*\d|\d")
+
+
+def _numbers(text: str) -> set[str]:
+    """Multi-digit numbers normalised (commas dropped, trailing dots stripped)."""
+    found = set()
+    for tok in _NUMBER.findall(text):
+        n = tok.replace(",", "").rstrip(".")
+        if len(n.replace(".", "")) >= 2:
+            found.add(n)
+    return found
+
+
+def assemble(draft: Draft, topic: str, content: RetrievedContent) -> StorySpec:
+    """Turn a draft into a full StorySpec (ids, labels, dates, Commons images)."""
+    chapters = []
+    for i, c in enumerate(draft.chapters, start=1):
+        image = content.images[(i - 1) % len(content.images)] if content.images else None
+        chapters.append({
+            "index": i,
+            "label": f"CHAPTER {i:02d} · {c.labelName.strip().upper()}",
+            "titleWord": c.titleWord.strip().upper(),
+            "heading": c.heading,
+            "subheading": c.subheading,
+            "body": c.body,
+            "sceneTemplate": c.sceneTemplate,
+            "sceneParams": {
+                "primaryColor": c.primaryColor,
+                "accentColor": c.accentColor,
+                "particleType": c.particleType,
+                "groundType": c.groundType,
+                "backgroundObject": c.backgroundObject,
+                "propVariant": c.artKit,
+                "artKit": c.artKit,
+                "timeOfDay": c.timeOfDay,
+                "props": [],
+                "particleDensity": round(c.particleDensity, 2),
+            },
+            "titleLayout": c.titleLayout,
+            "source": c.source,
+            "transition": c.transition,
+            "heroImage": {"url": image["url"], "attribution": image["attribution"], "license": image["license"]} if image else None,
+        })
+    slug = slugify(draft.title if len(draft.title) > 2 else topic)
+    return StorySpec.model_validate({
+        "version": 1,
+        "id": str(uuid.uuid4()),
+        "topic": topic,
+        "title": draft.title,
+        "subtitle": draft.subtitle,
+        "slug": slug,
+        "chapters": chapters,
+        "createdAt": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
+    })
+
+
+def validate_draft(raw: str, topic: str, content: RetrievedContent, chapters: int) -> StorySpec:
+    data = _parse_json(raw)
+    try:
+        draft = Draft.model_validate(data)
+    except ValidationError as e:
+        raise SpecInvalid(_pydantic_errors(e)) from e
+
+    errors: list[str] = []
+    if len(draft.chapters) != chapters:
+        errors.append(f"there must be exactly {chapters} chapters (got {len(draft.chapters)})")
+    source_numbers = _numbers(content.as_prompt_text())
+    seen_words = set()
+    for i, c in enumerate(draft.chapters):
+        where = f"chapters.{i}"
+        if problem := kit_problem(c.sceneTemplate, c.artKit):
+            errors.append(f"{where}: {problem}")
+        if c.source not in content.sources:
+            errors.append(f'{where}.source: "{c.source}" is not one of the SOURCE ids ({", ".join(content.sources)})')
+        invented = sorted(_numbers(f"{c.heading} {c.subheading} {c.body}") - source_numbers)
+        if invented:
+            errors.append(f"{where}: these numbers are not in the SOURCE TEXT: {', '.join(invented)}; use only numbers from the source")
+        if c.titleWord.upper() in seen_words:
+            errors.append(f"{where}.titleWord: {c.titleWord} is used twice; every chapter needs its own word")
+        seen_words.add(c.titleWord.upper())
+    if errors:
+        raise SpecInvalid(errors)
+
+    try:
+        return assemble(draft, topic, content)
+    except ValidationError as e:
+        # Map spec paths back to what the model wrote (label prefix is ours).
+        raise SpecInvalid([m.replace(".label:", ".labelName:") for m in _pydantic_errors(e)]) from e
+
+
+def generate_spec(content: RetrievedContent, chain: FallbackChain, chapters: int = 3) -> GenerationResult:
+    """One story call, then up to MAX_CORRECTIONS correction calls with the validation errors."""
+    max_tokens = get_settings().llm_max_output_tokens
+    messages = [{"role": "user", "content": build_prompt(content, chapters)}]
+    last_errors: list[str] = []
+    provider = ""
+    for attempt in range(1, MAX_CORRECTIONS + 2):
+        provider, raw = chain.complete_json(SYSTEM, messages, max_tokens)
+        try:
+            spec = validate_draft(raw, content.topic, content, chapters)
+            return GenerationResult(spec=spec, provider=provider, attempts=attempt, notes=list(chain.notes))
+        except SpecInvalid as e:
+            last_errors = e.errors
+            chain.notes.append(f"attempt {attempt} invalid: {len(e.errors)} problem(s)")
+            messages = messages[:1] + [
+                {"role": "assistant", "content": raw[:6000]},
+                {"role": "user", "content": correction_prompt(e.errors)},
+            ]
+    raise GenerationFailed(
+        f"The model could not write a valid story after {MAX_CORRECTIONS} corrections. Last problems: " + "; ".join(last_errors[:6])
+    )
