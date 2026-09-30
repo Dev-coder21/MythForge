@@ -2,23 +2,44 @@
   "name": "giza-sphinx",
   "template": "dune",
   "textures": {
-    "dune-far": "../painted/dune-far.webp",
-    "dune-mid": "../painted/dune-mid.webp",
-    "dune-near": "../painted/dune-near.webp",
-    "pyramids": "../painted/pyramids.webp",
-    "sphinx": "../painted/sphinx.webp",
-    "rocks-sandstone": "../painted/rocks-sandstone.webp",
-    "palm-b": "../painted/palm-b.webp",
+    "dune-far": [
+      "../hand/dune-far.webp",
+      "../painted/dune-far.webp"
+    ],
+    "dune-mid": [
+      "../hand/dune-mid.webp",
+      "../painted/dune-mid.webp"
+    ],
+    "dune-near": [
+      "../hand/dune-near.webp",
+      "../painted/dune-near.webp"
+    ],
+    "pyramids": [
+      "../hand/pyramids.webp",
+      "../painted/pyramids.webp"
+    ],
+    "sphinx": [
+      "../hand/sphinx.webp",
+      "../painted/sphinx.webp"
+    ],
+    "rocks-sandstone": [
+      "../hand/rocks-sandstone.webp",
+      "../painted/rocks-sandstone.webp"
+    ],
+    "palm-b": [
+      "../hand/palm-b.webp",
+      "../painted/palm-b.webp"
+    ],
     "sand": "../painted/sand.webp"
   },
   "layers": [
-    { "id": "dune-far", "texture": "dune-far", "z": -50, "x": 0.1, "bottom": 0.22, "height": 0.18, "stretch": true, "fog": 0.5, "tint": 0.5, "shade": 0.45 },
-    { "id": "pyramids", "texture": "pyramids", "z": -46, "x": -0.18, "bottom": 0.28, "height": 0.3, "maxWidth": 0.8, "fog": 0.32, "tint": 0.5, "rim": 0.5, "portrait": {"x": -0.1, "height": 0.15}, "shade": 0.55 },
-    { "id": "palm", "texture": "palm-b", "z": -22, "x": 0.44, "bottom": 0.18, "height": 0.36, "fog": 0.25, "tint": 0.5, "rim": 0.5, "sway": 0.03, "portrait": {"x": 0.46, "height": 0.22}, "shade": 0.5 },
+    { "id": "dune-far", "texture": "dune-far", "z": -50, "x": 0.1, "bottom": 0.22, "height": 0.18, "stretch": true, "fog": 0.5, "tint": 0.5, "shade": 0.45, "rim": 0 },
+    { "id": "pyramids", "texture": "pyramids", "z": -46, "x": -0.2, "bottom": 0.27, "height": 0.26, "maxWidth": 0.75, "fog": 0.32, "tint": 0.5, "rim": 0.35, "portrait": {"x": -0.1, "height": 0.15}, "shade": 0.55 },
+    { "id": "palm", "texture": "palm-b", "z": -22, "x": 0.44, "bottom": 0.18, "height": 0.36, "fog": 0.25, "tint": 0.5, "rim": 0.35, "sway": 0.03, "portrait": {"x": 0.46, "height": 0.22}, "shade": 0.5 },
     { "id": "dune-mid", "texture": "dune-mid", "z": -26, "x": -0.1, "bottom": 0.06, "height": 0.3, "stretch": true, "fog": 0.15, "tint": 0.5, "rim": 0.25, "shade": 0.55 },
-    { "id": "sphinx", "texture": "sphinx", "z": -15, "x": 0.1, "bottom": 0.14, "height": 0.3, "maxWidth": 0.9, "tint": 0.45, "rim": 0.9, "portrait": {"x": 0.05, "bottom": 0.2, "height": 0.14}, "shade": 0.75 },
-    { "id": "rocks", "texture": "rocks-sandstone", "z": -11, "x": -0.38, "bottom": 0.07, "height": 0.12, "tint": 0.45, "rim": 0.8, "portrait": {"x": -0.4, "height": 0.06}, "shade": 0.6 },
-    { "id": "dune-near", "texture": "dune-near", "z": -3.5, "x": 0.1, "bottom": -0.14, "height": 0.64, "stretch": true, "shade": 0.55, "tint": 0.45, "rim": 0.2, "portrait": {"bottom": -0.04, "height": 0.42} }
+    { "id": "sphinx", "texture": "sphinx", "z": -15, "x": 0.12, "bottom": 0.13, "height": 0.32, "maxWidth": 0.95, "tint": 0.45, "rim": 0.35, "portrait": {"x": 0.05, "bottom": 0.2, "height": 0.15}, "shade": 0.8 },
+    { "id": "rocks", "texture": "rocks-sandstone", "z": -11, "x": -0.38, "bottom": 0.07, "height": 0.12, "tint": 0.45, "rim": 0.35, "portrait": {"x": -0.4, "height": 0.06}, "shade": 0.6 },
+    { "id": "dune-near", "texture": "dune-near", "z": -3.5, "x": -0.1, "bottom": -0.1, "height": 0.46, "stretch": true, "shade": 0.55, "tint": 0.45, "rim": 0.2, "portrait": {"bottom": -0.04, "height": 0.32} }
   ],
   "camera": { "fov": 34, "position": [[-1.2,1.2,13.2],[-0.4,1.25,12.6],[0.4,1.3,12],[1.2,1.35,11.4]], "lookAt": [[-0.5,1.9,-20],[-0.1,1.9,-20],[0.3,1.95,-20],[0.7,2,-20]] },
   "celestial": { "u": 0.74, "v": 0.74, "uPortrait": 0.6, "vPortrait": 0.62, "size": 0.07, "driftU": -0.03, "driftV": 0.02, "intensity": 1.8, "halo": 0.1 },

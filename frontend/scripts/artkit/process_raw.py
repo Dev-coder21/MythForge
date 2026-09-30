@@ -1,7 +1,8 @@
 """
 Turn the hand-painted sources in art-raw/ into kit layers for torii-night.
 
-    python frontend/scripts/artkit/process_raw.py            (from the repo root)
+    python frontend/scripts/artkit/process_raw.py                 (all sets, from the repo root)
+    python frontend/scripts/artkit/process_raw.py --set giza      (just one set: kyoto | giza)
 
 Per element:
   1. remove the sparkle watermark (fill its corner box with the background colour)
@@ -84,7 +85,7 @@ def rembg_alpha(rgb: np.ndarray) -> np.ndarray:
     return np.asarray(Image.open(io.BytesIO(out)).convert("RGBA")).astype(np.float32)[..., 3] / 255.0
 
 
-def decontaminate(rgb: np.ndarray, alpha: np.ndarray, key: np.ndarray) -> np.ndarray:
+def decontaminate(rgb: np.ndarray, alpha: np.ndarray, key: np.ndarray, despill_all: bool = False) -> np.ndarray:
     """Edge pixels: colour from the solid interior nearby, then despill the key colour."""
     solid = (alpha > 0.96).astype(np.float32)
     wsum = ndimage.gaussian_filter(solid, 3.0) + 1e-6
@@ -92,6 +93,9 @@ def decontaminate(rgb: np.ndarray, alpha: np.ndarray, key: np.ndarray) -> np.nda
     # BiRefNet mattes are fairly hard, so the spill sits on near-opaque pixels at the
     # boundary: treat everything within 4px of the transparent side as the edge band.
     band = ndimage.binary_dilation(alpha < 0.5, iterations=4) & (alpha > 0.001)
+    # Art with no genuine key colour in it (desert set) is despilled everywhere, not just
+    # at the edge: spill also sits between fronds, plumes and on painted waterlines.
+    spill_zone = (alpha > 0.001) if despill_all else band
     out = rgb.copy()
     # Low-alpha pixels are mostly background: blend toward the interior colour by (1 - alpha).
     t = np.clip(1.0 - alpha, 0, 1)[..., None] * band[..., None]
@@ -100,16 +104,23 @@ def decontaminate(rgb: np.ndarray, alpha: np.ndarray, key: np.ndarray) -> np.nda
     r, g, b = out[..., 0], out[..., 1], out[..., 2]
     if key[1] > key[0] and key[1] > key[2]:  # green screen
         g_limit = np.maximum(r, b)
-        out[..., 1] = np.where(band, np.minimum(g, g_limit), g)
+        out[..., 1] = np.where(spill_zone, np.minimum(g, g_limit), g)
     else:  # magenta screen: remove the red+blue excess over green (purple cast), edge band only
         m = np.minimum(r, b)
-        spill = np.clip(m - g - 0.02, 0, None) * band
+        spill = np.clip(m - g - 0.02, 0, None) * spill_zone
         out[..., 0] = r - spill
         out[..., 2] = b - spill
+        if despill_all:
+            # Translucent plumes and frond tips mixed with the screen read salmon-pink; this set has
+            # no genuine pink, so pull pink-hued pixels back to the tan they were painted as.
+            r2, g2, b2 = out[..., 0], out[..., 1], out[..., 2]
+            pink = np.clip((b2 - g2 + 0.02) / 0.12, 0, 1) * np.clip((r2 - g2) / 0.12, 0, 1) * spill_zone
+            out[..., 0] = r2 + (np.minimum(r2, g2 * 1.22) - r2) * pink
+            out[..., 2] = b2 + (g2 * 0.72 - b2) * pink
     return np.clip(out, 0, 1)
 
 
-def cutout(rgb: np.ndarray, watermark: bool = True, wide_key: bool = False) -> tuple[np.ndarray, np.ndarray]:
+def cutout(rgb: np.ndarray, watermark: bool = True, wide_key: bool = False, despill_all: bool = False) -> tuple[np.ndarray, np.ndarray]:
     """Cut out one element. Sheets are de-watermarked whole, then sliced, then cut per slice
     (rembg picks one salient subject per image, so slicing must come first)."""
     key = key_color(rgb)
@@ -125,7 +136,7 @@ def cutout(rgb: np.ndarray, watermark: bool = True, wide_key: bool = False) -> t
     # Anti-aliased edge: pull the matte in by a pixel (drops the last contaminated row), then soften.
     a = np.minimum(a, ndimage.grey_erosion(a, size=(3, 3)) * 0.35 + a * 0.65)
     a = np.clip(ndimage.gaussian_filter(a, 0.6), 0, 1)
-    return decontaminate(rgb, a, key), a
+    return decontaminate(rgb, a, key, despill_all), a
 
 
 def trim(rgba: np.ndarray, pad: int = 4) -> np.ndarray:
@@ -147,8 +158,8 @@ def stats(rgba) -> tuple[float, float]:
     return float(np.median(luma(rgb))), float(np.median(sat))
 
 
-def grade(rgba, target_l, target_s, own_l, own_s, keep_warm=False):
-    """Match median brightness/saturation, then one shared cool night grade."""
+def grade(rgba, target_l, target_s, own_l, own_s, keep_warm=False, look="night"):
+    """Match median brightness/saturation, then the set's shared grade (cool night or warm desert)."""
     rgb = rgba[..., :3].copy()
     gain = np.clip(target_l / max(own_l, 1e-3), 0.7, 1.45)
     rgb = rgb * gain
@@ -156,9 +167,15 @@ def grade(rgba, target_l, target_s, own_l, own_s, keep_warm=False):
     s_gain = np.clip(target_s / max(own_s, 1e-3), 0.75, 1.3)
     rgb = l + (rgb - l) * s_gain
     # Night grade: slight blue lift in shadows, a touch of overall cool, gentle contrast.
-    night = np.array([0.93, 0.97, 1.08], dtype=np.float32)
-    graded = rgb * night + np.array([0.0, 0.004, 0.018], dtype=np.float32) * (1 - l)
-    graded = 0.5 + (graded - 0.5) * 1.04
+    if look == "desert":
+        # Warm desert: sun-baked highlights, amber-lifted shadows, a touch more contrast.
+        warm = np.array([1.06, 1.0, 0.9], dtype=np.float32)
+        graded = rgb * warm + np.array([0.022, 0.012, 0.0], dtype=np.float32) * (1 - l)
+        graded = 0.5 + (graded - 0.5) * 1.06
+    else:
+        night = np.array([0.93, 0.97, 1.08], dtype=np.float32)
+        graded = rgb * night + np.array([0.0, 0.004, 0.018], dtype=np.float32) * (1 - l)
+        graded = 0.5 + (graded - 0.5) * 1.04
     if keep_warm:  # the lantern window stays warm: don't cool the hottest pixels
         hot = np.clip((rgb[..., 0] - rgb[..., 2] - 0.25) * 4, 0, 1)[..., None]
         graded = graded * (1 - hot) + rgb * hot
@@ -224,7 +241,8 @@ def rgba_of(rgb, a):
     return np.dstack([rgb, a])
 
 
-def main() -> None:
+def run_kyoto() -> None:
+    """Threshold art for Kyoto: art-raw/*.png -> artkits/threshold/torii-night/ (night grade)."""
     OUT.mkdir(parents=True, exist_ok=True)
     CAPTURES.mkdir(parents=True, exist_ok=True)
     elements: dict[str, np.ndarray] = {}
@@ -294,6 +312,72 @@ def main() -> None:
         sheet_img.alpha_composite(t, ((i % cols) * 380 + 10, (i // cols) * 380 + 10))
     sheet_img.convert("RGB").save(CAPTURES / "art_processed.png")
     print("sheet ->", CAPTURES / "art_processed.png")
+
+
+GIZA_DUNE = ROOT / "frontend" / "public" / "artkits" / "dune" / "hand"
+GIZA_TIDE = ROOT / "frontend" / "public" / "artkits" / "tide" / "hand"
+
+
+def run_giza() -> None:
+    """Giza art: art-raw/giza/*.png -> artkits/dune/hand/ and artkits/tide/hand/ (warm desert grade).
+    The code-painted versions in each template's painted/ folder stay as fallbacks; sand stays code-made."""
+    GIZA_DUNE.mkdir(parents=True, exist_ok=True)
+    GIZA_TIDE.mkdir(parents=True, exist_ok=True)
+    out_dir = {
+        "pyramids": GIZA_DUNE, "sphinx": GIZA_DUNE, "dune-far": GIZA_DUNE, "dune-mid": GIZA_DUNE,
+        "dune-near": GIZA_DUNE, "rocks-sandstone": GIZA_DUNE, "palm": GIZA_DUNE, "palm-b": GIZA_DUNE,
+        "boat": GIZA_TIDE, "bank-far": GIZA_TIDE, "bank-near": GIZA_TIDE, "reeds": GIZA_TIDE, "papyrus": GIZA_TIDE,
+    }
+    elements: dict[str, np.ndarray] = {}
+    for name in ["pyramids", "sphinx", "dune-far", "dune-mid", "dune-near", "rocks-sandstone", "boat", "bank-far", "bank-near"]:
+        rgb, a = cutout(load(f"giza/{name}.png"), despill_all=True)
+        elements[name] = trim(rgba_of(rgb, a))
+        print(f"cut {name}")
+
+    # Two-up sheets: left/right halves, watermark removed on the whole sheet first.
+    # The pink on the reed plumes and papyrus heads was magenta spill, not paint, so both
+    # sheets take the standard (wide) magenta key plus the full despill.
+    for sheet, (left, right) in [("giza/sheet-palms.png", ("palm", "palm-b")), ("giza/sheet-reeds.png", ("reeds", "papyrus"))]:
+        img = load(sheet)
+        img = remove_watermark(img, key_color(img))
+        mid = img.shape[1] // 2
+        for name, part in ((left, img[:, :mid]), (right, img[:, mid:])):
+            rgb, a = cutout(part, watermark=False, despill_all=True)
+            elements[name] = trim(rgba_of(rgb, a))
+            print(f"cut {name}")
+
+    measured = {k: stats(v) for k, v in elements.items()}
+    target_l = float(np.median([m[0] for m in measured.values()]))
+    target_s = float(np.median([m[1] for m in measured.values()]))
+    thumbs = []
+    for name, rgba in elements.items():
+        l, sat = measured[name]
+        graded = grade(rgba, (target_l + l) / 2, (target_s + sat) / 2, l, sat, look="desert")
+        img = to_image(graded)
+        img.save(out_dir[name] / f"{name}.webp", "WEBP", quality=90, method=6)
+        print(f"{name:16s} {img.width}x{img.height}  L {l:.2f}->{(target_l + l) / 2:.2f}  S {sat:.2f}  -> {out_dir[name].parent.name}/hand")
+        t = img.copy()
+        t.thumbnail((360, 360))
+        thumbs.append(t)
+    cols = 4
+    rows = (len(thumbs) + cols - 1) // cols
+    sheet_img = Image.new("RGBA", (cols * 380, rows * 380), (90, 96, 110, 255))
+    for i, t in enumerate(thumbs):
+        sheet_img.alpha_composite(t, ((i % cols) * 380 + 10, (i // cols) * 380 + 10))
+    sheet_img.convert("RGB").save(CAPTURES / "giza_processed.png")
+    print("sheet ->", CAPTURES / "giza_processed.png")
+
+
+def main() -> None:
+    import argparse
+
+    ap = argparse.ArgumentParser(description="Process hand-painted art into kit layers.")
+    ap.add_argument("--set", choices=["kyoto", "giza", "all"], default="all", help="which art set to process")
+    which = ap.parse_args().set
+    if which in ("kyoto", "all"):
+        run_kyoto()
+    if which in ("giza", "all"):
+        run_giza()
 
 
 if __name__ == "__main__":
