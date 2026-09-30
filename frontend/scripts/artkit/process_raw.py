@@ -460,12 +460,58 @@ def run_peak() -> None:
     print("sheet ->", CAPTURES / "peak_processed.png")
 
 
+# Landmark layers take the grade of the template they are composited into.
+LANDMARK_LOOK = {"threshold": "night", "dune": "desert", "tide": "desert", "peak": "neutral"}
+
+
+def process_landmark(src: Path, dst: Path, template: str) -> dict:
+    """One AI-painted landmark on a flat green/magenta screen -> graded transparent webp + cutout stats.
+    Stats let the backend reject broken cutouts: subject touching the frame edge, tiny/huge coverage,
+    or screen colour left inside the matte."""
+    rgb = np.asarray(Image.open(src).convert("RGB")).astype(np.float32) / 255.0
+    key = key_color(rgb)
+    rgb_c, a = cutout(rgb, watermark=False, despill_all=True)
+    h, w = a.shape
+    solid = a > 0.5
+    coverage = float(solid.mean())
+    edge = np.concatenate([solid[0], solid[-1], solid[:, 0], solid[:, -1]])
+    touches = float(edge.mean())
+    inside = rgb[solid]
+    spill = float((np.linalg.norm(inside - key, axis=1) < 0.25).mean()) if inside.size else 1.0
+    rgba = trim(rgba_of(rgb_c, a))
+    l, sat = stats(rgba)
+    look = LANDMARK_LOOK.get(template, "neutral")
+    if look == "neutral":
+        target = 0.5 * l + 0.5 * 0.56
+        out = rgba.copy()
+        c = rgba[..., :3] * np.clip(target / max(l, 1e-3), 0.7, 1.3)
+        lum = luma(c)[..., None]
+        out[..., :3] = np.clip(lum + (c - lum) * 0.9, 0, 1)
+    else:
+        out = grade(rgba, 0.5 * l + 0.5 * 0.5, sat * 0.9, l, sat, look=look)
+    img = to_image(out)
+    if max(img.size) > 1400:
+        img.thumbnail((1400, 1400))
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    img.save(dst, "WEBP", quality=88, method=6)
+    return {"width": img.width, "height": img.height, "coverage": round(coverage, 3), "edgeTouch": round(touches, 3),
+            "screenLeft": round(spill, 4), "look": look, "key": [round(float(k), 3) for k in key]}
+
+
 def main() -> None:
     import argparse
 
     ap = argparse.ArgumentParser(description="Process hand-painted art into kit layers.")
     ap.add_argument("--set", choices=["kyoto", "giza", "peak", "all"], default="all", help="which art set to process")
-    which = ap.parse_args().set
+    ap.add_argument("--landmark", nargs=2, metavar=("SRC", "DST"), help="process one AI-painted landmark image")
+    ap.add_argument("--template", default="peak", help="template whose grade the landmark takes")
+    args = ap.parse_args()
+    if args.landmark:
+        import json
+
+        print(json.dumps(process_landmark(Path(args.landmark[0]), Path(args.landmark[1]), args.template)))
+        return
+    which = args.set
     if which in ("kyoto", "all"):
         run_kyoto()
     if which in ("giza", "all"):

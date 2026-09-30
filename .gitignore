@@ -39,3 +39,5 @@ backend/posters/
 *.mov
 *.sqlite
 *.sqlite3
+
+backend/landmarks/

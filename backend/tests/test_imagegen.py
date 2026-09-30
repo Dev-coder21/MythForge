@@ -47,3 +47,40 @@ def test_chain_needs_credentials():
     s2 = Settings(_env_file=None, cloudflare_account_id="a", cloudflare_api_token="b", hf_token="h")
     names = [f"{p.name}:{p.model}" for p in build_image_chain(s2, client=httpx.Client()).providers]
     assert names[0].startswith("cloudflare:") and names[1] == "huggingface:black-forest-labs/FLUX.1-schnell"
+
+
+def test_paint_landmark_retries_then_caches(tmp_path, monkeypatch):
+    from app.imagegen import landmarks as lm
+
+    monkeypatch.setattr(lm, "CACHE_DIR", tmp_path)
+    stats = iter([{"coverage": 0.3, "edgeTouch": 0.2, "screenLeft": 0}, {"coverage": 0.3, "edgeTouch": 0, "screenLeft": 0}])
+
+    def fake_process(raw, out, template):
+        out.write_bytes(b"RIFFwebp")
+        return next(stats)
+
+    monkeypatch.setattr(lm, "process_image", fake_process)
+
+    class Chain:
+        last_model = "huggingface:flux"
+
+        def generate(self, prompt, seed):
+            return PNG
+
+    calls = []
+
+    def checker(layer, name, desc, ref):
+        calls.append(layer.name)
+        return lm.Verdict(True, [], "gemini:vision")
+
+    r = lm.paint_landmark("Taj Mahal", "A white marble mausoleum with a dome.", "dune", Chain(), checker, None)
+    assert r.passed and r.attempts == 2 and calls == ["layer-2.webp"]  # attempt 1 failed the cutout check
+    assert lm.layer_path(r.key) is not None
+    again = lm.paint_landmark("Taj Mahal", "A white marble mausoleum with a dome.", "dune", Chain(), checker, None)
+    assert again.cached and again.passed and len(calls) == 1
+
+
+def test_cutout_problems():
+    from app.imagegen.landmarks import cutout_problems
+    assert cutout_problems({"coverage": 0.3, "edgeTouch": 0.0, "screenLeft": 0.0}) == []
+    assert len(cutout_problems({"coverage": 0.95, "edgeTouch": 0.5, "screenLeft": 0.1})) == 3
