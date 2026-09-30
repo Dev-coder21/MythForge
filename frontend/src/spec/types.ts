@@ -67,6 +67,8 @@ export interface Chapter {
   sceneParams: SceneParams
   /** How the giant 3D title is set: across the frame (default) or stacked vertically. */
   titleLayout?: TitleLayout
+  /** Where the chapter's facts come from, e.g. "wikipedia:Great Pyramid of Giza". */
+  source?: string
   transition: TransitionType
   heroImage?: ImageRef
 }

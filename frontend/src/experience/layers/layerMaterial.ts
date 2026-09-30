@@ -29,6 +29,8 @@ export function createLayerMaterial(map: Texture, lights: LightUniforms) {
       uBlur: { value: 0 },
       uLightGain: { value: 1 },
       uTileX: { value: 1 },
+      uBob: { value: 0 },
+      uFlipY: { value: 0 },
       // The chapter's light uniform objects are shared by reference, so one update per frame lights them all.
       ...lights,
     },
@@ -38,15 +40,19 @@ export function createLayerMaterial(map: Texture, lights: LightUniforms) {
       uniform float uSway;
       uniform float uFlip;
       uniform float uTileX;
+      uniform float uBob;
+      uniform float uFlipY;
       varying vec2 vUv;
       varying vec3 vWorld;
 
       void main() {
-        vUv = vec2(mix(uv.x, 1.0 - uv.x, uFlip) * uTileX, uv.y);
+        vUv = vec2(mix(uv.x, 1.0 - uv.x, uFlip) * uTileX, mix(uv.y, 1.0 - uv.y, uFlipY));
         vec4 world = modelMatrix * vec4(position, 1.0);
         float phase = uTime * 1.4 + world.x * 0.7;
         float gust = 0.65 + 0.35 * sin(uTime * 0.37 + world.x * 0.11);
         world.x += uv.y * uv.y * sin(phase) * uWind * uSway * gust;
+        // Floating things (boats) rise and settle on the water.
+        world.y += sin(uTime * 0.8 + world.x * 0.15) * uBob;
         vWorld = world.xyz;
         gl_Position = projectionMatrix * viewMatrix * world;
       }

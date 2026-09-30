@@ -25,6 +25,8 @@ interface KitParticlesProps {
   opacity: number
   /** Multiplies the sprite colour (night grade). */
   tint: string
+  /** Sideways wind, world units per second (blown sand). */
+  windX?: number
 }
 
 const MAX = 600
@@ -34,7 +36,7 @@ const MAX = 600
  * drift on a wind curve, spin and tumble (x-scale by cos for a fake 3D flip).
  * Out-of-focus sprites grow and fade (bokeh). One draw call per layer.
  */
-export function KitParticles({ texture, cells, count, min, max, size, speed, fall, opacity, tint }: KitParticlesProps) {
+export function KitParticles({ texture, cells, count, min, max, size, speed, fall, opacity, tint, windX = 0 }: KitParticlesProps) {
   const chapter = useChapter()
   const geometry = useMemo(() => {
     const quad = new PlaneGeometry(1, 1)
@@ -70,6 +72,7 @@ export function KitParticles({ texture, cells, count, min, max, size, speed, fal
           uSize: { value: 0.1 },
           uSpeed: { value: 1 },
           uFall: { value: 0.5 },
+          uWindX: { value: 0 },
           uOpacity: { value: 1 },
           uTint: { value: new Color() },
           uFocusDist: { value: 20 },
@@ -84,6 +87,7 @@ export function KitParticles({ texture, cells, count, min, max, size, speed, fal
           uniform float uSize;
           uniform float uSpeed;
           uniform float uFall;
+          uniform float uWindX;
           uniform float uCells;
           uniform float uFocusDist;
           uniform float uDof;
@@ -96,7 +100,7 @@ export function KitParticles({ texture, cells, count, min, max, size, speed, fal
             // Fall + wind drift (leaves travel left→right, bobbing).
             p.y -= uTime * uFall * (0.6 + aSeed.y * 0.8);
             p.y = uMin.y + mod(p.y - uMin.y, uSize3.y);
-            p.x += sin(t * 0.6 + aSeed.x * 6.283) * 0.8 + uTime * 0.12 * (0.5 + aSeed.z);
+            p.x += sin(t * 0.6 + aSeed.x * 6.283) * 0.8 + uTime * (0.12 + uWindX) * (0.5 + aSeed.z);
             p.x = uMin.x + mod(p.x - uMin.x, uSize3.x);
             p.z += cos(t * 0.4 + aSeed.w * 6.283) * 0.4;
 
@@ -154,6 +158,7 @@ export function KitParticles({ texture, cells, count, min, max, size, speed, fal
   u.uSize!.value = size
   u.uSpeed!.value = speed
   u.uFall!.value = fall
+  u.uWindX!.value = windX
   u.uOpacity!.value = opacity
   u.uTint!.value.set(tint)
 

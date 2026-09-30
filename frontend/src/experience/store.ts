@@ -43,6 +43,8 @@ export interface ChapterState {
   lights: LightUniforms
   /** True once the chapter's scene has loaded its kit and mounted (safe to show). */
   ready: boolean
+  /** Heat shimmer band: screen height 0–1 from the bottom, half-height, strength (0 = none). */
+  heat: { v: number; h: number; strength: number }
 }
 
 export function createChapterState(index: number): ChapterState {
@@ -57,6 +59,7 @@ export function createChapterState(index: number): ChapterState {
     gradeTint: '#000000',
     lights: createLightUniforms(),
     ready: false,
+    heat: { v: 0, h: 0, strength: 0 },
   }
 }
 

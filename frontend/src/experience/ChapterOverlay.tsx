@@ -20,6 +20,31 @@ export const chromeRefs = {
 
 export const chapterCaption = (spec: StorySpec, c: Chapter) => `${spec.topic} · ${c.sceneParams.timeOfDay}`
 
+/** "wikipedia:Great Pyramid of Giza" → label + link; anything else is shown as given. */
+function sourceOf(source?: string): { label: string; href?: string } | null {
+  if (!source) return null
+  const [kind, ...rest] = source.split(':')
+  const title = rest.join(':').trim()
+  if (kind === 'wikipedia' && title) {
+    return { label: `Wikipedia · ${title}`, href: `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}` }
+  }
+  return { label: source }
+}
+
+/** Small attribution under the chapter body; the only clickable thing in the overlay. */
+function Source({ source }: { source?: string }) {
+  const s = sourceOf(source)
+  if (!s) return null
+  const cls = 'pointer-events-auto text-[10px] uppercase tracking-[0.3em] text-white/45'
+  return s.href ? (
+    <a className={`${cls} border-b border-white/20 pb-0.5 hover:text-white/70`} href={s.href} target="_blank" rel="noreferrer">
+      Source · {s.label}
+    </a>
+  ) : (
+    <span className={cls}>Source · {s.label}</span>
+  )
+}
+
 /**
  * Persistent chrome (MythForge's own, see EXPERIENCE_SPEC §8): story mark with
  * accent tick, chapter counter with a progress ring, bottom chapter rail whose
@@ -157,6 +182,9 @@ export const ChapterCopy = forwardRef<HTMLDivElement, ChapterCopyProps>(function
           >
             CONTINUE <span aria-hidden>↓</span>
           </p>
+          <div data-reveal="source" className="invisible mt-5">
+            <Source source={chapter.source} />
+          </div>
         </div>
       </div>
 

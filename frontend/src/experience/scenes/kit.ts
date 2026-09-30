@@ -57,6 +57,12 @@ export interface KitLayer extends KitPlacement {
   /** Brightness multiplier (e.g. 0.6 to push a near silhouette darker). */
   shade?: number
   light?: KitLight
+  /** Gentle vertical bob, world units (things floating on water). */
+  bob?: number
+  /** Mirror vertically (water reflections). */
+  flipY?: boolean
+  /** Overall opacity 0–1 (reflections). */
+  opacity?: number
   /** Animated reflective water confined to a mask texture (grey, white = water) in this element's UV space. */
   water?: { mask: string; opacity?: number }
   /** Overrides for portrait screens. */
@@ -84,6 +90,8 @@ export interface KitParticles {
   /** Fall speed, world units per second. */
   fall: number
   opacity: number
+  /** Sideways wind, world units per second (blown sand). */
+  windX?: number
 }
 
 export interface KitShafts {
@@ -135,6 +143,37 @@ export interface KitTitle {
  */
 export type KitTextureSource = string | string[]
 
+/** Per-location light: overrides the palette derived from the spec's colours and time of day. */
+export interface KitSky {
+  top?: string
+  mid?: string
+  horizon?: string
+  fog?: string
+  /** Tint for layers that opt in (kit layer "tint"). */
+  tint?: string
+  /** Runtime rim light colour. */
+  rim?: string
+  /** Sun/moon disc colour. */
+  sun?: string
+}
+
+/** Heat shimmer near the horizon: band centre and half-height (frame fractions), strength. */
+export interface KitHeat {
+  v: number
+  h: number
+  strength: number
+}
+
+/** A river water plane (Tide): placed like a stretched layer, shaded procedurally. */
+export interface KitRiver {
+  z: number
+  bottom: number
+  height: number
+  /** Brightness of the sun glitter path (0 = off). */
+  glitter?: number
+  portrait?: { bottom?: number; height?: number }
+}
+
 export interface Kit {
   name: string
   template: string
@@ -146,6 +185,9 @@ export interface Kit {
   camera?: KitCamera
   celestial?: KitCelestial
   title?: KitTitle
+  sky?: KitSky
+  heat?: KitHeat
+  river?: KitRiver
 }
 
 export const kitUrl = (template: string, kit: string, file = 'kit.json') =>

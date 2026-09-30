@@ -104,7 +104,7 @@ export function useChapterTimeline(
           },
         }),
       )
-      tl.fromTo(q('[data-reveal="cta"]'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.06 }, 0.38)
+      tl.fromTo(q('[data-reveal="cta"], [data-reveal="source"]'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.06 }, 0.38)
       tl.fromTo(q('[data-reveal="body-mobile"]'), { autoAlpha: 0, y: 14 * rise }, { autoAlpha: 1, y: 0, duration: 0.08, ease: 'power2.out' }, 0.34)
 
       // Title out, light up.

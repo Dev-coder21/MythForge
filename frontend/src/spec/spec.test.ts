@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { sampleKyoto } from '.'
+import { STORIES } from '.'
 
 const TEMPLATES = ['threshold', 'peak', 'tide', 'grove', 'skyline', 'dune', 'cosmos', 'ruin']
 const PARTICLES = ['petals', 'snow', 'embers', 'fireflies', 'dust', 'rain', 'none']
@@ -9,24 +9,24 @@ const TIMES = ['dawn', 'day', 'dusk', 'night']
 const TRANSITIONS = ['noise-dissolve', 'ink-wipe', 'bloom-out']
 const HEX = /^#[0-9a-f]{6}$/i
 
-describe('sample-kyoto.json', () => {
-  it('has 3 chapters with unique, ordered indices', () => {
-    expect(sampleKyoto.version).toBe(1)
-    expect(sampleKyoto.chapters.map((c) => c.index)).toEqual([1, 2, 3])
+describe.each(Object.keys(STORIES))('story "%s"', (slug) => {
+  it('has ordered chapters and a matching slug', async () => {
+    const spec = await STORIES[slug]!()
+    expect(spec.version).toBe(1)
+    expect(spec.slug.startsWith(slug)).toBe(true)
+    expect(spec.chapters.map((c) => c.index)).toEqual(spec.chapters.map((_, i) => i + 1))
   })
 
   // Copy rules (CLAUDE.md "Design quality rules"): no em dashes anywhere in story copy.
-  it('has no em dashes in any copy', () => {
-    const texts = [
-      sampleKyoto.title,
-      sampleKyoto.subtitle,
-      ...sampleKyoto.chapters.flatMap((c) => [c.label, c.titleWord, c.heading, c.subheading, c.body]),
-    ]
+  it('has no em dashes in any copy', async () => {
+    const spec = await STORIES[slug]!()
+    const texts = [spec.title, spec.subtitle, ...spec.chapters.flatMap((c) => [c.label, c.titleWord, c.heading, c.subheading, c.body])]
     for (const t of texts) expect(t).not.toMatch(/—/)
   })
 
-  it('uses only valid enum values and hex colors', () => {
-    for (const c of sampleKyoto.chapters) {
+  it('uses only valid enum values and hex colors', async () => {
+    const spec = await STORIES[slug]!()
+    for (const c of spec.chapters) {
       const p = c.sceneParams
       expect(TEMPLATES).toContain(c.sceneTemplate)
       expect(TRANSITIONS).toContain(c.transition)

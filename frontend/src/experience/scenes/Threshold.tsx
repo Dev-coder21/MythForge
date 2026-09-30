@@ -58,10 +58,25 @@ export function LayeredScene({ chapter, index, reducedMotion, extras }: LayeredS
   const params = chapter.sceneParams
   const state = useChapter()
   const ns = (folder: string) => `Ch${index + 1} / ${folder}`
-  const palette = useMemo(() => thresholdPalette(params), [params])
+  const basePalette = useMemo(() => thresholdPalette(params), [params])
   const kit = useKit(chapter.sceneTemplate, params.artKit)
   const kitTextures = useKitTextures(chapter.sceneTemplate, params.artKit, kit)
   const glowRefs = useKitGlowRefs(kit)
+  // A kit may set its own light for the location (desert haze, river dawn...).
+  const palette = useMemo(() => {
+    const s = kit.sky
+    if (!s) return basePalette
+    return {
+      ...basePalette,
+      skyTop: s.top ?? basePalette.skyTop,
+      skyMid: s.mid ?? basePalette.skyMid,
+      skyHorizon: s.horizon ?? basePalette.skyHorizon,
+      fog: s.fog ?? basePalette.fog,
+      kitTint: s.tint ?? basePalette.kitTint,
+      kitRim: s.rim ?? basePalette.kitRim,
+      moon: s.sun ?? basePalette.moon,
+    }
+  }, [basePalette, kit])
   const camera = useThree((s) => s.camera) as PerspectiveCamera
   const aspect = useThree((s) => s.size.width / s.size.height)
 
@@ -218,7 +233,8 @@ export function LayeredScene({ chapter, index, reducedMotion, extras }: LayeredS
   useLayoutEffect(() => {
     state.focusZ = layers.titleZ
     state.gradeTint = params.primaryColor
-  }, [state, layers.titleZ, params.primaryColor])
+    state.heat = kit.heat ? { v: kit.heat.v, h: kit.heat.h, strength: kit.heat.strength } : { v: 0, h: 0, strength: 0 }
+  }, [state, layers.titleZ, params.primaryColor, kit])
   useEffect(() => {
     state.ready = true
     return () => {
@@ -334,6 +350,7 @@ export function LayeredScene({ chapter, index, reducedMotion, extras }: LayeredS
             fall={p.fall}
             opacity={p.opacity * petals.opacity}
             tint={petals.tint}
+            windX={p.windX}
           />
         )
       })}

@@ -45,11 +45,14 @@ export interface DepthLayerProps {
   lightGain?: number
   /** Texture repeats across the plane (texture must use RepeatWrapping). */
   tileX?: number
+  bob?: number
+  flipY?: boolean
+  opacity?: number
 }
 
 /** A painted, textured plane at a real Z depth (one kit element). */
 export const DepthLayer = forwardRef<Mesh, DepthLayerProps>(function DepthLayer(
-  { texture, z, box, flip = false, tint, fogColor, fogMix, sway = 0, wind = 0, rim = 0, rimColor = '#ffffff', lightGain = 1, tileX = 1 },
+  { texture, z, box, flip = false, tint, fogColor, fogMix, sway = 0, wind = 0, rim = 0, rimColor = '#ffffff', lightGain = 1, tileX = 1, bob = 0, flipY = false, opacity = 1 },
   ref,
 ) {
   const chapter = useChapter()
@@ -69,9 +72,12 @@ export const DepthLayer = forwardRef<Mesh, DepthLayerProps>(function DepthLayer(
   u.uRimTexel!.value.set(3 / image.width, 3 / image.height)
   u.uLightGain!.value = lightGain
   u.uTileX!.value = tileX
+  u.uBob!.value = bob
+  u.uFlipY!.value = flipY ? 1 : 0
+  u.uOpacity!.value = opacity
 
   useFrame(({ clock, camera }) => {
-    if (sway > 0) u.uTime!.value = clock.elapsedTime
+    if (sway > 0 || bob > 0) u.uTime!.value = clock.elapsedTime
     // Circle of confusion ∝ |d - f| / d, applied as a mip LOD bias.
     const { dof } = storyState
     const d = Math.max(0.1, Math.abs(camera.position.z - z))

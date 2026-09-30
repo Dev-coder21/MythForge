@@ -195,6 +195,9 @@ export function KitLayers({ kit, textures, rectAt, portrait, look, glowRefs }: K
             rimColor={look.rimColor}
             lightGain={look.lightGain}
             tileX={layer.tileX}
+            bob={layer.bob}
+            flipY={layer.flipY}
+            opacity={layer.opacity}
           />
           </Fragment>
         )

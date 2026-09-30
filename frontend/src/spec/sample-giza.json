@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "id": "sample-giza",
+  "topic": "The Giza pyramids",
+  "title": "Giza",
+  "subtitle": "Three kings, one plateau, and the river that carried the stone.",
+  "slug": "giza",
+  "createdAt": "2026-09-30T00:00:00Z",
+  "chapters": [
+    {
+      "index": 1,
+      "label": "CHAPTER 01 · THE GREAT PYRAMID",
+      "titleWord": "KHUFU",
+      "heading": "For 3,800 years, nothing stood taller.",
+      "subheading": "A tomb for one king, raised on the Giza plateau.",
+      "body": "The Great Pyramid was built for the pharaoh Khufu and completed around 2560 BCE. At about 146.6 metres, it was the tallest structure made by people for more than 3,800 years.",
+      "source": "wikipedia:Great Pyramid of Giza",
+      "sceneTemplate": "dune",
+      "sceneParams": {
+        "primaryColor": "#3a2418",
+        "accentColor": "#ff8a3c",
+        "particleType": "dust",
+        "groundType": "sand",
+        "backgroundObject": "sun",
+        "propVariant": "pyramids",
+        "artKit": "giza",
+        "timeOfDay": "dusk",
+        "props": [],
+        "particleDensity": 0.4
+      },
+      "transition": "noise-dissolve"
+    },
+    {
+      "index": 2,
+      "label": "CHAPTER 02 · THE SPHINX",
+      "titleWord": "SPHINX",
+      "heading": "Carved from the ground itself.",
+      "subheading": "A lion's body and a human face, cut where the rock already lay.",
+      "body": "The Great Sphinx was cut directly from the limestone bedrock of the Giza plateau. It is about 73 metres long and 20 metres high, and its face is generally attributed to the pharaoh Khafre.",
+      "source": "wikipedia:Great Sphinx of Giza",
+      "sceneTemplate": "dune",
+      "sceneParams": {
+        "primaryColor": "#0e1830",
+        "accentColor": "#cfd9f2",
+        "particleType": "dust",
+        "groundType": "sand",
+        "backgroundObject": "moon",
+        "propVariant": "sphinx",
+        "artKit": "giza-sphinx",
+        "timeOfDay": "night",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "transition": "ink-wipe"
+    },
+    {
+      "index": 3,
+      "label": "CHAPTER 03 · THE RIVER ROAD",
+      "titleWord": "NILE",
+      "heading": "A logbook written on the water.",
+      "subheading": "The stone came to Giza by boat.",
+      "body": "In 2013, papyri found at Wadi al-Jarf turned out to be the logbook of an inspector named Merer, whose crew moved limestone from the Tura quarries to Giza by boat. They are the oldest inscribed papyri yet discovered.",
+      "source": "wikipedia:Diary of Merer",
+      "sceneTemplate": "tide",
+      "sceneParams": {
+        "primaryColor": "#2e4a5a",
+        "accentColor": "#ffc27a",
+        "particleType": "dust",
+        "groundType": "water",
+        "backgroundObject": "sun",
+        "propVariant": "boat",
+        "artKit": "nile",
+        "timeOfDay": "dawn",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "transition": "bloom-out"
+    }
+  ]
+}

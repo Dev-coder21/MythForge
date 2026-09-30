@@ -1,0 +1,36 @@
+{
+  "name": "nile",
+  "template": "tide",
+  "textures": {
+    "bank-far": "../painted/bank-far.webp",
+    "bank-near": "../painted/bank-near.webp",
+    "reeds": "../painted/reeds.webp",
+    "papyrus": "../painted/papyrus.webp",
+    "boat": "../painted/boat.webp",
+    "pyramids": "../../dune/painted/pyramids.webp",
+    "palm": "../../dune/painted/palm.webp",
+    "palm-b": "../../dune/painted/palm-b.webp",
+    "sand": "../../dune/painted/sand.webp"
+  },
+  "layers": [
+    { "id": "pyramids-far", "texture": "pyramids", "z": -54, "x": 0.28, "bottom": 0.345, "height": 0.1, "fog": 0.6, "tint": 0.4, "portrait": {"x": 0.2, "height": 0.05} },
+    { "id": "bank-far", "texture": "bank-far", "z": -44, "x": 0, "bottom": 0.3, "height": 0.1, "stretch": true, "fog": 0.42, "tint": 0.35 },
+    { "id": "palm-far", "texture": "palm", "z": -38, "x": -0.4, "bottom": 0.31, "height": 0.24, "fog": 0.4, "tint": 0.35, "rim": 0.4, "sway": 0.03, "portrait": {"x": -0.45, "height": 0.14} },
+    { "id": "palm-far-2", "texture": "palm-b", "z": -37, "x": -0.31, "bottom": 0.31, "height": 0.18, "fog": 0.42, "tint": 0.35, "rim": 0.4, "sway": 0.03, "portrait": {"hidden": true} },
+    { "id": "boat-reflection", "texture": "boat", "z": -18.05, "x": 0.12, "bottom": 0.2, "anchorY": 1, "height": 0.34, "flipY": true, "opacity": 0.28, "shade": 0.55, "tint": 0.3, "bob": 0.03, "sway": 0.03, "portrait": {"x": 0.12, "bottom": 0.24, "height": 0.17} },
+    { "id": "boat", "texture": "boat", "z": -18, "x": 0.12, "bottom": 0.2, "height": 0.34, "tint": 0.3, "rim": 0.7, "bob": 0.03, "portrait": {"x": 0.12, "bottom": 0.24, "height": 0.17} },
+    { "id": "papyrus", "texture": "papyrus", "z": -5, "x": -0.44, "bottom": -0.02, "height": 0.46, "tint": 0.25, "rim": 0.7, "sway": 0.1, "shade": 0.8, "portrait": {"x": -0.4, "height": 0.24} },
+    { "id": "bank-near", "texture": "bank-near", "z": -4, "x": 0, "bottom": -0.14, "height": 0.3, "stretch": true, "shade": 0.65, "tint": 0.25, "rim": 0.5, "portrait": {"bottom": -0.06, "height": 0.2} },
+    { "id": "reeds", "texture": "reeds", "z": 1.5, "x": 0, "bottom": -0.14, "height": 0.34, "stretch": true, "shade": 0.55, "tint": 0.2, "rim": 0.4, "sway": 0.5, "portrait": {"height": 0.22} }
+  ],
+  "camera": { "fov": 36, "position": [[-1.5,1,14],[-0.5,0.98,13.2],[0.5,0.96,12.4],[1.5,0.95,11.6]], "lookAt": [[-1,1.55,-20],[-0.3,1.55,-20],[0.4,1.55,-20],[1.1,1.55,-20]] },
+  "celestial": { "u": 0.62, "v": 0.37, "uPortrait": 0.55, "vPortrait": 0.42, "size": 0.1, "driftU": 0, "driftV": 0.05, "intensity": 2.3, "halo": 0.04 },
+  "title": { "v": 0.12, "vPortrait": 0.24 },
+  "sky": { "top": "#3c6784", "mid": "#a6c5ca", "horizon": "#ffd59c", "fog": "#b6c6c0", "tint": "#d6dcc6", "rim": "#ffe0ae", "sun": "#ffe6b8" },
+  "river": { "z": -40, "bottom": -0.1, "height": 0.44, "glitter": 1, "portrait": {"bottom": -0.04, "height": 0.46} },
+  "fog": [
+    { "z": -34, "opacity": 0.3, "height": 0.5, "speed": 0.01, "scale": 1.4 },
+    { "z": -20, "opacity": 0.16, "height": 0.32, "speed": 0.018, "scale": 2 },
+    { "z": -8, "opacity": 0.07, "height": 0.22, "speed": 0.03, "scale": 2.8 }
+  ]
+}

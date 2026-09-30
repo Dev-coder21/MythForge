@@ -11,7 +11,7 @@ import {
   VignetteEffect,
 } from 'postprocessing'
 import { Fragment, Suspense, useEffect, useMemo, useState } from 'react'
-import { Color, HalfFloatType, PerspectiveCamera, Scene, Vector2, WebGLRenderTarget } from 'three'
+import { Color, HalfFloatType, PerspectiveCamera, Scene, Vector2, Vector3, WebGLRenderTarget } from 'three'
 import type { StorySpec } from '@/spec'
 import { chapterCaption, chromeRefs, RING_C } from './ChapterOverlay'
 import { TRANSITION_START } from './camera/useChapterTimeline'
@@ -200,6 +200,11 @@ export function StoryRenderer({ spec, states, reducedMotion }: StoryRendererProp
     accent.set(spec.chapters[a + 1]?.sceneParams.accentColor ?? chapterA.sceneParams.accentColor)
     ;(u.uAccent!.value as Color).copy(accent)
     u.uTime!.value = state.clock.elapsedTime
+    const heatA = A.heat
+    const heatB = B?.heat ?? A.heat
+    const heatK = storyState.reducedMotion ? 0.3 : 1
+    ;(u.uHeatA!.value as Vector3).set(heatA.v, heatA.h, heatA.strength * heatK)
+    ;(u.uHeatB!.value as Vector3).set(heatB.v, heatB.h, heatB.strength * heatK)
 
     // Grade: blend tint and reading dim between the two chapters.
     tintA.set(A.gradeTint)

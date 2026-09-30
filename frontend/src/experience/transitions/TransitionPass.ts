@@ -1,5 +1,5 @@
 import { Pass } from 'postprocessing'
-import { Color, ShaderMaterial, Uniform, Vector2, type Texture, type WebGLRenderer, type WebGLRenderTarget } from 'three'
+import { Color, ShaderMaterial, Uniform, Vector2, Vector3, type Texture, type WebGLRenderer, type WebGLRenderTarget } from 'three'
 import type { TransitionType } from '@/spec'
 import { NOISE_GLSL } from '../layers/glsl'
 
@@ -20,9 +20,20 @@ const fragmentShader = /* glsl */ `
   uniform float uTime;
   uniform float uCA;
   uniform float uEdge;
+  uniform vec3 uHeatA;
+  uniform vec3 uHeatB;
   uniform vec2 uAspect;
   varying vec2 vUv;
   ${NOISE_GLSL}
+
+  // Heat shimmer: rising, wavering refraction confined to a horizontal band (the horizon).
+  vec2 heatUV(vec2 uv, vec3 heat) {
+    if (heat.z <= 0.0) return uv;
+    float band = 1.0 - smoothstep(0.0, heat.y, abs(uv.y - heat.x));
+    float w = sin(uv.y * 420.0 - uTime * 7.0 + sin(uv.x * 40.0 + uTime * 1.3) * 2.0);
+    float n = valueNoise(vec2(uv.x * 30.0, uv.y * 90.0 - uTime * 2.5)) - 0.5;
+    return uv + vec2(w * 0.6 + n, n * 0.5) * heat.z * band;
+  }
 
   vec3 sampleCA(sampler2D tex, vec2 uv, float ca) {
     vec2 d = (uv - 0.5) * ca;
@@ -34,9 +45,9 @@ const fragmentShader = /* glsl */ `
     float bell = sin(3.14159265 * t);
     // Lens fringing peaks mid-transition (EXPERIENCE_SPEC §6).
     float ca = uCA + bell * 0.012;
-    vec3 a = sampleCA(tA, vUv, ca);
+    vec3 a = sampleCA(tA, heatUV(vUv, uHeatA), ca);
     if (t <= 0.0) { gl_FragColor = vec4(a, 1.0); return; }
-    vec3 b = sampleCA(tB, vUv, ca);
+    vec3 b = sampleCA(tB, heatUV(vUv, uHeatB), ca);
     vec2 p = vUv * uAspect;
     vec3 col;
 
@@ -105,6 +116,8 @@ export class TransitionPass extends Pass {
         uTime: new Uniform(0),
         uCA: new Uniform(0.0006),
         uEdge: new Uniform(1),
+        uHeatA: new Uniform(new Vector3()),
+        uHeatB: new Uniform(new Vector3()),
         uAspect: new Uniform(new Vector2(1, 1)),
       },
       vertexShader,

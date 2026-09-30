@@ -13,6 +13,7 @@ export const sampleKyoto = kyoto as StorySpec
  */
 export const STORIES: Record<string, () => Promise<StorySpec>> = {
   kyoto: async () => sampleKyoto,
+  giza: async () => (await import('./sample-giza.json')).default as StorySpec,
 }
 
 export const DEFAULT_STORY = 'kyoto'
