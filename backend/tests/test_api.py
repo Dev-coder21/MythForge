@@ -21,6 +21,7 @@ def client(db, monkeypatch):
 
     app.dependency_overrides[get_db] = fresh_session
     monkeypatch.setattr(generation, "session_factory", Session)
+    monkeypatch.setattr(generation, "checker_factory", None)
     monkeypatch.setattr(generation, "make_client", lambda: contextlib.nullcontext(None))
     yield TestClient(app)
     app.dependency_overrides.clear()
@@ -28,7 +29,7 @@ def client(db, monkeypatch):
 
 def test_generate_poll_and_read(client, monkeypatch):
     monkeypatch.setattr(generation, "gather_content", lambda topic, db, c: CONTENT)
-    three = draft([chapter(titleWord=w) for w in ("FUJI", "ASH", "SNOW")])
+    three = draft([chapter(titleWord=w) for w in ("FUJI", "HONSHU", "CLIMBING")])
     monkeypatch.setattr(generation, "chain_factory", lambda: chain(Scripted("gemini", three, '{"unsupported": []}')))
 
     r = client.post("/generate", json={"topic": "Mount Fuji"})

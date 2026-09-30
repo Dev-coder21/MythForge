@@ -7,7 +7,7 @@ from pathlib import Path
 from app.core.config import get_settings
 from app.core.db import SessionLocal, init_db
 from app.llm_pipeline.pipeline import generate_spec
-from app.llm_pipeline.providers import build_chain
+from app.llm_pipeline.providers import build_chain, build_checker_chain
 from app.retrieval import gather_content
 from app.retrieval.http import make_client
 
@@ -23,7 +23,7 @@ def main(topics: list[str]) -> None:
         for topic in topics:
             try:
                 content = gather_content(topic, db, client)
-                result = generate_spec(content, chain)
+                result = generate_spec(content, chain, checker_for=lambda w: build_checker_chain(get_settings(), exclude=w))
             except Exception as e:
                 print(f"{topic}: FAILED. {e}")
                 chain.notes.clear()
@@ -34,7 +34,7 @@ def main(topics: list[str]) -> None:
             reports = json.loads(report_path.read_text(encoding="utf-8")) if report_path.exists() else {}
             reports[path.name] = result.grounding
             report_path.write_text(json.dumps(reports, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-            score = result.grounding["score"] if result.grounding else "n/a"
+            score = f'{result.grounding["score"]} (checked by {result.grounding["checkedBy"]})' if result.grounding else "n/a"
             print(f"{topic}: {path.name} via {result.provider}, {result.attempts} attempt(s), grounding {score}. {'; '.join(chain.notes)}")
             chain.notes.clear()
 

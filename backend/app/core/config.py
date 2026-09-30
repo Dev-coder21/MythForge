@@ -21,6 +21,10 @@ class Settings(BaseSettings):
     ollama_url: str = "http://localhost:11434"
     ollama_model: str = ""  # empty = Ollama not used
 
+    # Fact-check models, tried in order; the exact provider:model that wrote the story is always skipped,
+    # so a story is never checked by its own writer.
+    grounding_models: str = "groq:qwen/qwen3.8-27b,groq:openai/gpt-oss-20b,gemini:gemini-flash-latest"
+
     # Keep requests small so free-tier limits hold.
     llm_max_output_tokens: int = 2000
     llm_timeout_s: float = 90.0

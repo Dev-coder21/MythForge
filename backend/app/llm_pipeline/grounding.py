@@ -21,6 +21,9 @@ A sentence is SUPPORTED when every factual claim in it (names, numbers, dates, p
 is stated in or directly implied by the SOURCE TEXT. Figurative or atmospheric wording is fine when it asserts no
 fact beyond the source ("Carved from the ground itself." about a statue carved from bedrock is supported).
 A sentence is UNSUPPORTED when it adds, changes, exaggerates or wrongly combines facts.
+Hedges matter: if the source hedges ("about five months", "up to 25,000", "roughly", "is thought to", "possibly")
+and the sentence states it as exact or certain ("five months", "25,000", "was"), it is UNSUPPORTED.
+Be strict: when in doubt, mark it unsupported.
 Return only JSON."""
 
 
@@ -41,6 +44,7 @@ class GroundingReport:
     claims: list[Claim]
     unsupported: dict[str, str] = field(default_factory=dict)  # claim id -> reason
     provider: str = ""
+    checked_by: str = ""  # provider:model that ran the check
 
     @property
     def score(self) -> float:
@@ -54,6 +58,7 @@ class GroundingReport:
     def as_dict(self) -> dict:
         return {
             "score": self.score,
+            "checkedBy": self.checked_by,
             "sentences": len(self.claims),
             "unsupported": [
                 {"id": c.id, "field": c.field, "text": c.text, "reason": self.unsupported[c.id]} for c in self.unsupported_claims()
@@ -94,7 +99,7 @@ def check_grounding(spec: StorySpec, content: RetrievedContent, chain: FallbackC
                 unsupported[item["id"]] = str(item.get("reason", "not in the source"))[:200]
     except (json.JSONDecodeError, AttributeError) as e:
         raise ValueError(f"grounding check returned unreadable JSON ({e})") from e
-    return GroundingReport(claims=claims, unsupported=unsupported, provider=provider)
+    return GroundingReport(claims=claims, unsupported=unsupported, provider=provider, checked_by=chain.last_model or provider)
 
 
 def remove_unsupported(spec: StorySpec, report: GroundingReport, min_body_words: int = 20) -> tuple[StorySpec, list[str]]:

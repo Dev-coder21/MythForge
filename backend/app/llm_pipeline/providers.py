@@ -39,6 +39,7 @@ Message = dict  # {"role": "user" | "assistant", "content": str}
 
 class LLMProvider(Protocol):
     name: str
+    model: str
 
     def complete_json(self, system: str, messages: list[Message], max_tokens: int) -> str: ...
 
@@ -172,6 +173,7 @@ class FallbackChain:
     bench_s: float = 300.0  # skip a provider this long after it fails, so later calls don't re-wait on it
     clock: Callable[[], float] = time.monotonic
     _benched: dict[str, float] = field(default_factory=dict)
+    last_model: str = ""  # "provider:model" of the last successful call
 
     def complete_json(self, system: str, messages: list[Message], max_tokens: int) -> tuple[str, str]:
         if not self.providers:
@@ -181,12 +183,14 @@ class FallbackChain:
             )
         failures = []
         now = self.clock()
-        active = [p for p in self.providers if self._benched.get(p.name, 0) <= now] or self.providers
+        active = [p for p in self.providers if self._benched.get(model_id(p), 0) <= now] or self.providers
         for p in active:
             waits = 0
             while True:
                 try:
-                    return p.name, p.complete_json(system, messages, max_tokens)
+                    out = p.complete_json(system, messages, max_tokens)
+                    self.last_model = model_id(p)
+                    return p.name, out
                 except RateLimitError as e:
                     if waits < self.max_rate_limit_waits and not e.daily:
                         delay = min(e.retry_after if e.retry_after is not None else 5.0 * 2**waits, self.max_backoff_s)
@@ -199,12 +203,35 @@ class FallbackChain:
                 except (LLMError, httpx.HTTPError) as e:
                     failures.append(str(e) if isinstance(e, LLMError) else f"{p.name}: {e}")
                     break
-            self._benched[p.name] = self.clock() + self.bench_s
+            self._benched[model_id(p)] = self.clock() + self.bench_s
             self.notes.append(f"{p.name} failed, trying the next provider")
         raise AllProvidersFailed(
             "All LLM providers failed: " + " | ".join(failures)
             + ". Free tiers reset over time; wait a minute and try again, or add another provider key."
         )
+
+
+def model_id(p: LLMProvider) -> str:
+    return f"{p.name}:{p.model}"
+
+
+def build_checker_chain(settings: Settings, exclude: str, client: httpx.Client | None = None,
+                        sleep: Callable[[float], None] = time.sleep) -> FallbackChain:
+    """Fact-check chain from GROUNDING_MODELS, minus the writer's provider:model and anything without credentials."""
+    client = client or httpx.Client(timeout=settings.llm_timeout_s)
+    providers: list[LLMProvider] = []
+    for entry in (e.strip() for e in settings.grounding_models.split(",") if e.strip()):
+        name, _, model = entry.partition(":")
+        if f"{name}:{model}" == exclude:
+            continue
+        if name == "groq" and settings.groq_api_key:
+            providers.append(GroqProvider(settings.groq_api_key, model, client))
+        elif name == "gemini" and settings.gemini_api_key:
+            providers.append(GeminiProvider(settings.gemini_api_key, model, client))
+        elif name == "ollama" and model:
+            providers.append(OllamaProvider(settings.ollama_url, model, client))
+    return FallbackChain(providers, max_rate_limit_waits=settings.llm_max_rate_limit_waits,
+                         max_backoff_s=settings.llm_max_backoff_s, sleep=sleep)
 
 
 def build_chain(settings: Settings, client: httpx.Client | None = None, sleep: Callable[[float], None] = time.sleep) -> FallbackChain:

@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from app.core.config import get_settings
 from app.core.db import SessionLocal
 from app.llm_pipeline.pipeline import GenerationFailed, generate_spec
-from app.llm_pipeline.providers import FallbackChain, LLMError, build_chain
+from app.llm_pipeline.providers import FallbackChain, LLMError, build_chain, build_checker_chain
 from app.models import Chapter, GenerationJob, JobStage, Story, StoryStatus
 from app.retrieval import ThinContentError, gather_content
 from app.retrieval.http import RetrievalConfigError, make_client
@@ -27,6 +27,13 @@ def default_chain() -> FallbackChain:
 
 
 chain_factory: Callable[[], FallbackChain] = default_chain
+
+
+def default_checker(writer: str) -> FallbackChain:
+    return build_checker_chain(get_settings(), exclude=writer)
+
+
+checker_factory: Callable[[str], FallbackChain] | None = default_checker
 
 
 def _stage(db: Session, job: GenerationJob, stage: JobStage, pct: int) -> None:
@@ -47,7 +54,7 @@ def run_generation(story_id: str, job_id: str) -> None:
                 content = gather_content(story.topic, db, client)
 
             _stage(db, job, JobStage.structuring, 40)
-            result = generate_spec(content, chain_factory())
+            result = generate_spec(content, chain_factory(), checker_for=checker_factory)
             job.provider = result.provider
 
             _stage(db, job, JobStage.assembling, 90)

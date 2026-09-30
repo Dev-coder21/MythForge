@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import re
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
@@ -151,6 +152,13 @@ def _numbers(text: str) -> set[str]:
     return found
 
 
+def _word_in(word: str, text: str) -> bool:
+    """Whole-word match, case-insensitive; a plural or singular form also counts (WALLS for "wall")."""
+    w = re.escape(word.strip().lower())
+    stem = re.escape(re.sub(r"(es|s)$", "", word.strip().lower()))
+    return bool(re.search(rf"\b({w}|{stem}|{stem}s|{stem}es)\b", text.lower()))
+
+
 def assemble(draft: Draft, topic: str, content: RetrievedContent) -> StorySpec:
     """Turn a draft into a full StorySpec (ids, labels, dates, Commons images)."""
     chapters = []
@@ -204,7 +212,8 @@ def validate_draft(raw: str, topic: str, content: RetrievedContent, chapters: in
     errors: list[str] = []
     if len(draft.chapters) != chapters:
         errors.append(f"there must be exactly {chapters} chapters (got {len(draft.chapters)})")
-    source_numbers = _numbers(content.as_prompt_text())
+    source_text = content.as_prompt_text()
+    source_numbers = _numbers(source_text)
     seen_words = set()
     for i, c in enumerate(draft.chapters):
         where = f"chapters.{i}"
@@ -217,6 +226,8 @@ def validate_draft(raw: str, topic: str, content: RetrievedContent, chapters: in
         invented = sorted(_numbers(f"{c.heading} {c.subheading} {c.body}") - source_numbers)
         if invented:
             errors.append(f"{where}: these numbers are not in the SOURCE TEXT: {', '.join(invented)}; use only numbers from the source")
+        if not _word_in(c.titleWord, f"{topic} {source_text}"):
+            errors.append(f"{where}.titleWord: {c.titleWord} does not appear in the topic or SOURCE TEXT; use a word or name from them")
         heading = c.heading.strip()
         if len(heading) > RULES["generatedHeadingMax"]:
             errors.append(f"{where}.heading: {len(heading)} characters; keep it under {RULES['generatedHeadingMax']}, evocative, not a summary")
@@ -253,7 +264,8 @@ def _write_valid(content, chain, messages, chapters, max_tokens, budget):
     raise SpecInvalid(last_errors)
 
 
-def generate_spec(content: RetrievedContent, chain: FallbackChain, chapters: int = 3, ground: bool = True) -> GenerationResult:
+def generate_spec(content: RetrievedContent, chain: FallbackChain, chapters: int = 3, ground: bool = True,
+                  checker_for: Callable[[str], FallbackChain] | None = None) -> GenerationResult:
     """One story call (+ up to MAX_CORRECTIONS corrections), then a grounding check call.
     Unsupported sentences go back once for correction; any still unsupported are removed."""
     max_tokens = get_settings().llm_max_output_tokens
@@ -267,20 +279,24 @@ def generate_spec(content: RetrievedContent, chain: FallbackChain, chapters: int
 
     grounding = None
     if ground:
+        writer = chain.last_model
+        # A different model checks the facts; the writer grading itself is too lenient.
+        checker = checker_for(writer) if checker_for else chain
         try:
-            report = check_grounding(spec, content, chain)
+            report = check_grounding(spec, content, checker)
             if report.unsupported:
                 chain.notes.append(f"grounding: {len(report.unsupported)} unsupported sentence(s), asking for a correction")
                 fix = messages + [{"role": "user", "content": grounding_correction_prompt(report)}]
                 try:
                     fixed, provider, _, _ = _write_valid(content, chain, fix, chapters, max_tokens, 2)
-                    spec, report = fixed, check_grounding(fixed, content, chain)
+                    spec, report = fixed, check_grounding(fixed, content, checker)
                 except SpecInvalid:
                     chain.notes.append("grounding correction did not validate; keeping the first version")
             spec, kept = remove_unsupported(spec, report)
             if report.unsupported:
                 chain.notes.append(f"grounding: removed {len(report.unsupported) - len(kept)} sentence(s)")
-            grounding = report.as_dict() | {"removed": [c.id for c in report.unsupported_claims() if c.id not in kept], "kept": kept}
+            grounding = report.as_dict() | {"writtenBy": writer,"removed": [c.id for c in report.unsupported_claims() if c.id not in kept], "kept": kept}
         except (LLMError, ValueError) as e:
             chain.notes.append(f"grounding check skipped: {e}")
+        chain.notes.extend(n for n in checker.notes if checker is not chain)
     return GenerationResult(spec=spec, provider=provider, attempts=attempts, notes=list(chain.notes), grounding=grounding)

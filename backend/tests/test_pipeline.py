@@ -50,14 +50,14 @@ def chapter(**over):
 
 def draft(chapters=None):
     return json.dumps({"title": "Fuji", "subtitle": "A volcano held still by snow and patience",
-                       "chapters": chapters or [chapter(), chapter(titleWord="ASH", artKit="temple-dusk", timeOfDay="dusk")]})
+                       "chapters": chapters or [chapter(), chapter(titleWord="HONSHU", artKit="temple-dusk", timeOfDay="dusk")]})
 
 
 class Scripted:
     """Fake provider returning queued responses (strings) or raising queued exceptions."""
 
     def __init__(self, name, *responses):
-        self.name, self.responses, self.calls = name, list(responses), []
+        self.name, self.model, self.responses, self.calls = name, "fake", list(responses), []
 
     def complete_json(self, system, messages, max_tokens):
         self.calls.append(messages)
@@ -92,13 +92,13 @@ def test_valid_draft_assembles_full_spec():
 ])
 def test_invalid_drafts_are_explained(over, needle):
     with pytest.raises(SpecInvalid) as e:
-        validate_draft(draft([chapter(**over), chapter(titleWord="ASH")]), "Mount Fuji", CONTENT, 2)
+        validate_draft(draft([chapter(**over), chapter(titleWord="HONSHU")]), "Mount Fuji", CONTENT, 2)
     assert needle in " ".join(e.value.errors).lower() or needle in " ".join(e.value.errors)
 
 
 def test_normalizes_typography_and_heading_stop():
     body = BODY.replace("and last", "and last").replace("second,", "second‑hand,")
-    spec = validate_draft(draft([chapter(body=body, heading="A mountain’s own weather"), chapter(titleWord="ASH")]),
+    spec = validate_draft(draft([chapter(body=body, heading="A mountain’s own weather"), chapter(titleWord="HONSHU")]),
                           "Mount Fuji", CONTENT, 2)
     c = spec.chapters[0]
     assert c.heading == "A mountain's own weather." and " " not in c.body and "second-hand" in c.body
@@ -106,7 +106,7 @@ def test_normalizes_typography_and_heading_stop():
 
 def test_landmark_kit_allowed_for_its_own_topic():
     giza = RetrievedContent(topic="Giza pyramid complex", pages=CONTENT.pages, images=[])
-    validate_draft(draft([chapter(sceneTemplate="dune", artKit="giza"), chapter(titleWord="ASH", artKit="erg", sceneTemplate="dune")]),
+    validate_draft(draft([chapter(sceneTemplate="dune", artKit="giza"), chapter(titleWord="HONSHU", artKit="erg", sceneTemplate="dune")]),
                    "Giza pyramid complex", giza, 2)
 
 
@@ -119,7 +119,7 @@ def test_prompt_contains_rules_sources_and_catalog():
 # retries
 
 def test_corrects_invalid_output_then_succeeds():
-    bad = draft([chapter(artKit="nile"), chapter(titleWord="ASH")])
+    bad = draft([chapter(artKit="nile"), chapter(titleWord="HONSHU")])
     p = Scripted("gemini", "not json at all", bad, draft())
     result = generate_spec(CONTENT, chain(p), chapters=2, ground=False)
     assert result.attempts == 3 and len(p.calls) == 3
@@ -227,7 +227,7 @@ def test_grounding_correction_fixes_unsupported_sentence():
 
 def test_still_unsupported_sentences_are_removed_and_scored():
     from app.llm_pipeline.grounding import claims_of
-    padded = draft([chapter(body=f"{BODY} {INVENTED}"), chapter(titleWord="ASH")])
+    padded = draft([chapter(body=f"{BODY} {INVENTED}"), chapter(titleWord="HONSHU")])
     n = len(claims_of(validate_draft(padded, "Mount Fuji", CONTENT, 2)))
     bad = '{"unsupported": [{"id": "c1.body.3", "reason": "not in source"}]}'
     r = generate_spec(CONTENT, chain(Scripted("gemini", padded, bad, padded, bad)), chapters=2)
@@ -249,7 +249,7 @@ def test_grounding_failure_does_not_fail_generation():
 def test_draft_heading_rules():
     for heading, needle in (("At 3,776 m it rises.", "no numbers"), ("A" * 61, "under 60")):
         with pytest.raises(SpecInvalid) as e:
-            validate_draft(draft([chapter(heading=heading), chapter(titleWord="ASH")]), "Mount Fuji", CONTENT, 2)
+            validate_draft(draft([chapter(heading=heading), chapter(titleWord="HONSHU")]), "Mount Fuji", CONTENT, 2)
         assert needle in " ".join(e.value.errors)
 
 
@@ -260,3 +260,41 @@ def test_daily_quota_skips_waiting_and_benches_provider():
     c = FallbackChain([g, q], sleep=slept.append)
     assert c.complete_json("s", [], 10) == ("groq", "a") and slept == []
     assert c.complete_json("s", [], 10) == ("groq", "b") and len(g.calls) == 1  # benched, not retried
+
+
+def test_title_word_must_come_from_source_or_topic():
+    with pytest.raises(SpecInvalid) as e:
+        validate_draft(draft([chapter(titleWord="GEODES"), chapter(titleWord="HONSHU")]), "Mount Fuji", CONTENT, 2)
+    assert "GEODES does not appear" in " ".join(e.value.errors)
+    # plural of a source word and a topic word are fine
+    validate_draft(draft([chapter(titleWord="MOUNT"), chapter(titleWord="MOUNTAINS")]), "Mount Fuji", CONTENT, 2)
+
+
+def test_checker_is_a_different_model_and_is_reported():
+    writer = Scripted("groq", draft())
+    writer.model = "openai/gpt-oss-120b"
+    checker = Scripted("groq", '{"unsupported": []}')
+    checker.model = "qwen/qwen3.8-27b"
+    seen = []
+
+    def checker_for(w):
+        seen.append(w)
+        return chain(checker)
+
+    r = generate_spec(CONTENT, chain(writer), chapters=2, checker_for=checker_for)
+    assert seen == ["groq:openai/gpt-oss-120b"]
+    assert r.grounding["checkedBy"] == "groq:qwen/qwen3.8-27b" and r.grounding["writtenBy"] == "groq:openai/gpt-oss-120b"
+    assert len(writer.calls) == 1
+
+
+def test_build_checker_chain_skips_writer_model():
+    from app.llm_pipeline.providers import build_checker_chain
+    s = Settings(_env_file=None, gemini_api_key="g", groq_api_key="q",
+                 grounding_models="groq:openai/gpt-oss-120b,groq:qwen/qwen3.8-27b,gemini:gemini-flash-latest")
+    ids = [f"{p.name}:{p.model}" for p in build_checker_chain(s, exclude="groq:openai/gpt-oss-120b", client=httpx.Client()).providers]
+    assert ids == ["groq:qwen/qwen3.8-27b", "gemini:gemini-flash-latest"]
+
+
+def test_hedge_rule_is_in_checker_prompt():
+    from app.llm_pipeline.grounding import SYSTEM as CHECK
+    assert "about five months" in CHECK and "UNSUPPORTED" in CHECK
