@@ -265,7 +265,8 @@ def _write_valid(content, chain, messages, chapters, max_tokens, budget):
 
 
 def generate_spec(content: RetrievedContent, chain: FallbackChain, chapters: int = 3, ground: bool = True,
-                  checker_for: Callable[[str], FallbackChain] | None = None) -> GenerationResult:
+                  checker_for: Callable[[str], FallbackChain] | None = None,
+                  on_stage: Callable[[str], None] | None = None) -> GenerationResult:
     """One story call (+ up to MAX_CORRECTIONS corrections), then a grounding check call.
     Unsupported sentences go back once for correction; any still unsupported are removed."""
     max_tokens = get_settings().llm_max_output_tokens
@@ -282,13 +283,21 @@ def generate_spec(content: RetrievedContent, chain: FallbackChain, chapters: int
         writer = chain.last_model
         # A different model checks the facts; the writer grading itself is too lenient.
         checker = checker_for(writer) if checker_for else chain
+        if checker is not chain:
+            checker.on_event = chain.on_event
+        if on_stage:
+            on_stage("checking")
         try:
             report = check_grounding(spec, content, checker)
             if report.unsupported:
                 chain.notes.append(f"grounding: {len(report.unsupported)} unsupported sentence(s), asking for a correction")
+                if on_stage:
+                    on_stage("correcting")
                 fix = messages + [{"role": "user", "content": grounding_correction_prompt(report)}]
                 try:
                     fixed, provider, _, _ = _write_valid(content, chain, fix, chapters, max_tokens, 2)
+                    if on_stage:
+                        on_stage("checking")
                     spec, report = fixed, check_grounding(fixed, content, checker)
                 except SpecInvalid:
                     chain.notes.append("grounding correction did not validate; keeping the first version")

@@ -174,6 +174,12 @@ class FallbackChain:
     clock: Callable[[], float] = time.monotonic
     _benched: dict[str, float] = field(default_factory=dict)
     last_model: str = ""  # "provider:model" of the last successful call
+    # Live progress for the UI: (provider:model, message). Called on each attempt, wait and failure.
+    on_event: Callable[[str, str], None] | None = None
+
+    def _event(self, p: LLMProvider, message: str) -> None:
+        if self.on_event:
+            self.on_event(model_id(p), message)
 
     def complete_json(self, system: str, messages: list[Message], max_tokens: int) -> tuple[str, str]:
         if not self.providers:
@@ -187,6 +193,7 @@ class FallbackChain:
         for p in active:
             waits = 0
             while True:
+                self._event(p, "working")
                 try:
                     out = p.complete_json(system, messages, max_tokens)
                     self.last_model = model_id(p)
@@ -195,6 +202,7 @@ class FallbackChain:
                     if waits < self.max_rate_limit_waits and not e.daily:
                         delay = min(e.retry_after if e.retry_after is not None else 5.0 * 2**waits, self.max_backoff_s)
                         self.notes.append(f"{p.name}: rate limited, waiting {delay:.0f}s")
+                        self._event(p, f"rate limited, waiting {delay:.0f}s")
                         self.sleep(delay)
                         waits += 1
                         continue
@@ -205,6 +213,7 @@ class FallbackChain:
                     break
             self._benched[model_id(p)] = self.clock() + self.bench_s
             self.notes.append(f"{p.name} failed, trying the next provider")
+            self._event(p, "unavailable, trying the next provider")
         raise AllProvidersFailed(
             "All LLM providers failed: " + " | ".join(failures)
             + ". Free tiers reset over time; wait a minute and try again, or add another provider key."

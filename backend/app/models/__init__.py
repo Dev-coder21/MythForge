@@ -28,6 +28,7 @@ class JobStage(str, enum.Enum):
     queued = "queued"
     retrieving = "retrieving"
     structuring = "structuring"
+    checking = "checking"  # sentence-level fact check (and its correction round)
     assembling = "assembling"
     done = "done"
     error = "error"
@@ -85,7 +86,9 @@ class GenerationJob(Base):
     stage: Mapped[JobStage] = mapped_column(Enum(JobStage), default=JobStage.queued)
     progress_pct: Mapped[int] = mapped_column(Integer, default=0)
     error_message: Mapped[str | None] = mapped_column(Text)
-    provider: Mapped[str | None] = mapped_column(String(40))
+    provider: Mapped[str | None] = mapped_column(String(80))
+    # Latest live message for the UI ("rate limited, waiting 20s", "rewriting 2 unsupported sentences").
+    detail: Mapped[str | None] = mapped_column(Text)
     started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 

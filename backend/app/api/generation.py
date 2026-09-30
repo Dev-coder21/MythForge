@@ -6,6 +6,7 @@ import logging
 from collections.abc import Callable
 from datetime import UTC, datetime
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
@@ -53,13 +54,29 @@ def run_generation(story_id: str, job_id: str) -> None:
             with make_client() as client:
                 content = gather_content(story.topic, db, client)
 
-            _stage(db, job, JobStage.structuring, 40)
-            result = generate_spec(content, chain_factory(), checker_for=checker_factory)
+            _stage(db, job, JobStage.structuring, 35)
+            chain = chain_factory()
+
+            def on_event(model: str, message: str) -> None:
+                job.provider, job.detail = model, message
+                db.commit()
+
+            def on_stage(stage: str) -> None:
+                if stage == "checking":
+                    _stage(db, job, JobStage.checking, 70)
+                elif stage == "correcting":
+                    job.detail = "rewriting sentences the fact check could not find in the sources"
+                    db.commit()
+
+            chain.on_event = on_event
+            result = generate_spec(content, chain, checker_for=checker_factory, on_stage=on_stage)
             job.provider = result.provider
+            job.detail = None
 
             _stage(db, job, JobStage.assembling, 90)
             spec = result.spec.model_dump(mode="json")
             spec["id"] = story.id  # the spec id is the story id, so /stories/{id} matches
+            spec["slug"] = _unique_slug(db, spec["slug"], story.id)  # /story/:slug must name one story
             story.spec_json = spec
             story.title, story.subtitle, story.share_slug = spec["title"], spec["subtitle"], spec["slug"]
             story.chapters = [
@@ -85,6 +102,15 @@ def run_generation(story_id: str, job_id: str) -> None:
         db.commit()
     finally:
         db.close()
+
+
+def _unique_slug(db: Session, slug: str, story_id: str) -> str:
+    taken = set(db.scalars(select(Story.share_slug).where(Story.id != story_id, Story.share_slug.is_not(None))))
+    taken |= {"kyoto", "giza"}  # built-in stories in the frontend
+    candidate, n = slug, 2
+    while candidate in taken:
+        candidate, n = f"{slug}-{n}", n + 1
+    return candidate
 
 
 def _fail(story: Story, job: GenerationJob, message: str) -> None:

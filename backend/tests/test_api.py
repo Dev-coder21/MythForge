@@ -63,3 +63,35 @@ def test_not_found_and_bad_input(client):
     assert client.get("/stories/nope").status_code == 404
     assert client.post("/generate", json={"topic": ""}).status_code == 422
     assert client.get("/templates").status_code == 200
+
+
+def test_poster_upload_and_summary(client, monkeypatch, tmp_path):
+    import base64
+
+    from app.api import routes
+    monkeypatch.setattr(routes, "POSTER_DIR", tmp_path)
+    monkeypatch.setattr(generation, "gather_content", lambda topic, db, c: CONTENT)
+    three = draft([chapter(titleWord=w) for w in ("FUJI", "HONSHU", "CLIMBING")])
+    monkeypatch.setattr(generation, "chain_factory", lambda: chain(Scripted("gemini", three, '{"unsupported": []}')))
+    ids = client.post("/generate", json={"topic": "Mount Fuji"}).json()
+    sid = ids["storyId"]
+    assert client.get(f"/stories/{sid}/poster").status_code == 404
+    assert client.post(f"/stories/{sid}/poster", json={"dataUrl": "data:image/png;base64,AAAA"}).status_code == 422
+    jpeg = "data:image/jpeg;base64," + base64.b64encode(b"\xff\xd8\xff\xe0fake").decode()
+    assert client.post(f"/stories/{sid}/poster", json={"dataUrl": jpeg}).status_code == 204
+    assert client.get(f"/stories/{sid}/poster").content.startswith(b"\xff\xd8")
+    card = client.get("/stories").json()[0]
+    assert card["posterUrl"] == f"/stories/{sid}/poster" and card["primaryColor"] == "#1c2230"
+    status = client.get(f"/generate/{ids['jobId']}/status").json()
+    assert status["storySlug"] == "fuji"
+
+
+def test_duplicate_topics_get_unique_slugs(client, monkeypatch):
+    monkeypatch.setattr(generation, "gather_content", lambda topic, db, c: CONTENT)
+    three = draft([chapter(titleWord=w) for w in ("FUJI", "HONSHU", "CLIMBING")])
+    slugs = []
+    for _ in range(2):
+        monkeypatch.setattr(generation, "chain_factory", lambda: chain(Scripted("gemini", three, '{"unsupported": []}')))
+        ids = client.post("/generate", json={"topic": "Mount Fuji"}).json()
+        slugs.append(client.get(f"/generate/{ids['jobId']}/status").json()["storySlug"])
+    assert slugs == ["fuji", "fuji-2"]

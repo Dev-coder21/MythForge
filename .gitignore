@@ -24,3 +24,5 @@ mythforge-starter.zip
 
 # Backend local database
 backend/*.db
+
+backend/posters/
