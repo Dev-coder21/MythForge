@@ -510,11 +510,96 @@ def process_landmark(src: Path, dst: Path, template: str) -> dict:
             "screenLeft": round(spill, 4), "look": look, "key": [round(float(k), 3) for k in key]}
 
 
+def erase_ground_line(rgb: np.ndarray) -> np.ndarray:
+    """Some elements stand on a thin dark ground line spanning most of the width. Paint it over with
+    the screen colour (sampled before touching anything) so the cutout trims to the element; cropping
+    it off instead would also remove the screen border that key_color() samples."""
+    key = key_color(rgb)
+    dark = rgb.mean(axis=2) < 0.18
+    rows = np.flatnonzero(dark.mean(axis=1) > 0.5)
+    rows = rows[rows > rgb.shape[0] * 0.6]
+    if not rows.size:
+        return rgb
+    out = rgb.copy()
+    lo, hi = max(0, rows.min() - 2), min(rgb.shape[0], rows.max() + 3)
+    band = out[lo:hi]
+    band[band.mean(axis=2) < 0.3] = key
+    return out
+
+
+# Generic scene sets: art-raw/<folder>/<source> -> artkits/<template>/hand/<name>.webp
+GENERIC_SETS = {
+    "oldcity": ("skyline", {
+        "city-far.png": "city-far", "rooftops-mid.png": "rooftops-mid", "rooftops-near.jpg": "rooftops-near",
+        "plaza.png": "plaza", "lamps.png": "lamp",
+    }),
+    "ruins": ("ruin", {
+        "hills-far.png": "hills-far", "ruins-far.png": "ruins-far", "collonade.png": "colonnade", "arch.png": "arch",
+        "column-broken.png": "column-broken", "blocks.png": "blocks", "grass-fore.png": "grass-fore",
+    }),
+    "harbor": ("harbor", {
+        "skyline-low.png": "skyline-low", "boats.png": "boats", "ferry.png": "ferry", "seawall.png": "seawall",
+    }),
+}
+FULL_DESPILL = {"lamp"}
+# Elements painted standing on a thin dark ground line (cropped before the cutout).
+GROUND_LINE = {"lamp", "ferry", "rooftops-near", "plaza"}
+
+
+def run_generic(folder: str) -> None:
+    """One generic scene set, neutral mid tones matched within the set (the kit's per-time sky grades
+    them). Code-painted versions stay in <template>/painted/ as fallbacks; particles stay code-made."""
+    template, mapping = GENERIC_SETS[folder]
+    out_dir = ROOT / "frontend" / "public" / "artkits" / template / "hand"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    elements: dict[str, np.ndarray] = {}
+    for src, name in mapping.items():
+        path = RAW / folder / src
+        if not path.exists():
+            print(f"skip {src} (missing)")
+            continue
+        rgb = remove_sparkle(load(f"{folder}/{src}"))
+        if name in GROUND_LINE:
+            rgb = erase_ground_line(rgb)
+        key = key_color(rgb)
+        magenta = key[1] < max(key[0], key[2])
+        # Full despill on magenta sheets (no genuine pink) and on elements whose glass or metal took green
+        # spill; other green sheets keep grass and foliage greens.
+        c, a = cutout(rgb, watermark=False, despill_all=magenta or name in FULL_DESPILL)
+        elements[name] = trim(rgba_of(c, a))
+        print(f"cut {name}")
+    measured = {k: stats(v) for k, v in elements.items()}
+    set_l = float(np.median([m[0] for m in measured.values()]))
+    set_s = float(np.median([m[1] for m in measured.values()]))
+    thumbs = []
+    for name, rgba in elements.items():
+        l, sat = measured[name]
+        target = 0.5 * (0.5 * (set_l + l)) + 0.5 * 0.54
+        rgb = rgba[..., :3] * np.clip(target / max(l, 1e-3), 0.7, 1.35)
+        lum = luma(rgb)[..., None]
+        rgb = lum + (rgb - lum) * np.clip(0.95 * set_s / max(sat, 1e-3), 0.75, 1.1)
+        graded = rgba.copy()
+        graded[..., :3] = np.clip(rgb, 0, 1)
+        img = to_image(graded)
+        img.save(out_dir / f"{name}.webp", "WEBP", quality=90, method=6)
+        print(f"{name:14s} {img.width}x{img.height}  L {l:.2f}->{target:.2f}  S {sat:.2f}")
+        t = img.copy()
+        t.thumbnail((360, 360))
+        thumbs.append(t)
+    cols = 4
+    rows = (len(thumbs) + cols - 1) // cols
+    sheet_img = Image.new("RGBA", (cols * 380, rows * 380), (70, 76, 92, 255))
+    for i, t in enumerate(thumbs):
+        sheet_img.alpha_composite(t, ((i % cols) * 380 + 10, (i // cols) * 380 + 10))
+    sheet_img.convert("RGB").save(CAPTURES / f"{folder}_processed.png")
+    print("sheet ->", CAPTURES / f"{folder}_processed.png")
+
+
 def main() -> None:
     import argparse
 
     ap = argparse.ArgumentParser(description="Process hand-painted art into kit layers.")
-    ap.add_argument("--set", choices=["kyoto", "giza", "peak", "all"], default="all", help="which art set to process")
+    ap.add_argument("--set", choices=["kyoto", "giza", "peak", "oldcity", "ruins", "harbor", "all"], default="all", help="which art set to process")
     ap.add_argument("--landmark", nargs=2, metavar=("SRC", "DST"), help="process one AI-painted landmark image")
     ap.add_argument("--template", default="peak", help="template whose grade the landmark takes")
     args = ap.parse_args()
@@ -530,6 +615,9 @@ def main() -> None:
         run_giza()
     if which in ("peak", "all"):
         run_peak()
+    for folder in GENERIC_SETS:
+        if which in (folder, "all"):
+            run_generic(folder)
 
 
 if __name__ == "__main__":

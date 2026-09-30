@@ -2,12 +2,27 @@
   "name": "port",
   "template": "harbor",
   "textures": {
-    "skyline-low": "../painted/skyline-low.webp",
-    "boats": "../painted/boats.webp",
-    "ferry": "../painted/ferry.webp",
-    "seawall": "../painted/seawall.webp",
+    "skyline-low": [
+      "../hand/skyline-low.webp",
+      "../painted/skyline-low.webp"
+    ],
+    "boats": [
+      "../hand/boats.webp",
+      "../painted/boats.webp"
+    ],
+    "ferry": [
+      "../hand/ferry.webp",
+      "../painted/ferry.webp"
+    ],
+    "seawall": [
+      "../hand/seawall.webp",
+      "../painted/seawall.webp"
+    ],
     "gulls": "../painted/gulls.webp",
-    "lamp": "../../skyline/painted/lamp.webp"
+    "lamp": [
+      "../../skyline/hand/lamp.webp",
+      "../../skyline/painted/lamp.webp"
+    ]
   },
   "layers": [
     {
@@ -15,14 +30,14 @@
       "texture": "skyline-low",
       "z": -70,
       "x": 0,
-      "bottom": 0.34,
-      "height": 0.1,
+      "bottom": 0.33,
+      "height": 0.13,
       "stretch": true,
       "fog": 0.5,
       "tint": 0.5,
       "rim": 0.1,
       "portrait": {
-        "bottom": 0.4,
+        "bottom": 0.39,
         "height": 0.05
       }
     },
@@ -30,9 +45,9 @@
       "id": "ferry",
       "texture": "ferry",
       "z": -44,
-      "x": -0.2,
-      "bottom": 0.3,
-      "height": 0.12,
+      "x": -0.22,
+      "bottom": 0.28,
+      "height": 0.13,
       "maxWidth": 0.4,
       "fog": 0.3,
       "tint": 0.4,
@@ -48,10 +63,10 @@
       "id": "boats",
       "texture": "boats",
       "z": -20,
-      "x": 0.2,
-      "bottom": 0.2,
-      "height": 0.3,
-      "maxWidth": 0.6,
+      "x": 0.22,
+      "bottom": 0.18,
+      "height": 0.26,
+      "maxWidth": 0.62,
       "fog": 0.1,
       "tint": 0.35,
       "rim": 0.35,
@@ -67,15 +82,15 @@
       "texture": "seawall",
       "z": -4,
       "x": 0,
-      "bottom": -0.12,
-      "height": 0.3,
+      "bottom": -0.14,
+      "height": 0.36,
       "stretch": true,
       "shade": 0.8,
       "tint": 0.3,
       "rim": 0.25,
       "portrait": {
-        "bottom": -0.05,
-        "height": 0.16
+        "bottom": -0.06,
+        "height": 0.18
       }
     },
     {
@@ -90,7 +105,7 @@
       "rim": 0.3,
       "light": {
         "u": 0.5,
-        "v": 0.86,
+        "v": 0.8,
         "color": "#ffc27a",
         "intensity": 2.2,
         "radius": 1.2,

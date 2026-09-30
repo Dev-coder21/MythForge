@@ -2,11 +2,26 @@
   "name": "oldtown",
   "template": "skyline",
   "textures": {
-    "city-far": "../painted/city-far.webp",
-    "rooftops-mid": "../painted/rooftops-mid.webp",
-    "rooftops-near": "../painted/rooftops-near.webp",
-    "plaza": "../painted/plaza.webp",
-    "lamp": "../painted/lamp.webp",
+    "city-far": [
+      "../hand/city-far.webp",
+      "../painted/city-far.webp"
+    ],
+    "rooftops-mid": [
+      "../hand/rooftops-mid.webp",
+      "../painted/rooftops-mid.webp"
+    ],
+    "rooftops-near": [
+      "../hand/rooftops-near.webp",
+      "../painted/rooftops-near.webp"
+    ],
+    "plaza": [
+      "../hand/plaza.webp",
+      "../painted/plaza.webp"
+    ],
+    "lamp": [
+      "../hand/lamp.webp",
+      "../painted/lamp.webp"
+    ],
     "birds": "../painted/birds.webp"
   },
   "layers": [
@@ -15,15 +30,15 @@
       "texture": "city-far",
       "z": -60,
       "x": 0,
-      "bottom": 0.26,
-      "height": 0.26,
+      "bottom": 0.3,
+      "height": 0.23,
       "stretch": true,
       "fog": 0.55,
       "tint": 0.5,
       "rim": 0.15,
       "portrait": {
-        "bottom": 0.34,
-        "height": 0.12
+        "bottom": 0.36,
+        "height": 0.1
       }
     },
     {
@@ -31,15 +46,15 @@
       "texture": "rooftops-mid",
       "z": -34,
       "x": 0,
-      "bottom": 0.12,
-      "height": 0.4,
+      "bottom": 0.14,
+      "height": 0.31,
       "stretch": true,
       "fog": 0.22,
       "tint": 0.4,
       "rim": 0.3,
       "portrait": {
-        "bottom": 0.16,
-        "height": 0.16
+        "bottom": 0.18,
+        "height": 0.15
       }
     },
     {
@@ -47,15 +62,15 @@
       "texture": "rooftops-near",
       "z": -16,
       "x": 0,
-      "bottom": -0.04,
-      "height": 0.46,
+      "bottom": 0.0,
+      "height": 0.4,
       "stretch": true,
       "fog": 0.08,
       "tint": 0.35,
       "rim": 0.3,
       "portrait": {
-        "bottom": 0.02,
-        "height": 0.18
+        "bottom": 0.0,
+        "height": 0.26
       }
     },
     {
@@ -63,14 +78,14 @@
       "texture": "plaza",
       "z": -4,
       "x": 0,
-      "bottom": -0.14,
-      "height": 0.3,
+      "bottom": -0.16,
+      "height": 0.34,
       "stretch": true,
       "shade": 0.8,
       "tint": 0.3,
       "rim": 0.2,
       "portrait": {
-        "bottom": -0.06,
+        "bottom": -0.1,
         "height": 0.16
       }
     },
@@ -78,15 +93,15 @@
       "id": "lamp-l",
       "texture": "lamp",
       "z": -3,
-      "x": -0.4,
+      "x": -0.41,
       "bottom": -0.06,
-      "height": 0.8,
+      "height": 0.78,
       "shade": 0.7,
       "tint": 0.2,
       "rim": 0.3,
       "light": {
         "u": 0.5,
-        "v": 0.86,
+        "v": 0.8,
         "color": "#ffc27a",
         "intensity": 2.2,
         "radius": 1.2,
@@ -94,23 +109,23 @@
         "glow": 0.3
       },
       "portrait": {
-        "x": -0.42,
-        "height": 0.44
+        "x": -0.43,
+        "height": 0.42
       }
     },
     {
       "id": "lamp-r",
       "texture": "lamp",
       "z": -3.4,
-      "x": 0.43,
+      "x": 0.44,
       "bottom": -0.06,
-      "height": 0.7,
+      "height": 0.68,
       "shade": 0.7,
       "tint": 0.2,
       "rim": 0.3,
       "light": {
         "u": 0.5,
-        "v": 0.86,
+        "v": 0.8,
         "color": "#ffc27a",
         "intensity": 2.2,
         "radius": 1.2,
@@ -255,8 +270,8 @@
   "hero": {
     "z": -26,
     "x": 0.06,
-    "bottom": 0.2,
-    "height": 0.62,
+    "bottom": 0.24,
+    "height": 0.6,
     "maxWidth": 0.75,
     "fog": 0.14,
     "tint": 0.35,
