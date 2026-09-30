@@ -32,7 +32,12 @@ class Settings(BaseSettings):
     min_content_words: int = 350
     max_source_words: int = 1800
     cache_ttl_days: int = 7
-    http_user_agent: str = "MythForge/0.1 (local development project; not deployed)"
+    # Wikimedia's User-Agent policy requires a way to reach you (email or URL); requests without it get 403.
+    http_contact: str = ""
+
+    @property
+    def http_user_agent(self) -> str:
+        return f"MythForge/0.1 ({self.http_contact}; local development project, not deployed) python-httpx"
 
     database_url: str = f"sqlite:///{(BACKEND_DIR / 'mythforge.db').as_posix()}"
 
