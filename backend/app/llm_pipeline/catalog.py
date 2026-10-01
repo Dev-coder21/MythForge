@@ -55,6 +55,18 @@ KITS: tuple[Kit, ...] = (
         "moored boats and a ferry, a low distant skyline, gulls, sea mist",
         "coasts, ports, harbors, bays, lighthouses, seafront monuments, bridges over the sea, island towns",
         "dawn", "sun"),
+    Kit("grove", "jungle", "a forest or jungle: a misty far canopy, a row of tall trunks, hanging vines, ferns in front, "
+        "light shafts, fireflies at night", "rainforests, jungles, forests, national parks with woodland, temples in a jungle", "day", "sun"),
+    Kit("beach", "lagoon", "a beach or island: shallow turquoise water with a glitter path, a sand beach with a foam edge, "
+        "leaning palms, shore rocks, low islands on the horizon", "beaches, islands, atolls, lagoons, tropical coasts, reefs", "day", "sun"),
+    Kit("polar", "glacier", "ice and snow: a far glacier range, an ice cliff with blue crevasses, an iceberg, a snowfield, "
+        "drifting snow, an aurora at night", "Antarctica, the Arctic, glaciers, ice shelves, polar expeditions, tundra in winter", "night", "moon"),
+    Kit("cosmos", "ink", "an abstract painterly cosmos: a flowing nebula in the chapter colours, light ribbons, floating "
+        "shapes, drifting motes; no landscape at all", "people, musicians, writers, scientists, music styles, history, events, "
+        "ideas, science and anything that is not a physical place", "night", "stars"),
+    Kit("cosmos", "ink-wash", "an abstract ink wash: soft pigment washes with pooled edges in the chapter colours, light "
+        "ribbons, floating shapes; no landscape at all", "people, art, literature, philosophy, history and ideas (calmer, "
+        "paper-like alternative to the cosmos)", "dusk", "none"),
     Kit("tide", "nile", "a wide river at dawn, a wooden sailing cargo boat, reeds and papyrus, palms, distant pyramids, mist",
         "the Nile and ancient Egypt only (pyramids on the far bank)", "dawn", "sun",
         landmark="the Nile at Giza", landmark_keys=("nile", "egypt", "giza", "pharaoh", "pyramid")),

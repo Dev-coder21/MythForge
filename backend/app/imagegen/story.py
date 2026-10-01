@@ -17,7 +17,7 @@ from app.llm_pipeline.providers import LLMError
 log = logging.getLogger("mythforge.landmarks")
 
 # Landmark-specific kits already show their landmark; they have no hero slot.
-TEMPLATES_WITH_SLOTS = {"threshold", "dune", "peak", "skyline", "ruin", "harbor"}
+TEMPLATES_WITH_SLOTS = {"threshold", "dune", "peak", "skyline", "ruin", "harbor", "grove", "beach", "polar", "cosmos"}
 KITS_WITHOUT_SLOTS = {"giza", "giza-sphinx", "nile", "torii-night"}
 
 

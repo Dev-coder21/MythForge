@@ -111,7 +111,9 @@ kit and recolour it for the topic. Use the kit's painted time of day and backgro
 topic and light: primaryColor is a dark base (never pure black), accentColor a warm or cool glow. No purple or violet. LANDMARK: when a chapter is about one specific, visible structure (a building, monument, bridge, tower or statue) that the
 SOURCE TEXT names and describes, set "landmark" to its name and a short physical description taken only from the source.
 Otherwise set "landmark": null (natural features like mountains, deserts and rivers are null; the scene already shows them).
-SETTING GUIDE: cities, towns and urban monuments use "skyline" (oldtown); ancient and archaeological sites use "ruin"
+SETTING GUIDE: people, music, history, events and ideas with no physical place ALWAYS use "cosmos" (ink or
+ink-wash), never a landscape; forests and jungles use "grove" (jungle); beaches and islands use "beach" (lagoon);
+the poles, glaciers and ice use "polar" (glacier); cities, towns and urban monuments use "skyline" (oldtown); ancient and archaeological sites use "ruin"
 (ancient); coastal landmarks, ports and seafronts use "harbor" (port); mountains use "peak"; deserts use "dune";
 rivers use "tide"; Japanese shrines and gardens use "threshold".
 Keep ONE setting: every chapter uses the same sceneTemplate (a mountain story stays on "peak"), and variety comes from

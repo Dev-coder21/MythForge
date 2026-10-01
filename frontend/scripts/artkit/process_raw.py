@@ -461,7 +461,7 @@ def run_peak() -> None:
 
 
 # Landmark layers take the grade of the template they are composited into.
-LANDMARK_LOOK = {"threshold": "night", "dune": "desert", "tide": "desert", "peak": "neutral", "skyline": "neutral", "ruin": "desert", "harbor": "neutral"}
+LANDMARK_LOOK = {"threshold": "night", "dune": "desert", "tide": "desert", "peak": "neutral", "skyline": "neutral", "ruin": "desert", "harbor": "neutral", "grove": "neutral", "beach": "neutral", "polar": "neutral", "cosmos": "neutral"}
 
 
 def process_landmark(src: Path, dst: Path, template: str) -> dict:

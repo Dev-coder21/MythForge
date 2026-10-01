@@ -1,0 +1,232 @@
+{
+  "name": "glacier",
+  "template": "polar",
+  "textures": {
+    "ice-far": "../painted/ice-far.webp",
+    "ice-cliff": "../painted/ice-cliff.webp",
+    "iceberg": "../painted/iceberg.webp",
+    "snowfield": "../painted/snowfield.webp",
+    "snow": "../../peak/painted/snow.webp"
+  },
+  "layers": [
+    {
+      "id": "ice-far",
+      "texture": "ice-far",
+      "z": -66,
+      "x": 0,
+      "bottom": 0.24,
+      "height": 0.26,
+      "stretch": true,
+      "fog": 0.5,
+      "tint": 0.55,
+      "rim": 0.15,
+      "portrait": {
+        "bottom": 0.32,
+        "height": 0.12
+      }
+    },
+    {
+      "id": "iceberg",
+      "texture": "iceberg",
+      "z": -40,
+      "x": -0.28,
+      "bottom": 0.18,
+      "height": 0.2,
+      "maxWidth": 0.4,
+      "fog": 0.25,
+      "tint": 0.45,
+      "rim": 0.4,
+      "portrait": {
+        "x": -0.3,
+        "bottom": 0.24,
+        "height": 0.1
+      }
+    },
+    {
+      "id": "ice-cliff",
+      "texture": "ice-cliff",
+      "z": -24,
+      "x": 0,
+      "bottom": 0.0,
+      "height": 0.4,
+      "stretch": true,
+      "fog": 0.12,
+      "tint": 0.4,
+      "rim": 0.45,
+      "portrait": {
+        "bottom": 0.08,
+        "height": 0.2
+      }
+    },
+    {
+      "id": "snowfield",
+      "texture": "snowfield",
+      "z": -4,
+      "x": 0,
+      "bottom": -0.14,
+      "height": 0.32,
+      "stretch": true,
+      "shade": 0.8,
+      "tint": 0.3,
+      "rim": 0.25,
+      "portrait": {
+        "bottom": -0.06,
+        "height": 0.18
+      }
+    }
+  ],
+  "camera": {
+    "fov": 38,
+    "position": [
+      [
+        0,
+        0.3,
+        15
+      ],
+      [
+        0.05,
+        0.4,
+        13.6
+      ],
+      [
+        0.1,
+        0.5,
+        12.2
+      ],
+      [
+        0.12,
+        0.6,
+        10.8
+      ]
+    ],
+    "lookAt": [
+      [
+        0,
+        1.0,
+        -20
+      ],
+      [
+        0.03,
+        1.05,
+        -20
+      ],
+      [
+        0.06,
+        1.1,
+        -20
+      ],
+      [
+        0.08,
+        1.15,
+        -20
+      ]
+    ]
+  },
+  "celestial": {
+    "u": 0.7,
+    "v": 0.78,
+    "uPortrait": 0.7,
+    "vPortrait": 0.82,
+    "size": 0.06,
+    "intensity": 2.2,
+    "halo": 0.05
+  },
+  "title": {
+    "v": 0.24,
+    "vPortrait": 0.3,
+    "fitPortrait": 0.7
+  },
+  "skyByTime": {
+    "night": {
+      "top": "#03070f",
+      "mid": "#0a1626",
+      "horizon": "#1c3248",
+      "fog": "#24384e",
+      "tint": "#8eaccc",
+      "rim": "#cfe4ff",
+      "sun": "#eef4ff"
+    },
+    "dawn": {
+      "top": "#1a2848",
+      "mid": "#7a7690",
+      "horizon": "#f0bca0",
+      "fog": "#c8b4b0",
+      "tint": "#f2d2c8",
+      "rim": "#ffd8c0",
+      "sun": "#ffe0c8"
+    },
+    "day": {
+      "top": "#3a6ea6",
+      "mid": "#9cc0dc",
+      "horizon": "#e8f2f6",
+      "fog": "#d8e6ee",
+      "tint": "#f4f8fa",
+      "rim": "#ffffff",
+      "sun": "#fffaf0"
+    },
+    "dusk": {
+      "top": "#18203c",
+      "mid": "#6a5a70",
+      "horizon": "#e0a088",
+      "fog": "#a89090",
+      "tint": "#e8bca8",
+      "rim": "#ffc8a8",
+      "sun": "#ffd0a8"
+    }
+  },
+  "fog": [
+    {
+      "z": -50,
+      "opacity": 0.26,
+      "height": 0.4,
+      "speed": 0.01,
+      "scale": 1.6
+    },
+    {
+      "z": -14,
+      "opacity": 0.12,
+      "height": 0.28,
+      "speed": 0.02,
+      "scale": 2.2
+    }
+  ],
+  "particles": [
+    {
+      "texture": "snow",
+      "cells": 4,
+      "count": 120,
+      "zMin": -24,
+      "zMax": -4,
+      "size": 0.3,
+      "speed": 0.45,
+      "fall": 0.3,
+      "opacity": 0.7,
+      "windX": 1.2
+    }
+  ],
+  "aurora": {
+    "z": -64,
+    "colorA": "#3cf0a8",
+    "colorB": "#7ab8ff",
+    "opacity": 0.55,
+    "v": 0.74,
+    "h": 0.2,
+    "speed": 0.05
+  },
+  "hero": {
+    "z": -34,
+    "x": 0.18,
+    "bottom": 0.22,
+    "height": 0.3,
+    "maxWidth": 0.45,
+    "fog": 0.2,
+    "tint": 0.4,
+    "rim": 0.35,
+    "replace": [],
+    "portrait": {
+      "bottom": 0.28,
+      "height": 0.16,
+      "maxWidth": 0.8
+    }
+  }
+}

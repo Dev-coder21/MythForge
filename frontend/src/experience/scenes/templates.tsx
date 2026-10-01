@@ -1,6 +1,10 @@
 import type { ComponentType } from 'react'
 import type { SceneTemplateId } from '@/spec'
+import { Abstract } from './Abstract'
+import { Beach } from './Beach'
 import { Dune } from './Dune'
+import { Forest } from './Forest'
+import { Polar } from './Polar'
 import { Harbor } from './Harbor'
 import { OldCity } from './OldCity'
 import { Ruins } from './Ruins'
@@ -21,6 +25,10 @@ const TEMPLATES: Partial<Record<SceneTemplateId, ComponentType<TemplateProps>>> 
   skyline: OldCity,
   ruin: Ruins,
   harbor: Harbor,
+  grove: Forest,
+  beach: Beach,
+  polar: Polar,
+  cosmos: Abstract,
 }
 
 export function templateFor(id: SceneTemplateId): ComponentType<TemplateProps> {

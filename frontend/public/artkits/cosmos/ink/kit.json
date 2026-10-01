@@ -1,0 +1,125 @@
+{
+  "name": "ink",
+  "template": "cosmos",
+  "textures": {},
+  "layers": [],
+  "camera": {
+    "fov": 38,
+    "position": [
+      [
+        0,
+        0.8,
+        14
+      ],
+      [
+        0.2,
+        0.9,
+        13.2
+      ],
+      [
+        0.4,
+        1.0,
+        12.4
+      ],
+      [
+        0.6,
+        1.1,
+        11.6
+      ]
+    ],
+    "lookAt": [
+      [
+        0,
+        1.0,
+        -20
+      ],
+      [
+        0.1,
+        1.05,
+        -20
+      ],
+      [
+        0.2,
+        1.1,
+        -20
+      ],
+      [
+        0.3,
+        1.15,
+        -20
+      ]
+    ]
+  },
+  "celestial": {
+    "u": 0.7,
+    "v": 0.76,
+    "size": 0.05,
+    "intensity": 1.6,
+    "halo": 0.04
+  },
+  "title": {
+    "v": 0.32,
+    "vPortrait": 0.36,
+    "fitPortrait": 0.72
+  },
+  "skyByTime": {
+    "night": {
+      "top": "#04060c",
+      "mid": "#0a0e1a",
+      "horizon": "#141a2a",
+      "fog": "#1a2030",
+      "tint": "#9aa8c8",
+      "rim": "#d0dcff",
+      "sun": "#eef2ff"
+    },
+    "dawn": {
+      "top": "#141a2c",
+      "mid": "#3a3440",
+      "horizon": "#806a60",
+      "fog": "#5a5050",
+      "tint": "#e0c8b0",
+      "rim": "#ffd8b8",
+      "sun": "#ffe0c0"
+    },
+    "day": {
+      "top": "#1a2a3c",
+      "mid": "#3a5068",
+      "horizon": "#6a8090",
+      "fog": "#506070",
+      "tint": "#e0e8ee",
+      "rim": "#ffffff",
+      "sun": "#fff6e8"
+    },
+    "dusk": {
+      "top": "#120e10",
+      "mid": "#3a2220",
+      "horizon": "#7a4a30",
+      "fog": "#4a3028",
+      "tint": "#e8b890",
+      "rim": "#ffc898",
+      "sun": "#ffcc98"
+    }
+  },
+  "abstract": {
+    "style": "cosmos",
+    "ribbons": 3,
+    "shapes": 6,
+    "particles": 260
+  },
+  "hero": {
+    "z": -30,
+    "x": 0.0,
+    "bottom": 0.3,
+    "height": 0.44,
+    "maxWidth": 0.5,
+    "fog": 0.1,
+    "tint": 0.3,
+    "rim": 0.4,
+    "replace": [],
+    "portrait": {
+      "bottom": 0.34,
+      "height": 0.24,
+      "maxWidth": 0.8
+    }
+  }
+}

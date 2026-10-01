@@ -1,0 +1,247 @@
+{
+  "name": "jungle",
+  "template": "grove",
+  "textures": {
+    "canopy-far": "../painted/canopy-far.webp",
+    "trunks-mid": "../painted/trunks-mid.webp",
+    "trunk-near": "../painted/trunk-near.webp",
+    "vines": "../painted/vines.webp",
+    "ferns": "../painted/ferns.webp",
+    "fireflies": "../painted/fireflies.webp"
+  },
+  "layers": [
+    {
+      "id": "canopy-far",
+      "texture": "canopy-far",
+      "z": -60,
+      "x": 0,
+      "bottom": -0.06,
+      "height": 0.64,
+      "stretch": true,
+      "fog": 0.55,
+      "tint": 0.5,
+      "rim": 0.1,
+      "portrait": {
+        "bottom": 0.0,
+        "height": 0.34
+      }
+    },
+    {
+      "id": "trunks-mid",
+      "texture": "trunks-mid",
+      "z": -24,
+      "x": 0,
+      "bottom": -0.02,
+      "height": 0.95,
+      "stretch": true,
+      "fog": 0.18,
+      "tint": 0.4,
+      "rim": 0.35,
+      "portrait": {
+        "bottom": 0.04,
+        "height": 0.6
+      }
+    },
+    {
+      "id": "ferns",
+      "texture": "ferns",
+      "z": -4,
+      "x": 0,
+      "bottom": -0.04,
+      "height": 0.5,
+      "stretch": true,
+      "shade": 0.6,
+      "tint": 0.25,
+      "rim": 0.3,
+      "sway": 0.02,
+      "portrait": {
+        "bottom": -0.02,
+        "height": 0.26
+      }
+    },
+    {
+      "id": "trunk-near",
+      "texture": "trunk-near",
+      "z": -3,
+      "x": -0.46,
+      "bottom": -0.1,
+      "height": 1.3,
+      "shade": 0.8,
+      "tint": 0.2,
+      "rim": 0.3,
+      "portrait": {
+        "x": -0.52,
+        "height": 0.8
+      }
+    },
+    {
+      "id": "vines",
+      "texture": "vines",
+      "z": -6,
+      "x": 0,
+      "bottom": 0.62,
+      "height": 0.42,
+      "stretch": true,
+      "shade": 0.7,
+      "tint": 0.25,
+      "rim": 0.2,
+      "sway": 0.03,
+      "portrait": {
+        "bottom": 0.78,
+        "height": 0.24
+      }
+    }
+  ],
+  "camera": {
+    "fov": 38,
+    "position": [
+      [
+        0,
+        0.6,
+        15
+      ],
+      [
+        0.1,
+        0.65,
+        13.8
+      ],
+      [
+        0.15,
+        0.75,
+        12.6
+      ],
+      [
+        0.2,
+        0.85,
+        11.4
+      ]
+    ],
+    "lookAt": [
+      [
+        0,
+        1.2,
+        -20
+      ],
+      [
+        0.05,
+        1.3,
+        -20
+      ],
+      [
+        0.1,
+        1.4,
+        -20
+      ],
+      [
+        0.12,
+        1.5,
+        -20
+      ]
+    ]
+  },
+  "celestial": {
+    "u": 0.66,
+    "v": 0.8,
+    "uPortrait": 0.66,
+    "vPortrait": 0.82,
+    "size": 0.06,
+    "intensity": 2.0,
+    "halo": 0.05
+  },
+  "title": {
+    "v": 0.22,
+    "vPortrait": 0.28,
+    "fitPortrait": 0.7
+  },
+  "skyByTime": {
+    "night": {
+      "top": "#050a0c",
+      "mid": "#0e1c1a",
+      "horizon": "#203a30",
+      "fog": "#24403a",
+      "tint": "#86a898",
+      "rim": "#bfe0c8",
+      "sun": "#e6f0e8"
+    },
+    "dawn": {
+      "top": "#1a2a2a",
+      "mid": "#5a6a50",
+      "horizon": "#d6c48a",
+      "fog": "#a8b090",
+      "tint": "#e0dcb0",
+      "rim": "#fff0c0",
+      "sun": "#fff2c8"
+    },
+    "day": {
+      "top": "#2e5a50",
+      "mid": "#7aa890",
+      "horizon": "#cfe0c0",
+      "fog": "#b4ccb0",
+      "tint": "#e6f0dc",
+      "rim": "#fffbe8",
+      "sun": "#fff8e0"
+    },
+    "dusk": {
+      "top": "#101a1c",
+      "mid": "#5a4a3a",
+      "horizon": "#d89a60",
+      "fog": "#8a7a5a",
+      "tint": "#e0b080",
+      "rim": "#ffcc90",
+      "sun": "#ffd09a"
+    }
+  },
+  "fog": [
+    {
+      "z": -40,
+      "opacity": 0.32,
+      "height": 0.5,
+      "speed": 0.008,
+      "scale": 1.6
+    },
+    {
+      "z": -14,
+      "opacity": 0.08,
+      "height": 0.3,
+      "speed": 0.015,
+      "scale": 2.2
+    }
+  ],
+  "particles": [
+    {
+      "texture": "fireflies",
+      "cells": 4,
+      "count": 60,
+      "zMin": -22,
+      "zMax": -5,
+      "size": 0.16,
+      "speed": 0.2,
+      "fall": 0.0,
+      "opacity": 0.85,
+      "windX": 0.1
+    }
+  ],
+  "shafts": {
+    "count": 7,
+    "opacity": 0.09,
+    "length": 1,
+    "spread": 1.1,
+    "angle": -1.4
+  },
+  "hero": {
+    "z": -40,
+    "x": 0.08,
+    "bottom": 0.16,
+    "height": 0.56,
+    "maxWidth": 0.6,
+    "fog": 0.22,
+    "tint": 0.4,
+    "rim": 0.3,
+    "replace": [],
+    "portrait": {
+      "bottom": 0.22,
+      "height": 0.3,
+      "maxWidth": 0.9
+    }
+  }
+}

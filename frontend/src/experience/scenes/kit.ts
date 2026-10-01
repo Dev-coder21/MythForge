@@ -173,6 +173,9 @@ export interface KitRiver {
   height: number
   /** Brightness of the sun glitter path (0 = off). */
   glitter?: number
+  /** Shallow-water body colour (beach) and how much it shows under the sky reflection (0 = river). */
+  tint?: string
+  tintMix?: number
   portrait?: { bottom?: number; height?: number }
 }
 
@@ -207,6 +210,10 @@ export interface Kit {
   heat?: KitHeat
   river?: KitRiver
   hero?: KitHero
+  /** Aurora curtains (Ice / polar), drawn at night only. */
+  aurora?: { z: number; colorA: string; colorB: string; opacity: number; v: number; h: number; speed: number }
+  /** Code-only abstract field (people, music, ideas): style and how many ribbons, shapes and motes. */
+  abstract?: { style: 'ink' | 'cosmos'; ribbons: number; shapes: number; particles: number }
 }
 
 export const kitUrl = (template: string, kit: string, file = 'kit.json') =>

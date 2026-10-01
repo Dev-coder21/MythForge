@@ -42,6 +42,8 @@ export function RiverWater({ river, rectAt, portrait, skyTop, skyMid, skyHorizon
           uWidth: { value: 1 },
           uGlitter: { value: 1 },
           uIntensity: { value: 0 },
+          uTint: { value: new Color('#2bb3b0') },
+          uTintMix: { value: 0 },
           ...chapter.lights,
         },
         vertexShader: /* glsl */ `
@@ -64,6 +66,8 @@ export function RiverWater({ river, rectAt, portrait, skyTop, skyMid, skyHorizon
           uniform float uWidth;
           uniform float uGlitter;
           uniform float uIntensity;
+          uniform vec3 uTint;
+          uniform float uTintMix;
           varying vec2 vUv;
           varying vec3 vWorld;
           ${NOISE_GLSL}
@@ -84,6 +88,8 @@ export function RiverWater({ river, rectAt, portrait, skyTop, skyMid, skyHorizon
             // Water is darker and bluer than the sky it mirrors (Fresnel: brighter only toward the far edge).
             sky = mix(sky, uTop, 0.35);
             vec3 col = sky * (0.6 + 0.4 * ripple) * mix(0.32, 0.8, pow(far, 1.5));
+            // Shallow water (beach kits): a turquoise body that brightens toward the shore, under the reflection.
+            col = mix(col, uTint * (0.75 + 0.5 * (1.0 - far)) * (0.85 + 0.3 * ripple), uTintMix * (1.0 - far * 0.6));
 
             // Sun glitter path: a column under the sun, wider near the viewer.
             float halfW = mix(0.16, 0.03, far) * uWidth;
@@ -113,6 +119,8 @@ export function RiverWater({ river, rectAt, portrait, skyTop, skyMid, skyHorizon
 
   const u = material.uniforms
   u.uTop!.value.set(skyTop)
+  u.uTint!.value.set(river.tint ?? '#2bb3b0')
+  u.uTintMix!.value = river.tintMix ?? 0
   u.uMid!.value.set(skyMid)
   u.uHorizon!.value.set(skyHorizon)
   u.uSun!.value.set(sun)

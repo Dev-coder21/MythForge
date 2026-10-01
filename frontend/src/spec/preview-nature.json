@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "id": "nature-preview",
+  "topic": "Nature preview",
+  "title": "Nature",
+  "subtitle": "Development preview of the forest, beach, ice and abstract templates.",
+  "slug": "nature-preview",
+  "createdAt": "2026-09-30T00:00:00Z",
+  "chapters": [
+    {
+      "index": 1,
+      "label": "CHAPTER 01 · FOREST",
+      "titleWord": "FOREST",
+      "heading": "Snow holds the high ground long after the valley thaws.",
+      "subheading": "Peak template preview",
+      "body": "A development preview of the Peak scene, used to tune the layers, the camera climb and the light for each time of day. It is not a story and never appears in the gallery or in production builds of the site.",
+      "sceneTemplate": "grove",
+      "sceneParams": {
+        "primaryColor": "#1a2a22",
+        "accentColor": "#e8e0a8",
+        "particleType": "none",
+        "groundType": "stone",
+        "backgroundObject": "sun",
+        "propVariant": "jungle",
+        "artKit": "jungle",
+        "timeOfDay": "dawn",
+        "props": [],
+        "particleDensity": 0.5
+      },
+      "titleLayout": "horizontal",
+      "transition": "noise-dissolve"
+    },
+    {
+      "index": 2,
+      "label": "CHAPTER 02 · BEACH",
+      "titleWord": "BEACH",
+      "heading": "Snow holds the high ground long after the valley thaws.",
+      "subheading": "Peak template preview",
+      "body": "A development preview of the Peak scene, used to tune the layers, the camera climb and the light for each time of day. It is not a story and never appears in the gallery or in production builds of the site.",
+      "sceneTemplate": "beach",
+      "sceneParams": {
+        "primaryColor": "#16384a",
+        "accentColor": "#f4f0d8",
+        "particleType": "none",
+        "groundType": "stone",
+        "backgroundObject": "sun",
+        "propVariant": "lagoon",
+        "artKit": "lagoon",
+        "timeOfDay": "day",
+        "props": [],
+        "particleDensity": 0.5
+      },
+      "titleLayout": "horizontal",
+      "transition": "ink-wipe"
+    },
+    {
+      "index": 3,
+      "label": "CHAPTER 03 · ICE",
+      "titleWord": "ICE",
+      "heading": "Snow holds the high ground long after the valley thaws.",
+      "subheading": "Peak template preview",
+      "body": "A development preview of the Peak scene, used to tune the layers, the camera climb and the light for each time of day. It is not a story and never appears in the gallery or in production builds of the site.",
+      "sceneTemplate": "polar",
+      "sceneParams": {
+        "primaryColor": "#0c1828",
+        "accentColor": "#bfe8ff",
+        "particleType": "none",
+        "groundType": "stone",
+        "backgroundObject": "moon",
+        "propVariant": "glacier",
+        "artKit": "glacier",
+        "timeOfDay": "night",
+        "props": [],
+        "particleDensity": 0.5
+      },
+      "titleLayout": "horizontal",
+      "transition": "bloom-out"
+    },
+    {
+      "index": 4,
+      "label": "CHAPTER 04 · IDEAS",
+      "titleWord": "IDEAS",
+      "heading": "Snow holds the high ground long after the valley thaws.",
+      "subheading": "Peak template preview",
+      "body": "A development preview of the Peak scene, used to tune the layers, the camera climb and the light for each time of day. It is not a story and never appears in the gallery or in production builds of the site.",
+      "sceneTemplate": "cosmos",
+      "sceneParams": {
+        "primaryColor": "#141c28",
+        "accentColor": "#f0b060",
+        "particleType": "none",
+        "groundType": "stone",
+        "backgroundObject": "stars",
+        "propVariant": "ink",
+        "artKit": "ink",
+        "timeOfDay": "night",
+        "props": [],
+        "particleDensity": 0.5
+      },
+      "titleLayout": "horizontal",
+      "transition": "noise-dissolve"
+    }
+  ]
+}
