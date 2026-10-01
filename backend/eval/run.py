@@ -27,7 +27,7 @@ from app.llm_pipeline.pipeline import GenerationFailed, generate_spec
 from app.llm_pipeline.providers import AllProvidersFailed, FallbackChain, LLMError, build_chain, build_checker_chain
 from app.retrieval import ThinContentError, gather_content
 from app.retrieval.http import make_client
-from eval.golden import GOLDEN, Golden
+from eval.golden import GOLDEN, MULTILINGUAL, Golden
 
 HERE = Path(__file__).resolve().parent
 RESULTS = HERE / "results.json"
@@ -97,6 +97,7 @@ def run_topic(g: Golden, db, client) -> dict:
         result = generate_spec(content, chain, checker_for=checker_for)
         spec = result.spec
         templates = [c.sceneTemplate for c in spec.chapters]
+        rec["sourceLanguages"] = [p.lang for p in content.pages]
         rec.update(
             status="success",
             reason="",
@@ -138,15 +139,20 @@ def main() -> None:
     ap.add_argument("--resume", action="store_true", help="skip topics that already finished")
     ap.add_argument("--report", action="store_true", help="only rebuild report.md from results.json")
     ap.add_argument("--pause", type=float, default=75, help="seconds between topics (free-tier limits)")
+    ap.add_argument("--set", choices=["golden", "multilingual"], default="golden", help="which topic set to run")
     args = ap.parse_args()
 
     if args.report:
         write_report(load_results())
         return
-    data = load_results() if args.resume else {"startedAt": datetime.now(UTC).isoformat(timespec="seconds"), "results": {}}
+    topics = MULTILINGUAL if args.set == "multilingual" else GOLDEN
+    data = load_results()
+    if not args.resume:  # a fresh run resets only the chosen set; other sets' results are kept
+        for g in topics:
+            data["results"].pop(g.topic, None)
     init_db()
-    todo = [g for g in GOLDEN if data["results"].get(g.topic, {}).get("status") not in DONE]
-    print(f"{len(todo)} topic(s) to run, {len(GOLDEN) - len(todo)} already done")
+    todo = [g for g in topics if data["results"].get(g.topic, {}).get("status") not in DONE]
+    print(f"{len(todo)} topic(s) to run, {len(topics) - len(todo)} already done")
     with SessionLocal() as db, make_client() as client:
         for i, g in enumerate(todo):
             print(f"[{i + 1}/{len(todo)}] {g.topic} ...", flush=True)

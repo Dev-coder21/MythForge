@@ -34,3 +34,11 @@ GOLDEN: tuple[Golden, ...] = (
     Golden("Zorvath Pass of Queldmoor", "hard", (), expect="reject", note="invented, should be rejected as too thin"),
     Golden("History of jazz", "hard", (), note="off-theme: no scene family fits"),
 )
+
+
+# Topics with thin English Wikipedia coverage (multilingual retrieval). Measured English words in the note.
+MULTILINGUAL: tuple[Golden, ...] = (
+    Golden("Chaturshringi Temple", "temple", ("skyline", "threshold"), note="English 213 words (rejected before); Odia and Marathi added"),
+    Golden("Kasba Ganapati", "temple", ("skyline", "threshold"), note="English 599 words; Marathi and Telugu added"),
+    Golden("Ōsu Kannon", "temple", ("skyline", "threshold"), note="English 659 words; Japanese added"),
+)
