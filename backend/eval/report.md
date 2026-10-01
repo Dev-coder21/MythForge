@@ -38,3 +38,31 @@ Golden topics finished: 12 of 12 (plus 2 hard cases).
 3. **First drafts almost never pass, and two rules cause nearly all retries.** Only 1 of 11 successful stories was valid on the first draft. Of 38 rule violations caught across 15 rejected drafts, 24 were the source-bound title word and 10 were numbers in headings. Mount Kilimanjaro failed outright on those two after both corrections. Em dashes, cliches and the purple rule were never triggered: the prompt already prevents them. Giving the model a short list of allowed title words up front would likely halve the calls.
 4. **The whole run used the fallback models.** Earlier testing that day had used up the Gemini and gpt-oss-120b daily quotas, so all 11 stories were written by qwen3.8-27b (the Groq fallback) and checked by gpt-oss-20b. The numbers describe the fallback path, not the intended default. Free-tier capacity is roughly a dozen stories per day at about 15,000 tokens each, and the off-theme case (History of jazz) stopped on the daily quota; it runs on --resume.
 5. **A checker that returns an empty reply skips the fact check instead of trying the next model.** The Mekong story was saved without a score because gpt-oss-20b returned no JSON; that counts as a parse error rather than a provider failure, so the chain never moved on. The thin-topic guard worked as intended: the invented topic was rejected in under a second with a helpful message and no model calls.
+
+## Writing quality rubric
+
+Scored 1 to 5 by a model separate from the writers (Gemini first), with the source text in hand. Before: stories from the earlier pipeline. After: the same topics with gold examples, best-of-3 headings picked by a small judge, and the style critic.
+
+| | Vivid | Specific | Grounded | No cliches | Mean |
+|---|---|---|---|---|---|
+| Before (6 stories) | 3.00 | 4.00 | 4.67 | 2.83 | 3.62 |
+| After (3 stories) | 4.00 | 4.33 | 5.00 | 3.67 | 4.25 |
+
+| Topic | Before | After | Headings after |
+|---|---|---|---|
+| Mount Everest | 4.0 | n/a |  |
+| Namib Desert | 3.25 | n/a |  |
+| Fushimi Inari-taisha | 4.25 | n/a |  |
+| Taj Mahal | 3.25 | 4.25 | The emperor placed grief in ivory marble. / Scaffolds of brick mirrored a marble sky. / A full-moon night opens the gates briefly. |
+| Sahara Desert | 3.25 | 4.25 | So large it glows from other stars. / A mosaic of rock, gravel, and salt. / The monsoon shifts with the axis. |
+| Great Wall of China | 3.75 | 4.25 | Stamped into the northern soil. / One emperor, one northern line. / Bricks and towers, a stronger line. |
+
+Average tokens per story with the style passes: 31067.
+
+**Rubric notes (partial run, free-tier quota).** Three of six "after" stories are scored so far; the other three resume with `python -m eval.rubric --only after` once the Groq daily caps refill.
+
+- **On the same three topics, the mean rose from 3.42 to 4.25** (Taj Mahal 3.25 to 4.25, Sahara Desert 3.25 to 4.25, Great Wall of China 3.75 to 4.25). Vivid went from 2-3 to 4 on all three, mostly from the headings: "A sea of sand stretches beyond the horizon." became "So large it glows from other stars." Grounding stayed at 5.
+- **Not every story improved.** A first Mount Everest run with the new passes scored 3.25 against 4.0 before: the judge picked "Where clouds kiss the stone." and "A name whispered by the sky." because neither phrase was banned. "kiss", "whisper", "beacon" and "jewel" are now on the cliche list and that run was set aside for a rerun.
+- **Two first-run failures were pipeline bugs, now fixed.** Fushimi Inari-taisha: the landmark name "rōmon" was rejected because the name check only matched ASCII letters. Namib Desert: the model chose the same dark indigo base three times and the purple rule never told it what to use instead; the error now suggests navy, slate and brown bases.
+- **Cost: 24,000 to 42,000 tokens per story**, against about 15,000 in the first evaluation. The heading judge and the critic add roughly 2,000 to 3,000; most of the rest is correction rounds (every scored story needed one or two) and the longer gold examples in every writer call. On free tiers that means about five to seven stories per model per day.
+- **The critic is cautious.** It accepted 2 to 3 rewrites in two stories and none in two others, because any rewrite that changes a number or drifts in length is dropped. That keeps facts safe but limits its effect.

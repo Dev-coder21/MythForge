@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "id": "67e05c89-cb12-4ddc-8f5b-f59e5c831df8",
+  "topic": "Mount Everest",
+  "title": "Skyward",
+  "subtitle": "The silent stone that crowns the world",
+  "slug": "skyward",
+  "chapters": [
+    {
+      "index": 1,
+      "label": "CHAPTER 01 · THE SUMMIT'S SHADOW",
+      "titleWord": "EVEREST",
+      "heading": "Where clouds kiss the stone.",
+      "subheading": "The highest point measured in two thousand twenty.",
+      "body": "Mount Everest rises above sea level as the highest mountain on Earth. Its summit marks part of the China-Nepal border. The most recent survey recorded a height of 8,848.86 m. The peak belongs to the Mahalangur Himal sub-range of the Himalayas.",
+      "sceneTemplate": "peak",
+      "sceneParams": {
+        "primaryColor": "#2b3a4f",
+        "accentColor": "#e4cda1",
+        "particleType": "snow",
+        "groundType": "stone",
+        "backgroundObject": "sun",
+        "propVariant": "alpine",
+        "artKit": "alpine",
+        "timeOfDay": "dawn",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Mount Everest",
+      "transition": "noise-dissolve",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/Everest%2C_Himalayas.jpg/1920px-Everest%2C_Himalayas.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Vyacheslav Argenberg · CC BY 4.0 · Wikimedia Commons",
+        "license": "CC BY 4.0"
+      },
+      "landmark": null
+    },
+    {
+      "index": 2,
+      "label": "CHAPTER 02 · NAMES IN THE WIND",
+      "titleWord": "MOUNT",
+      "heading": "A name whispered by the sky.",
+      "subheading": "Local names speak of a holy mother.",
+      "body": "In Nepali the peak is called Sagarmāthā, meaning \"head in the sky\". Sherpa speakers know it as Chamolangma and Tibetan peoples call it Qomolangma, \"holy mother\". The Chinese transcription renders the Tibetan name as Zhūmùlǎngmǎ Fēng. The British survey once labelled it Peak XV before the name Everest was adopted.",
+      "sceneTemplate": "peak",
+      "sceneParams": {
+        "primaryColor": "#3c4e5a",
+        "accentColor": "#bfa58d",
+        "particleType": "none",
+        "groundType": "stone",
+        "backgroundObject": "clouds",
+        "propVariant": "alpine",
+        "artKit": "alpine",
+        "timeOfDay": "day",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Mount Everest",
+      "transition": "ink-wipe",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006.jpg/1920px-Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Luca Galuzzi (Lucag) · CC BY-SA 2.5 · Wikimedia Commons",
+        "license": "CC BY-SA 2.5"
+      },
+      "landmark": null
+    },
+    {
+      "index": 3,
+      "label": "CHAPTER 03 · GEOPHYSICAL LAYERS",
+      "titleWord": "FORMATION",
+      "heading": "Limestone cliffs beneath the snow.",
+      "subheading": "Three rock formations rise to the top.",
+      "body": "The summit sits on the Qomolangma Formation, a limestone unit extending to the Yellow Band at about 8,600 m. Below lies the North Col Formation, whose Yellow Band is a marble layer that weathers yellow-brown. The lower slopes consist of schist, phyllite and marble, all thrust together by low-angle faults.",
+      "sceneTemplate": "peak",
+      "sceneParams": {
+        "primaryColor": "#1e2a38",
+        "accentColor": "#c9b08e",
+        "particleType": "dust",
+        "groundType": "stone",
+        "backgroundObject": "stars",
+        "propVariant": "alpine",
+        "artKit": "alpine",
+        "timeOfDay": "night",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Mount Everest",
+      "transition": "bloom-out",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/Sunset_view_of_Everest.jpg/1920px-Sunset_view_of_Everest.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Nir B. Gurung · CC BY-SA 4.0 · Wikimedia Commons",
+        "license": "CC BY-SA 4.0"
+      },
+      "landmark": null
+    }
+  ],
+  "createdAt": "2026-10-01T04:21:03Z"
+}

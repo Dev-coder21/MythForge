@@ -231,6 +231,10 @@ def write_report(data: dict) -> None:
             f"{_model(r.get('checkedBy'))} | {templates} | {fits} | {caught} | {r.get('seconds', '')} s | {r.get('tokensTotal', 0)} |"
         )
     lines += ["", "## Findings", "", *findings(data), ""]
+    from eval.rubric import rubric_section
+    rubric = rubric_section()
+    if rubric:
+        lines += [*rubric, "", *RUBRIC_NOTES, ""]
     REPORT.write_text("\n".join(lines), encoding="utf-8")
 
 
@@ -256,6 +260,27 @@ def findings(data: dict) -> list[str]:
 
 
 # Written by hand after reviewing results.json (kept here so --report reproduces them).
+# Reviewed notes on the rubric run (kept here so --report reproduces them).
+RUBRIC_NOTES: list[str] = [
+    "**Rubric notes (partial run, free-tier quota).** Three of six \"after\" stories are scored so far; the other three "
+    "resume with `python -m eval.rubric --only after` once the Groq daily caps refill.",
+    "",
+    "- **On the same three topics, the mean rose from 3.42 to 4.25** (Taj Mahal 3.25 to 4.25, Sahara Desert 3.25 to 4.25, "
+    "Great Wall of China 3.75 to 4.25). Vivid went from 2-3 to 4 on all three, mostly from the headings: \"A sea of sand "
+    "stretches beyond the horizon.\" became \"So large it glows from other stars.\" Grounding stayed at 5.",
+    "- **Not every story improved.** A first Mount Everest run with the new passes scored 3.25 against 4.0 before: the judge "
+    "picked \"Where clouds kiss the stone.\" and \"A name whispered by the sky.\" because neither phrase was banned. "
+    "\"kiss\", \"whisper\", \"beacon\" and \"jewel\" are now on the cliche list and that run was set aside for a rerun.",
+    "- **Two first-run failures were pipeline bugs, now fixed.** Fushimi Inari-taisha: the landmark name \"rōmon\" was "
+    "rejected because the name check only matched ASCII letters. Namib Desert: the model chose the same dark indigo base "
+    "three times and the purple rule never told it what to use instead; the error now suggests navy, slate and brown bases.",
+    "- **Cost: 24,000 to 42,000 tokens per story**, against about 15,000 in the first evaluation. The heading judge and the "
+    "critic add roughly 2,000 to 3,000; most of the rest is correction rounds (every scored story needed one or two) and the "
+    "longer gold examples in every writer call. On free tiers that means about five to seven stories per model per day.",
+    "- **The critic is cautious.** It accepted 2 to 3 rewrites in two stories and none in two others, because any rewrite "
+    "that changes a number or drifts in length is dropped. That keeps facts safe but limits its effect.",
+]
+
 FINDINGS: list[str] = [
     "**The fact check almost never disagrees, which says more about the checker than the stories.** Nine of the ten "
     "checked stories scored 100%. The only flags were on Fushimi Inari-taisha: an invented image in a heading "

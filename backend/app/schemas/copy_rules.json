@@ -29,7 +29,14 @@
     "shrouded in mystery",
     "whispers of",
     "timeless",
-    "iconic"
+    "iconic",
+    "kiss",
+    "kisses",
+    "whisper",
+    "whispers",
+    "whispered",
+    "beacon",
+    "jewel"
   ],
   "label": "^CHAPTER \\d{2} · [A-Z0-9][A-Z0-9 ,'\\-]{1,48}$",
   "titleWord": "^[A-Z]{2,10}$",

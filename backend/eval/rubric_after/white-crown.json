@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "id": "49ed1401-f312-4e49-99d1-7edc1e1c5712",
+  "topic": "Taj Mahal",
+  "title": "White Crown",
+  "subtitle": "A marble love letter on the banks of the Yamuna",
+  "slug": "white-crown",
+  "chapters": [
+    {
+      "index": 1,
+      "label": "CHAPTER 01 · THE COMMISSION",
+      "titleWord": "MEMORY",
+      "heading": "The emperor placed grief in ivory marble.",
+      "subheading": "Shah Jahan ordered a monument in 1631.",
+      "body": "Shah Jahan commissioned an ivory-white marble mausoleum on the right bank of the Yamuna in Agra to house the tomb of his late wife Mumtaz Mahal. The project began in 1632 and the central tomb was finished in 1648, while the surrounding garden and buildings followed for another five years.",
+      "sceneTemplate": "ruin",
+      "sceneParams": {
+        "primaryColor": "#2b2b2b",
+        "accentColor": "#d4a76a",
+        "particleType": "dust",
+        "groundType": "stone",
+        "backgroundObject": "moon",
+        "propVariant": "ancient",
+        "artKit": "ancient",
+        "timeOfDay": "dawn",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Taj Mahal",
+      "transition": "ink-wipe",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/74/Taj_Mahal%2C_Agra%2C_India_edit2.jpg/1920px-Taj_Mahal%2C_Agra%2C_India_edit2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Yann; edited by King of Hearts · CC BY-SA 4.0 · Wikimedia Commons",
+        "license": "CC BY-SA 4.0"
+      },
+      "landmark": {
+        "name": "Taj Mahal",
+        "description": "ivory-white marble mausoleum with a large dome, surrounded by a formal garden and flanked by a mosque and guest house",
+        "layer": null,
+        "reference": null,
+        "check": null
+      }
+    },
+    {
+      "index": 2,
+      "label": "CHAPTER 02 · THE CRAFT",
+      "titleWord": "ARTISAN",
+      "heading": "Scaffolds of brick mirrored a marble sky.",
+      "subheading": "Artisans from many lands built the complex.",
+      "body": "More than 20,000 workers, artisans, sculptors, calligraphers and designers from regions including Bukhara, Persia, southern India, Baluchistan and Italy contributed. Marble came from Makrana in Rajasthan, red sandstone from Fatehpur Sikri, and 28 varieties of precious stone were inlaid. A 15 km earthen ramp and pulley systems moved the blocks into place.",
+      "sceneTemplate": "ruin",
+      "sceneParams": {
+        "primaryColor": "#3a3a3a",
+        "accentColor": "#c09a6b",
+        "particleType": "none",
+        "groundType": "stone",
+        "backgroundObject": "sun",
+        "propVariant": "ancient",
+        "artKit": "ancient",
+        "timeOfDay": "day",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Taj Mahal",
+      "transition": "noise-dissolve",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/Taj_Mahal_in_March_2004.jpg/1920px-Taj_Mahal_in_March_2004.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Dhirad, picture edited by J. A. Knudsen · CC BY-SA 3.0 · Wikimedia Commons",
+        "license": "CC BY-SA 3.0"
+      },
+      "landmark": {
+        "name": "Taj Mahal",
+        "description": "ivory-white marble mausoleum with a large dome, surrounded by a formal garden and flanked by a mosque and guest house",
+        "layer": null,
+        "reference": null,
+        "check": null
+      }
+    },
+    {
+      "index": 3,
+      "label": "CHAPTER 03 · THE VISIT",
+      "titleWord": "GUESTS",
+      "heading": "A full-moon night opens the gates briefly.",
+      "subheading": "The site draws millions each year.",
+      "body": "About five million visitors visited the Taj Mahal in the financial year 2022-23. It is open from one hour before sunrise to 45 minutes before sunset, with limited night viewing on full-moon days. Vehicles are barred near the walls, so guests walk or take electric buses through three gates into the garden and towards the marble tomb.",
+      "sceneTemplate": "ruin",
+      "sceneParams": {
+        "primaryColor": "#1f1f1f",
+        "accentColor": "#e5c29f",
+        "particleType": "fireflies",
+        "groundType": "stone",
+        "backgroundObject": "stars",
+        "propVariant": "ancient",
+        "artKit": "ancient",
+        "timeOfDay": "night",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Taj Mahal",
+      "transition": "bloom-out",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/El_Taj_Mahal-Agra_India0023.JPG/1920px-El_Taj_Mahal-Agra_India0023.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Diego Delso · CC BY-SA 4.0 · Wikimedia Commons",
+        "license": "CC BY-SA 4.0"
+      },
+      "landmark": {
+        "name": "Taj Mahal",
+        "description": "ivory-white marble mausoleum with a large dome, surrounded by a formal garden and flanked by a mosque and guest house",
+        "layer": null,
+        "reference": null,
+        "check": null
+      }
+    }
+  ],
+  "createdAt": "2026-10-01T04:29:19Z"
+}

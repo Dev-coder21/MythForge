@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "id": "ea1bd7f6-81a6-4f0b-aa47-2b7453875181",
+  "topic": "Great Wall of China",
+  "title": "The Long Wall",
+  "subtitle": "Earth and stone stitched across the northern frontier.",
+  "slug": "the-long-wall",
+  "chapters": [
+    {
+      "index": 1,
+      "label": "CHAPTER 01 · EARTH AND STONE",
+      "titleWord": "RAMMED",
+      "heading": "Stamped into the northern soil.",
+      "subheading": "Rammed earth and stone, shaped by the terrain.",
+      "body": "The first walls date to the 7th century BC, built by states like Qin and Zhao. They used local resources, stamping earth and gravel between frames in the plains and cutting stone in the mountains. The goal was simple. Withstand the attack of swords and spears. No permanent border, just a defensive line that moved with the empire's needs.",
+      "sceneTemplate": "ruin",
+      "sceneParams": {
+        "primaryColor": "#2b2620",
+        "accentColor": "#d4a373",
+        "particleType": "dust",
+        "groundType": "grass",
+        "backgroundObject": "sun",
+        "propVariant": "ancient",
+        "artKit": "ancient",
+        "timeOfDay": "day",
+        "props": [],
+        "particleDensity": 0.2
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Great Wall of China",
+      "transition": "bloom-out",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Badaling_China_Great-Wall-of-China-01.jpg/1920px-Badaling_China_Great-Wall-of-China-01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "CEphoto, Uwe Aranas · CC BY-SA 3.0 · Wikimedia Commons",
+        "license": "CC BY-SA 3.0"
+      },
+      "landmark": null
+    },
+    {
+      "index": 2,
+      "label": "CHAPTER 02 · QIN UNIFICATION",
+      "titleWord": "QIN",
+      "heading": "One emperor, one northern line.",
+      "subheading": "Separate state walls joined into a single frontier.",
+      "body": "In 221 BC, the state of Qin unified China. The First Emperor ordered the destruction of internal walls that divided the former states. He then commanded the building of new walls to connect the remaining fortifications along the northern frontier. This move positioned the empire against the Xiongnu people from the north.",
+      "sceneTemplate": "ruin",
+      "sceneParams": {
+        "primaryColor": "#1a1a1d",
+        "accentColor": "#8d99ae",
+        "particleType": "none",
+        "groundType": "stone",
+        "backgroundObject": "none",
+        "propVariant": "ancient",
+        "artKit": "ancient",
+        "timeOfDay": "dusk",
+        "props": [],
+        "particleDensity": 0.0
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Great Wall of China",
+      "transition": "ink-wipe",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/20090529_Great_Wall_8185.jpg/1920px-20090529_Great_Wall_8185.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Jakub Hałun · CC BY-SA 3.0 · Wikimedia Commons",
+        "license": "CC BY-SA 3.0"
+      },
+      "landmark": null
+    },
+    {
+      "index": 3,
+      "label": "CHAPTER 03 · MING DEFENSE",
+      "titleWord": "BRICKS",
+      "heading": "Bricks and towers, a stronger line.",
+      "subheading": "Ming construction with bricks, stone and watchtowers.",
+      "body": "The Ming dynasty rebuilt the wall as a response to defeat by the Oirats. They used bricks and stone instead of rammed earth, making the structure stronger and more elaborate. Up to 25,000 watchtowers were estimated to be constructed. Sections near Beijing were especially strong, with brick facades added to the older earth walls to withstand periodic Mongol raids.",
+      "sceneTemplate": "ruin",
+      "sceneParams": {
+        "primaryColor": "#0d1117",
+        "accentColor": "#e0e1dd",
+        "particleType": "fireflies",
+        "groundType": "stone",
+        "backgroundObject": "moon",
+        "propVariant": "ancient",
+        "artKit": "ancient",
+        "timeOfDay": "night",
+        "props": [],
+        "particleDensity": 0.1
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Great Wall of China",
+      "transition": "noise-dissolve",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fa/Great_Wall_of_China_July_2006.JPG/1920px-Great_Wall_of_China_July_2006.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Velatrix · CC0 · Wikimedia Commons",
+        "license": "CC0"
+      },
+      "landmark": null
+    }
+  ],
+  "createdAt": "2026-10-01T04:36:14Z"
+}

@@ -1,0 +1,266 @@
+{
+  "before": {
+    "Mount Everest": {
+      "scores": {
+        "vivid": 4,
+        "specific": 4,
+        "grounded": 4,
+        "no_cliches": 4
+      },
+      "mean": 4.0,
+      "reasons": {
+        "vivid": "The headings are excellent, using lyrical phrasing like 'A chorus of tongues' and 'The stone that crowns the sky' rather than dry summaries.",
+        "specific": "Strong geological and linguistic specifics are present (e.g., Ordovician limestone, Yellow Band, Sagarmāthā), though some details like 'schist, phyllite and marble' could apply to many metamorphic ranges.",
+        "grounded": "Mostly supported, but with a minor error: the text states the North Col Formation consists of schist, phyllite, and marble, but the source text places the Yellow Band (marble) as the upper part of the North Col Formation, making the distinction in the second chapter slightly muddled regarding the middle/lower layers.",
+        "no_cliches": "The prose is clean and avoids standard mountain-writing clichés like 'conquering the peak' or 'frozen graveyard', though 'tells a deep story' is a bit tired."
+      },
+      "scoredBy": "gemini:gemini-3.5-flash",
+      "headings": [
+        "A chorus of tongues rests on the ridge.",
+        "Layers of ancient sea lie beneath the snow.",
+        "A joint survey fixed the final number."
+      ],
+      "from": "db:summit"
+    },
+    "Namib Desert": {
+      "scores": {
+        "vivid": 2,
+        "specific": 4,
+        "grounded": 5,
+        "no_cliches": 2
+      },
+      "mean": 3.25,
+      "reasons": {
+        "vivid": "The headings rely heavily on generic, tired imagery ('endless waves', 'veil of ocean breath') rather than concrete, fresh phrasing.",
+        "specific": "The story incorporates highly distinctive geographical markers such as the Benguela Current, the Moçâmedes Desert, and the Skeleton Coast's desert-adapted lions feeding on seals.",
+        "grounded": "Every factual claim in the text is fully supported by the Wikipedia source, including the specific dimensions, temperatures, fog days, and ecological interactions.",
+        "no_cliches": "The text suffers from numerous stock poetic tropes like 'veil of ocean breath', 'life clings to rock', and 'sea of pink and orange sand'."
+      },
+      "scoredBy": "gemini:gemini-3.5-flash",
+      "headings": [
+        "The Atlantic wind sweeps the dunes into endless waves.",
+        "Morning fog rolls inland, a veil of ocean breath.",
+        "Life clings to rock and sand, defying age."
+      ],
+      "from": "db:namib"
+    },
+    "Fushimi Inari-taisha": {
+      "scores": {
+        "vivid": 4,
+        "specific": 4,
+        "grounded": 5,
+        "no_cliches": 4
+      },
+      "mean": 4.25,
+      "reasons": {
+        "vivid": "The headings are strong and active (e.g., 'A clan's arrow birthed a shrine'), though the body text relies heavily on dry, encyclopedia-like statistics.",
+        "specific": "Captures exact details of Fushimi Inari, such as the Hata clan's mochi-turned-bird legend and the specific counts of the Senbon Torii.",
+        "grounded": "Every single claim, including heights, dates, and the specific 32,000 sub-shrines, is fully supported by the Wikipedia source text.",
+        "no_cliches": "Avoids common orientalist tropes and tired travel-writing phrases, though 'ancient vows' in the subtitle leans slightly toward stock fantasy imagery."
+      },
+      "scoredBy": "gemini:gemini-3.5-flash",
+      "headings": [
+        "Vermilion arches climb the hillside.",
+        "A clan's arrow birthed a shrine.",
+        "Foxes guard the grain and trade."
+      ],
+      "from": "db:inari-paths"
+    },
+    "Taj Mahal": {
+      "scores": {
+        "vivid": 3,
+        "specific": 4,
+        "grounded": 4,
+        "no_cliches": 2
+      },
+      "mean": 3.25,
+      "reasons": {
+        "vivid": "The headings are somewhat dry and informative rather than freshly phrased, though the body uses concrete details like the 'brick scaffold' and specific stone names.",
+        "specific": "Excellent inclusion of the specific geology of the materials (Makrana marble, named semi-precious stones) and the precise measurements of the excavation and site footprint.",
+        "grounded": "Almost fully supported, though the text states the site is open 'from one hour before sunrise to 45 minutes before sunset', which the story slightly alters to 'before sunrise to before sunset'.",
+        "no_cliches": "The story relies on tired, stock travel-writing phrases like 'world heritage jewel', 'born of love', and 'masterpiece of Mughal architecture'."
+      },
+      "scoredBy": "gemini:gemini-3.5-flash",
+      "headings": [
+        "A riverbank cleared for a dream of marble.",
+        "White marble rises, inlaid with distant stones.",
+        "A world heritage jewel endures through centuries."
+      ],
+      "from": "db:ivory-crown-2"
+    },
+    "Sahara Desert": {
+      "scores": {
+        "vivid": 2,
+        "specific": 4,
+        "grounded": 5,
+        "no_cliches": 2
+      },
+      "mean": 3.25,
+      "reasons": {
+        "vivid": "The headings contain highly unoriginal imagery like 'sea of sand' and 'sun beats down'. While subheadings like 'Stone and sand in dialogue' try to be poetic, the overall phrasing lacks fresh, concrete visual punch.",
+        "specific": "Excellent inclusion of highly specific Saharan geographical features such as the Ahaggar, Tibesti, and Aïr massifs, Emi Koussi shield volcano, and the precise 31% African continent coverage.",
+        "grounded": "Every geographical and meteorological claim is fully supported by the provided Wikipedia source text, including the dimensions, physical features, and atmospheric dynamics.",
+        "no_cliches": "The text relies heavily on tired desert tropes and stock phrases such as 'sea of sand', 'beyond the horizon', 'towering dunes', and 'sun beats down'."
+      },
+      "scoredBy": "gemini:gemini-3.5-flash",
+      "headings": [
+        "A sea of sand stretches beyond the horizon.",
+        "Rocky plateaus rise beside towering dunes.",
+        "Sun beats down where clouds never form."
+      ],
+      "from": "file:sahara.json"
+    },
+    "Great Wall of China": {
+      "scores": {
+        "vivid": 3,
+        "specific": 4,
+        "grounded": 5,
+        "no_cliches": 3
+      },
+      "mean": 3.75,
+      "reasons": {
+        "vivid": "The headings are somewhat active ('rose against', 'marked a new resolve') but rely on conventional imagery. Concrete details like 'swords and spears' and 'bricks and stone' help, but the phrasing is mostly standard historical summary.",
+        "specific": "Excellent naming of specific historical figures (Qi Jiguang, Wu Sangui, Li Zicheng), precise dates (1567, 1644, May 25), and key geographic locations like Shanhaiguan Pass and Beijing that uniquely identify this defensive system.",
+        "grounded": "Every historical claim, date, name, and architectural detail matches the provided source text perfectly without any external embellishments or contradictions.",
+        "no_cliches": "The title 'Stone Dragon' is a tired cliché for the Great Wall of China, and phrases like 'new resolve' and 'decisive conquest' are standard historical narrative tropes."
+      },
+      "scoredBy": "gemini:gemini-3.5-flash",
+      "headings": [
+        "Stone and earth rose against the steppe winds.",
+        "Bricks and towers marked a new resolve.",
+        "The wall finally yielded to a new empire."
+      ],
+      "from": "file:stone-dragon.json"
+    }
+  },
+  "after": {
+    "Taj Mahal": {
+      "scores": {
+        "vivid": 4,
+        "specific": 5,
+        "grounded": 5,
+        "no_cliches": 3
+      },
+      "mean": 4.25,
+      "reasons": {
+        "vivid": "The headings are poetic and evocative, especially 'Scaffolds of brick mirrored a marble sky', though the first heading is a bit plain.",
+        "specific": "Every detail—from the 15 km earthen ramp and specific artisan origins to the 2022-23 visitor stats—uniquely defines this historic construction project and its modern reality.",
+        "grounded": "Every single claim, including the 15 km ramp, the specific worker origins, the 28 types of stone, and the 2022-23 tourism figures, is fully supported by the source text.",
+        "no_cliches": "The subtitle 'A marble love letter' is a tired, overused trope for the Taj Mahal, but the body text successfully avoids standard travelogue clichés."
+      },
+      "scoredBy": "gemini:gemini-3.5-flash",
+      "headings": [
+        "The emperor placed grief in ivory marble.",
+        "Scaffolds of brick mirrored a marble sky.",
+        "A full-moon night opens the gates briefly."
+      ],
+      "seconds": 220.5,
+      "tokens": 41638,
+      "attempts": 3,
+      "writtenBy": "groq:qwen/qwen3.8-27b",
+      "notes": [
+        "heading judge picked 3 heading(s) by groq:qwen/qwen3.8-27b",
+        "style critic rewrote 2 sentence(s)"
+      ],
+      "grounding": 1.0
+    },
+    "Sahara Desert": {
+      "scores": {
+        "vivid": 4,
+        "specific": 4,
+        "grounded": 5,
+        "no_cliches": 4
+      },
+      "mean": 4.25,
+      "reasons": {
+        "vivid": "The headings are poetic and visual, especially the cosmic scale of 'glowing from other stars' and the tactile 'mosaic of rock, gravel, and salt'.",
+        "specific": "The text lists highly specific Saharan features like the Aïr, Ahaggar, and Tibesti volcanic ranges, and its unique 31% coverage of Africa.",
+        "grounded": "Every single claim, from the 31% continental coverage to the planetary precession mechanics of the 20,000-year cycle, is fully supported by the source text.",
+        "no_cliches": "The story avoids standard desert tropes like 'shifting sands' or 'scorching sun,' though 'breaks the horizon' is a slightly common landscape phrasing."
+      },
+      "scoredBy": "gemini:gemini-3.5-flash",
+      "headings": [
+        "So large it glows from other stars.",
+        "A mosaic of rock, gravel, and salt.",
+        "The monsoon shifts with the axis."
+      ],
+      "seconds": 151.6,
+      "tokens": 24142,
+      "attempts": 3,
+      "writtenBy": "groq:qwen/qwen3.8-27b",
+      "notes": [
+        "heading judge picked 3 heading(s) by groq:openai/gpt-oss-20b",
+        "style critic: no rewrites accepted"
+      ],
+      "grounding": 0.944
+    },
+    "Great Wall of China": {
+      "scores": {
+        "vivid": 4,
+        "specific": 4,
+        "grounded": 5,
+        "no_cliches": 4
+      },
+      "mean": 4.25,
+      "reasons": {
+        "vivid": "The title and subheadings use strong, active imagery like 'stitched across the northern frontier' and 'stamped into the northern soil', though the body prose is more conventional.",
+        "specific": "Details like the Qin, Zhao, and Ming dynasties, the Xiongnu and Oirat threats, and the specific transition from rammed earth to 25,000 brick watchtowers belong uniquely to this wall's history.",
+        "grounded": "Every single claim in the story, including the construction techniques, the 7th-century BC origins, the specific defensive purposes, and the Ming reconstruction after the Oirat defeat, is fully supported by the source text.",
+        "no_cliches": "The writing avoids major tired tropes, though phrases like 'The goal was simple' and 'a stronger line' lean slightly towards common expository formulas."
+      },
+      "scoredBy": "gemini:gemini-3.5-flash",
+      "headings": [
+        "Stamped into the northern soil.",
+        "One emperor, one northern line.",
+        "Bricks and towers, a stronger line."
+      ],
+      "seconds": 227.7,
+      "tokens": 27422,
+      "attempts": 2,
+      "writtenBy": "groq:qwen/qwen3.8-27b",
+      "notes": [
+        "heading judge picked 3 heading(s) by groq:openai/gpt-oss-20b",
+        "style critic: no rewrites accepted"
+      ],
+      "grounding": 1.0
+    }
+  },
+  "superseded": {
+    "Mount Everest": {
+      "scores": {
+        "vivid": 2,
+        "specific": 4,
+        "grounded": 5,
+        "no_cliches": 2
+      },
+      "mean": 3.25,
+      "reasons": {
+        "vivid": "The headings are poetic but rely on stale, soft imagery rather than sharp, concrete sensory details.",
+        "specific": "Strong use of local names and precise geological layers (Yellow Band, North Col, Qomolangma Formation) that belong specifically to Everest.",
+        "grounded": "Every single detail, including the exact height, Chinese spelling, local translations, and geological composition, is perfectly supported by the source text.",
+        "no_cliches": "Contains tired, stock metaphors like 'where clouds kiss the stone', 'whispered by the sky', and 'crowns the world'."
+      },
+      "scoredBy": "gemini:gemini-3.5-flash",
+      "headings": [
+        "Where clouds kiss the stone.",
+        "A name whispered by the sky.",
+        "Limestone cliffs beneath the snow."
+      ],
+      "seconds": 587.3,
+      "tokens": 25434,
+      "attempts": 2,
+      "writtenBy": "groq:openai/gpt-oss-120b",
+      "notes": [
+        "heading judge picked 3 heading(s) by groq:qwen/qwen3.8-27b",
+        "style critic rewrote 3 sentence(s)"
+      ],
+      "grounding": 1.0
+    },
+    "Namib Desert": {
+      "failed": "The model could not write a valid story after 2 corrections. Last problems: chapters.2.sceneParams.primaryColor: #1e1b2a is purple; the palette rules out purple themes, pick a warm or neutral colour"
+    },
+    "Fushimi Inari-taisha": {
+      "failed": "The model could not write a valid story after 2 corrections. Last problems: chapters.0.landmark: \"rōmon\" is not named in the SOURCE TEXT; use a structure the source names, or null"
+    }
+  }
+}

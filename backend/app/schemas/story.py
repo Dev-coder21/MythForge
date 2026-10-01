@@ -70,7 +70,8 @@ def purple_problem(hex_color: str) -> str | None:
     h, l, s = colorsys.rgb_to_hls(r, g, b)
     rule = RULES["purple"]
     if rule["hueMin"] <= h * 360 <= rule["hueMax"] and s > rule["minSaturation"] and l > rule["minLightness"]:
-        return f"{hex_color} is purple; the palette rules out purple themes, pick a warm or neutral colour"
+        return (f"{hex_color} is purple; the palette rules out purple themes. For a dark base use a navy, slate or "
+                "brown such as #141c2c, #1c2230 or #2a1e18; for an accent use a warm or neutral light colour")
     return None
 
 

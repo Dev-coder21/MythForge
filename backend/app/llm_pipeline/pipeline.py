@@ -307,7 +307,7 @@ def validate_draft_full(raw: str, topic: str, content: RetrievedContent, chapter
                 f"pick one of: {', '.join(_title_candidates(source_text, used_words))}"
             )
         if c.landmark and not any(
-            _word_in(w, f"{topic} {source_text}") for w in re.findall(r"[A-Za-z][A-Za-z'-]{3,}", c.landmark.name)
+            _word_in(w, f"{topic} {source_text}") for w in re.findall(r"[^\W\d_][\w'-]{3,}", c.landmark.name)
         ):
             errors.append(f"{where}.landmark: \"{c.landmark.name}\" is not named in the SOURCE TEXT; use a structure the source names, or null")
         if c.titleWord.upper() in seen_words:

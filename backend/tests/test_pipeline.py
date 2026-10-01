@@ -393,3 +393,14 @@ def test_style_passes_fail_soft():
     same = pick_headings(spec, [["A", "B"], ["C"]], chain(Scripted("groq", LLMError("down"))), notes)
     same = critique_style(same, chain(Scripted("groq", "not json")), notes)
     assert same == spec and any("skipped" in n for n in notes)
+
+
+def test_landmark_name_with_diacritics_matches_source():
+    from app.retrieval.wikipedia import WikiPage
+    src = RetrievedContent(topic="Fushimi Inari-taisha", pages=[WikiPage(title="Fushimi Inari-taisha", url="u",
+        summary="The shrine's main gate, the rōmon, was donated in 1589. Thousands of torii line the paths up the mountain behind it.")])
+    lm = {"name": "Rōmon gate", "description": "The two-storey vermilion main gate of the shrine."}
+    d = draft([chapter(landmark=lm, titleWord="SHRINE", source="wikipedia:Fushimi Inari-taisha", body=BODY.replace("3,776.24 m", "high").replace("1707", "long ago")),
+               chapter(titleWord="TORII", source="wikipedia:Fushimi Inari-taisha", body=BODY.replace("3,776.24 m", "high").replace("1707", "long ago"))])
+    spec = validate_draft(d, "Fushimi Inari-taisha", src, 2)
+    assert spec.chapters[0].landmark.name == "Rōmon gate"

@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "id": "efa17f51-efd3-4530-a581-e019a94ca092",
+  "topic": "Sahara Desert",
+  "title": "Sahara",
+  "subtitle": "The largest hot desert, breathing in a twenty-thousand-year rhythm.",
+  "slug": "sahara",
+  "chapters": [
+    {
+      "index": 1,
+      "label": "CHAPTER 01 · VAST EXPANSE",
+      "titleWord": "AFRICA",
+      "heading": "So large it glows from other stars.",
+      "subheading": "Spanning North Africa, from the Red Sea to the Atlantic.",
+      "body": "The Sahara covers 9,200,000 square kilometres, making it the largest hot desert in the world. Stretching across eleven countries, it occupies 31 percent of the African continent. Its surface is so extensive and reflective that, with current technology, it could theoretically be detected as a surface feature from other stars. The landscape shifts from the Red Sea coast to the Atlantic plains.",
+      "sceneTemplate": "dune",
+      "sceneParams": {
+        "primaryColor": "#3e2723",
+        "accentColor": "#ff8a65",
+        "particleType": "dust",
+        "groundType": "sand",
+        "backgroundObject": "sun",
+        "propVariant": "erg",
+        "artKit": "erg",
+        "timeOfDay": "dusk",
+        "props": [],
+        "particleDensity": 0.2
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Sahara",
+      "transition": "noise-dissolve",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/Moonlight_in_the_Sahara.jpg/1920px-Moonlight_in_the_Sahara.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Sergey Pesterev · CC BY-SA 4.0 · Wikimedia Commons",
+        "license": "CC BY-SA 4.0"
+      },
+      "landmark": null
+    },
+    {
+      "index": 2,
+      "label": "CHAPTER 02 · ROCK AND SAND",
+      "titleWord": "MOUNTAINS",
+      "heading": "A mosaic of rock, gravel, and salt.",
+      "subheading": "Highly diverse terrain shaped by wind and rare rain.",
+      "body": "The desert consists of hamada rocky plateaus, erg sand seas, and gravel plains. Many sand dunes rise over 180 metres, while dry valleys and salt flats scatter the map. Mountain massifs, some volcanic, break the horizon, including the Aïr and Ahaggar ranges. The highest point is Emi Koussi, a shield volcano in the Tibesti range.",
+      "sceneTemplate": "dune",
+      "sceneParams": {
+        "primaryColor": "#4e342e",
+        "accentColor": "#ffd54f",
+        "particleType": "dust",
+        "groundType": "stone",
+        "backgroundObject": "sun",
+        "propVariant": "erg",
+        "artKit": "erg",
+        "timeOfDay": "day",
+        "props": [],
+        "particleDensity": 0.1
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Sahara",
+      "transition": "ink-wipe",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c6/Caravan_in_the_desert.jpg/1920px-Caravan_in_the_desert.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Sergey Pesterev · CC BY-SA 4.0 · Wikimedia Commons",
+        "license": "CC BY-SA 4.0"
+      },
+      "landmark": null
+    },
+    {
+      "index": 3,
+      "label": "CHAPTER 03 · ANCIENT CYCLE",
+      "titleWord": "SAHARA",
+      "heading": "The monsoon shifts with the axis.",
+      "subheading": "Alternating between desert and savanna over millennia.",
+      "body": "For several hundred thousand years, the Sahara has alternated between desert and savanna grassland. This cycle repeats every 20,000 years, driven by the precession of Earth's axis. As the planet rotates, the location of the North African monsoon shifts.",
+      "sceneTemplate": "dune",
+      "sceneParams": {
+        "primaryColor": "#263238",
+        "accentColor": "#80deea",
+        "particleType": "none",
+        "groundType": "sand",
+        "backgroundObject": "sun",
+        "propVariant": "erg",
+        "artKit": "erg",
+        "timeOfDay": "dawn",
+        "props": [],
+        "particleDensity": 0.0
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Sahara",
+      "transition": "bloom-out",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a7/Sahara_satellite_hires.jpg/1920px-Sahara_satellite_hires.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "NASA · Public domain · Wikimedia Commons",
+        "license": "Public domain"
+      },
+      "landmark": null
+    }
+  ],
+  "createdAt": "2026-10-01T04:32:31Z"
+}
