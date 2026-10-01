@@ -23,6 +23,11 @@ fact beyond the source ("Carved from the ground itself." about a statue carved f
 A sentence is UNSUPPORTED when it adds, changes, exaggerates or wrongly combines facts.
 Hedges matter: if the source hedges ("about five months", "up to 25,000", "roughly", "is thought to", "possibly")
 and the sentence states it as exact or certain ("five months", "25,000", "was"), it is UNSUPPORTED.
+Headings are checked too: a heading that states or implies a fact (size, age, distance, visibility, a first,
+a record or other superlative, a cause) must be supported like any sentence. A heading that stretches a fact into
+something the source does not say (for example "visible from space" or "glows from other stars" when the source
+only gives an area) is UNSUPPORTED. Pure mood or imagery that claims nothing is fine.
+The SOURCE TEXT may be in another language; compare meaning, not wording.
 Be strict: when in doubt, mark it unsupported.
 Return only JSON."""
 
@@ -103,6 +108,15 @@ def check_grounding(spec: StorySpec, content: RetrievedContent, chain: FallbackC
     except (json.JSONDecodeError, AttributeError) as e:
         raise ValueError(f"grounding check returned unreadable JSON ({e})") from e
     return GroundingReport(claims=claims, unsupported=unsupported, provider=provider, checked_by=chain.last_model or provider)
+
+
+def check_texts(texts: list[str], content: RetrievedContent, chain: FallbackChain, max_tokens: int = 300) -> list[bool]:
+    """Fact-check loose candidate lines (e.g. alternative headings); True = supported."""
+    claims = [Claim(f"alt.{i + 1}", 0, "heading", t) for i, t in enumerate(texts)]
+    _, raw = chain.complete_json(SYSTEM, [{"role": "user", "content": build_check_prompt(claims, content)}], max_tokens)
+    data = json.loads(raw[raw.find("{") : raw.rfind("}") + 1])
+    bad = {item.get("id") for item in data.get("unsupported", []) if isinstance(item, dict)}
+    return [c.id not in bad for c in claims]
 
 
 def remove_unsupported(spec: StorySpec, report: GroundingReport, min_body_words: int = 20) -> tuple[StorySpec, list[str]]:

@@ -237,10 +237,22 @@ def test_still_unsupported_sentences_are_removed_and_scored():
     assert r.grounding["removed"] == ["c1.body.3"] and r.grounding["score"] == round((n - 1) / n, 3)
 
 
-def test_unsupported_heading_is_kept_but_reported():
+def test_unsupported_heading_is_replaced():
     bad = '{"unsupported": [{"id": "c1.heading.1", "reason": "invented"}]}'
     r = generate_spec(CONTENT, chain(Scripted("gemini", draft(), bad, draft(), bad)), chapters=2)
-    assert r.grounding["kept"] == ["c1.heading.1"] and r.spec.chapters[0].heading
+    # no other candidates in this draft: neutral heading from the chapter label, nothing kept
+    assert r.grounding["kept"] == [] and r.spec.chapters[0].heading == "The white cone."
+
+
+def test_unsupported_heading_swapped_for_supported_candidate():
+    d = json.loads(draft())
+    d["chapters"][0].pop("heading")
+    d["chapters"][0]["headings"] = ["So large it glows from other stars.", "Snow on a cone."]
+    d = json.dumps(d)
+    bad = '{"unsupported": [{"id": "c1.heading.1", "reason": "glow not in source"}]}'
+    alt_ok = '{"unsupported": []}'
+    r = generate_spec(CONTENT, chain(Scripted("gemini", d, bad, d, bad, alt_ok)), chapters=2)
+    assert r.spec.chapters[0].heading == "Snow on a cone."
 
 
 def test_grounding_failure_does_not_fail_generation():

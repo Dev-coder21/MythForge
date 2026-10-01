@@ -19,7 +19,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from app.core.config import get_settings
 from app.llm_pipeline.catalog import kit_problem, landmark_problem
-from app.llm_pipeline.grounding import check_grounding, remove_unsupported
+from app.llm_pipeline.grounding import check_grounding, check_texts, remove_unsupported
 from app.llm_pipeline.style import critique_style, pick_headings
 from app.llm_pipeline.prompt import SYSTEM, build_prompt, correction_prompt, grounding_correction_prompt
 from app.llm_pipeline.providers import FallbackChain, LLMError
@@ -346,6 +346,33 @@ def _write_valid(content, chain, messages, chapters, max_tokens, budget):
     raise SpecInvalid(last_errors)
 
 
+def replace_unsupported_headings(spec, kept: list[str], candidates: list[list[str]], content, checker, notes: list[str]):
+    """Headings are never left unsupported: try the chapter's other usable candidates (one small
+    fact-check call), else fall back to a neutral heading made from the chapter label (claims nothing)."""
+    flagged = [cid for cid in kept if ".heading." in cid]
+    if not flagged:
+        return spec, kept
+    data = spec.model_dump(mode="json")
+    for cid in flagged:
+        ci = int(cid.split(".")[0][1:]) - 1
+        ch = data["chapters"][ci]
+        current = ch["heading"].rstrip(".")
+        alts = [h for h in (candidates[ci] if ci < len(candidates) else []) if h.rstrip(".") != current]
+        chosen = None
+        if alts:
+            try:
+                ok = check_texts(alts, content, checker)
+                chosen = next((h for h, good in zip(alts, ok) if good), None)
+            except (LLMError, ValueError):
+                chosen = None
+        if chosen is None:
+            name = ch["label"].split("·", 1)[-1].strip().lower()
+            chosen = name[:1].upper() + name[1:]
+        ch["heading"] = chosen if chosen[-1:] in ".?!" else chosen + "."
+        notes.append(f"grounding: heading of chapter {ci + 1} replaced (unsupported claim)")
+    return StorySpec.model_validate(data), [k for k in kept if k not in flagged]
+
+
 def generate_spec(content: RetrievedContent, chain: FallbackChain, chapters: int = 3, ground: bool = True, style: bool | None = None,
                   checker_for: Callable[[str], FallbackChain] | None = None,
                   on_stage: Callable[[str], None] | None = None) -> GenerationResult:
@@ -394,6 +421,7 @@ def generate_spec(content: RetrievedContent, chain: FallbackChain, chapters: int
                 except (LLMError, ValueError) as e:
                     chain.notes.append(f"grounding correction unavailable ({e}); keeping the first version")
             spec, kept = remove_unsupported(spec, report)
+            spec, kept = replace_unsupported_headings(spec, kept, getattr(chain, "last_candidates", []), content, checker, chain.notes)
             if report.unsupported:
                 chain.notes.append(f"grounding: removed {len(report.unsupported) - len(kept)} sentence(s)")
             grounding = report.as_dict() | {"writtenBy": writer,"removed": [c.id for c in report.unsupported_claims() if c.id not in kept], "kept": kept}
