@@ -187,6 +187,7 @@ class FallbackChain:
     last_model: str = ""  # "provider:model" of the last successful call
     tokens: dict[str, int] = field(default_factory=dict)  # total tokens per provider:model (usage reports)
     validation_log: list[list[str]] = field(default_factory=list)  # errors of each rejected draft (evaluation)
+    last_candidates: list[list[str]] = field(default_factory=list)  # usable candidate headings of the last valid draft
     # Live progress for the UI: (provider:model, message). Called on each attempt, wait and failure.
     on_event: Callable[[str, str], None] | None = None
 

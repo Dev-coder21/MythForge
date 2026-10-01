@@ -43,7 +43,7 @@ FORMAT = """{
     {
       "labelName": "UPPERCASE CHAPTER NAME, 2 TO 5 WORDS",
       "titleWord": "ONE UPPERCASE WORD, 3 TO 8 LETTERS, NO SPACES",
-      "heading": "evocative line, max 60 characters, no digits, ends with a full stop",
+      "headings": ["three different candidate headings: evocative, max 60 characters, no digits, each ends with a full stop"],
       "subheading": "one short line",
       "body": "40 to 70 words of facts from the source, in the voice",
       "source": "one of the SOURCE ids",
@@ -66,26 +66,41 @@ FORMAT = """{
 
 @lru_cache
 def style_examples() -> str:
-    """Copy from the hand-written Kyoto and Giza samples, trimmed to what teaches the voice."""
+    """Gold examples: every chapter of the hand-written Kyoto and Giza stories (copy only; scene
+    fields are taught by the catalog), so the model sees the target voice and rhythm."""
     out = []
     for name in ("sample-kyoto.json", "sample-giza.json"):
         spec = json.loads((SAMPLES_DIR / name).read_text(encoding="utf-8"))
         out.append(f'Story "{spec["title"]}", subtitle: {spec["subtitle"]}')
-        for c in spec["chapters"][:2]:
-            p = c["sceneParams"]
-            out.append(
-                f'  {c["titleWord"]} | heading: {c["heading"]} | subheading: {c["subheading"]} | body: {c["body"]} '
-                f'| scene: {c["sceneTemplate"]}/{p["artKit"]}, {p["timeOfDay"]}, {p["backgroundObject"]}, {p["particleType"]}, '
-                f'{p["primaryColor"]}/{p["accentColor"]}, {c["transition"]}'
-            )
+        for c in spec["chapters"]:
+            out.append(f'  heading: {c["heading"]} | subheading: {c["subheading"]} | body: {c["body"]}')
     return "\n".join(out)
+
+
+# Real headings from earlier runs, each with what is wrong with it.
+NEVER_LIKE_THIS = [
+    ("A cone that dominates the horizon.", "generic, fits any mountain"),
+    ("A sea of sand stretches beyond the horizon.", "stock image, no fact"),
+    ("Bricks and towers marked a new resolve.", "abstract, says nothing"),
+    ("Subtropical high pressure creates a sun-baked world where rain is a rarity.", "a summary, too long"),
+    ("A ridge that kisses the heavens.", "cliche"),
+    ("The longest water on this planet.", "awkward and vague"),
+    ("Height confirmed in recent years.", "flat report"),
+]
+
+
+def anti_examples() -> str:
+    return "\n".join(f"  {h}  ({why})" for h, why in NEVER_LIKE_THIS)
 
 
 def build_prompt(content: RetrievedContent, chapters: int = 3) -> str:
     return f"""Write a {chapters}-chapter story about: {content.topic}
 
-STYLE EXAMPLES (match this voice and level of detail; do not reuse their facts)
+GOLD EXAMPLES (match this voice, rhythm and level of detail; do not reuse their facts)
 {style_examples()}
+
+NEVER LIKE THIS (real headings from earlier drafts and why they fail)
+{anti_examples()}
 
 SCENE CATALOG (pick the best-fitting kit for each chapter; if nothing fits well, pick the closest mood and light)
 {catalog_text()}

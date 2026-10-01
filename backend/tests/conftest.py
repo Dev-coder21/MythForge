@@ -18,3 +18,11 @@ def db():
     finally:
         session.close()
         Base.metadata.drop_all(engine)
+
+
+@pytest.fixture(autouse=True)
+def _no_style_passes(monkeypatch, request):
+    """Scripted providers return fixed reply sequences; the style passes are tested on their own."""
+    if "style" not in request.node.name:
+        from app.llm_pipeline import pipeline
+        monkeypatch.setattr(pipeline, "STYLE_PASSES", False)

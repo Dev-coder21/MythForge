@@ -364,3 +364,32 @@ def test_landmark_must_be_named_in_source():
     with pytest.raises(SpecInvalid) as e:
         validate_draft(draft([chapter(landmark=lm), chapter(titleWord="HONSHU")]), "Mount Fuji", CONTENT, 2)
     assert "not named in the SOURCE" in " ".join(e.value.errors)
+
+
+def test_style_best_of_n_headings_and_critic():
+    d = json.loads(draft())
+    d["chapters"][0].pop("heading")
+    d["chapters"][0]["headings"] = ["At 3,776 m it rises.", "A mountain that keeps its own weather", "Snow on a cone."]
+    spec, cands = __import__("app.llm_pipeline.pipeline", fromlist=["x"]).validate_draft_full(json.dumps(d), "Mount Fuji", CONTENT, 2)
+    assert cands[0] == ["A mountain that keeps its own weather", "Snow on a cone."]  # the number heading is dropped
+    judge = Scripted("groq", '{"picks": [{"chapter": 1, "pick": 2}]}')
+    critic = Scripted("groq", json.dumps({"rewrites": [
+        {"id": "c1.body.1", "text": "The volcano lifts 3,776.24 m above Honshu; its last eruption came in 1707."},
+        {"id": "c1.body.2", "text": "It was 9,999 m tall."},  # adds a number: rejected
+        {"id": "c1.subheading.1", "text": "Honshu, before the light comes"}]}))
+    from app.llm_pipeline.style import critique_style, pick_headings
+    notes = []
+    spec = pick_headings(spec, cands, chain(judge), notes)
+    assert spec.chapters[0].heading == "Snow on a cone."
+    spec = critique_style(spec, chain(critic), notes)
+    assert spec.chapters[0].body.startswith("The volcano lifts") and "9,999" not in spec.chapters[0].body
+    assert spec.chapters[0].subheading == "Honshu, before the light comes"
+
+
+def test_style_passes_fail_soft():
+    from app.llm_pipeline.style import critique_style, pick_headings
+    spec = validate_draft(draft(), "Mount Fuji", CONTENT, 2)
+    notes = []
+    same = pick_headings(spec, [["A", "B"], ["C"]], chain(Scripted("groq", LLMError("down"))), notes)
+    same = critique_style(same, chain(Scripted("groq", "not json")), notes)
+    assert same == spec and any("skipped" in n for n in notes)

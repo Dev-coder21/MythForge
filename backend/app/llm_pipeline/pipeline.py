@@ -20,10 +20,11 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from app.core.config import get_settings
 from app.llm_pipeline.catalog import kit_problem, landmark_problem
 from app.llm_pipeline.grounding import check_grounding, remove_unsupported
+from app.llm_pipeline.style import critique_style, pick_headings
 from app.llm_pipeline.prompt import SYSTEM, build_prompt, correction_prompt, grounding_correction_prompt
 from app.llm_pipeline.providers import FallbackChain, LLMError
 from app.retrieval import RetrievedContent
-from app.schemas.story import RULES
+from app.schemas.story import RULES, copy_problems
 from app.schemas.story import (
     BackgroundObject,
     GroundType,
@@ -36,6 +37,8 @@ from app.schemas.story import (
 )
 
 MAX_CORRECTIONS = 2
+HEADING_CANDIDATES = 3
+STYLE_PASSES = True  # best-of-N heading judge + style critic (tests switch it off for scripted providers)
 
 
 class DraftLandmark(BaseModel):
@@ -50,7 +53,10 @@ class DraftChapter(BaseModel):
     model_config = ConfigDict(extra="ignore")
     labelName: str
     titleWord: str
-    heading: str
+    heading: str | None = None
+    # Best-of-N: the writer proposes several headings; validation keeps the ones that pass the rules
+    # and a small judge model picks the most vivid (see pick_headings).
+    headings: list[str] = Field(default_factory=list)
     subheading: str
     body: str
     source: str
@@ -230,7 +236,28 @@ def assemble(draft: Draft, topic: str, content: RetrievedContent) -> StorySpec:
     })
 
 
+def heading_problems(heading: str, source_numbers: set[str]) -> list[str]:
+    """Why one candidate heading cannot be used (empty = usable)."""
+    h = heading.strip()
+    out = []
+    if not h:
+        return ["empty"]
+    if len(h) > RULES["generatedHeadingMax"]:
+        out.append(f"{len(h)} characters; keep it under {RULES['generatedHeadingMax']}, evocative, not a summary")
+    if RULES["generatedHeadingNoDigits"] and (re.search(r"\d", h) or _NUMBER_WORDS.search(h)):
+        out.append("no numbers or dates in headings, in digits or words; move the figure into the body")
+    out += copy_problems(h)
+    if _numbers(h) - source_numbers:
+        out.append("uses a number that is not in the SOURCE TEXT")
+    return out
+
+
 def validate_draft(raw: str, topic: str, content: RetrievedContent, chapters: int) -> StorySpec:
+    return validate_draft_full(raw, topic, content, chapters)[0]
+
+
+def validate_draft_full(raw: str, topic: str, content: RetrievedContent, chapters: int) -> tuple[StorySpec, list[list[str]]]:
+    """Validated spec (first usable heading per chapter) plus every usable candidate heading per chapter."""
     data = _parse_json(raw)
     try:
         draft = Draft.model_validate(data)
@@ -251,8 +278,20 @@ def validate_draft(raw: str, topic: str, content: RetrievedContent, chapters: in
     source_numbers = _numbers(source_text)
     used_words = {c.titleWord.upper() for c in draft.chapters}
     seen_words = set()
+    candidates: list[list[str]] = []
     for i, c in enumerate(draft.chapters):
         where = f"chapters.{i}"
+        proposed = [h for h in [*c.headings, *([c.heading] if c.heading else [])] if isinstance(h, str) and h.strip()]
+        usable = [h.strip() for h in proposed if not heading_problems(h, source_numbers)]
+        usable = list(dict.fromkeys(usable))
+        candidates.append(usable)
+        if usable:
+            c.heading = usable[0]
+        else:
+            why = heading_problems(proposed[0], source_numbers) if proposed else ["no heading given"]
+            errors.append(f"{where}.headings: none of the candidate headings can be used ({'; '.join(why)}); "
+                          f"give {HEADING_CANDIDATES} new ones")
+            c.heading = proposed[0] if proposed else ""
         if problem := kit_problem(c.sceneTemplate, c.artKit):
             errors.append(f"{where}: {problem}")
         if problem := landmark_problem(c.artKit, topic):
@@ -271,11 +310,6 @@ def validate_draft(raw: str, topic: str, content: RetrievedContent, chapters: in
             _word_in(w, f"{topic} {source_text}") for w in re.findall(r"[A-Za-z][A-Za-z'-]{3,}", c.landmark.name)
         ):
             errors.append(f"{where}.landmark: \"{c.landmark.name}\" is not named in the SOURCE TEXT; use a structure the source names, or null")
-        heading = c.heading.strip()
-        if len(heading) > RULES["generatedHeadingMax"]:
-            errors.append(f"{where}.heading: {len(heading)} characters; keep it under {RULES['generatedHeadingMax']}, evocative, not a summary")
-        if RULES["generatedHeadingNoDigits"] and (re.search(r"\d", heading) or _NUMBER_WORDS.search(heading)):
-            errors.append(f"{where}.heading: no numbers or dates in headings, in digits or words; move the figure into the body")
         if c.titleWord.upper() in seen_words:
             errors.append(
                 f"{where}.titleWord: {c.titleWord} is used twice; every chapter needs its own word, "
@@ -286,7 +320,7 @@ def validate_draft(raw: str, topic: str, content: RetrievedContent, chapters: in
         raise SpecInvalid(errors)
 
     try:
-        return assemble(draft, topic, content)
+        return assemble(draft, topic, content), candidates
     except ValidationError as e:
         # Map spec paths back to what the model wrote (label prefix is ours).
         raise SpecInvalid([m.replace(".label:", ".labelName:") for m in _pydantic_errors(e)]) from e
@@ -298,7 +332,8 @@ def _write_valid(content, chain, messages, chapters, max_tokens, budget):
     for attempt in range(1, budget + 1):
         provider, raw = chain.complete_json(SYSTEM, messages, max_tokens)
         try:
-            spec = validate_draft(raw, content.topic, content, chapters)
+            spec, cands = validate_draft_full(raw, content.topic, content, chapters)
+            chain.last_candidates = cands
             return spec, provider, attempt, messages + [{"role": "assistant", "content": raw[:6000]}]
         except SpecInvalid as e:
             last_errors = e.errors
@@ -311,7 +346,7 @@ def _write_valid(content, chain, messages, chapters, max_tokens, budget):
     raise SpecInvalid(last_errors)
 
 
-def generate_spec(content: RetrievedContent, chain: FallbackChain, chapters: int = 3, ground: bool = True,
+def generate_spec(content: RetrievedContent, chain: FallbackChain, chapters: int = 3, ground: bool = True, style: bool | None = None,
                   checker_for: Callable[[str], FallbackChain] | None = None,
                   on_stage: Callable[[str], None] | None = None) -> GenerationResult:
     """One story call (+ up to MAX_CORRECTIONS corrections), then a grounding check call.
@@ -325,11 +360,17 @@ def generate_spec(content: RetrievedContent, chain: FallbackChain, chapters: int
             f"The model could not write a valid story after {MAX_CORRECTIONS} corrections. Last problems: " + "; ".join(e.errors[:6])
         ) from e
 
+    # Writing-quality passes (fail soft): a small judge picks headings, the writer edits flat lines.
+    writer = chain.last_model
+    judge = checker_for(writer) if checker_for else chain
+    if STYLE_PASSES if style is None else style:
+        spec = pick_headings(spec, getattr(chain, "last_candidates", []), judge, chain.notes)
+        spec = critique_style(spec, chain, chain.notes)
+
     grounding = None
     if ground:
-        writer = chain.last_model
         # A different model checks the facts; the writer grading itself is too lenient.
-        checker = checker_for(writer) if checker_for else chain
+        checker = judge
         if checker is not chain:
             checker.on_event = chain.on_event
         if on_stage:
