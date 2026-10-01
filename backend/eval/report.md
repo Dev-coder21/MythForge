@@ -39,6 +39,17 @@ Golden topics finished: 12 of 12 (plus 2 hard cases).
 4. **The whole run used the fallback models.** Earlier testing that day had used up the Gemini and gpt-oss-120b daily quotas, so all 11 stories were written by qwen3.8-27b (the Groq fallback) and checked by gpt-oss-20b. The numbers describe the fallback path, not the intended default. Free-tier capacity is roughly a dozen stories per day at about 15,000 tokens each, and the off-theme case (History of jazz) stopped on the daily quota; it runs on --resume.
 5. **A checker that returns an empty reply skips the fact check instead of trying the next model.** The Mekong story was saved without a score because gpt-oss-20b returned no JSON; that counts as a parse error rather than a provider failure, so the chain never moved on. The thin-topic guard worked as intended: the invented topic was rejected in under a second with a helpful message and no model calls.
 
+## Scene routing check
+
+Does each topic land in the scene family it should? 4 of 4 did (`python -m eval.templates_check`). Antarctica needed a second run: the first failed the title-word rule.
+
+| Topic | Expected | Scenes chosen | Grounding |
+|---|---|---|---|
+| Amazon rainforest | grove | jungle / jungle / jungle | 100% |
+| Maldives | beach | lagoon / lagoon / lagoon | 100% |
+| Antarctica | polar | glacier / glacier / glacier | 93% |
+| History of jazz | cosmos | ink-wash / ink / ink | 100% |
+
 ## Writing quality rubric
 
 Scored 1 to 5 by a model separate from the writers (Gemini first), with the source text in hand. Before: stories from the earlier pipeline. After: the same topics with gold examples, best-of-3 headings picked by a small judge, and the style critic.

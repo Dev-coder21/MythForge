@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "id": "a16883fe-21cc-45a4-bbdf-5e180f0a0602",
+  "topic": "Maldives",
+  "title": "Garland",
+  "subtitle": "A chain of atolls strung across the equator",
+  "slug": "garland",
+  "chapters": [
+    {
+      "index": 1,
+      "label": "CHAPTER 01 · ATOLL REACH",
+      "titleWord": "MALDIVES",
+      "heading": "A line of islands against the sky.",
+      "subheading": "Twenty-six atolls stretch across the equator.",
+      "body": "The Maldives lie in the Indian Ocean, southwest of India and Sri Lanka, about seven hundred fifty kilometres from the mainland. Their chain of twenty-six atolls extends from Ihavandhippolhu in the north to Addu in the south, crossing the equator.",
+      "sceneTemplate": "beach",
+      "sceneParams": {
+        "primaryColor": "#0a3b5c",
+        "accentColor": "#f4c842",
+        "particleType": "none",
+        "groundType": "sand",
+        "backgroundObject": "sun",
+        "propVariant": "lagoon",
+        "artKit": "lagoon",
+        "timeOfDay": "dawn",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Maldives",
+      "transition": "bloom-out",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Floatplane_at_Bathala_%28Maldives%29.jpg/1920px-Floatplane_at_Bathala_%28Maldives%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Gzzz · CC BY-SA 4.0 · Wikimedia Commons",
+        "license": "CC BY-SA 4.0"
+      },
+      "landmark": null
+    },
+    {
+      "index": 2,
+      "label": "CHAPTER 02 · NAME'S THREAD",
+      "titleWord": "ISLANDS",
+      "heading": "Words woven from sand and sea.",
+      "subheading": "Etymology ties islands to a necklace.",
+      "body": "Legends say the first settlers were the Dheyvis, and the kingdom was known as Dheeva Maari. Scholars link the name Maldives to Sanskrit mālā meaning garland and dvīpa meaning island, a translation echoed in Sinhala as Maala Divaina, Tamil as mālaittīvu, and Malayalam as māladvīpŭ. The term evokes a necklace of islands.",
+      "sceneTemplate": "beach",
+      "sceneParams": {
+        "primaryColor": "#1b4a70",
+        "accentColor": "#e8b44a",
+        "particleType": "none",
+        "groundType": "sand",
+        "backgroundObject": "clouds",
+        "propVariant": "lagoon",
+        "artKit": "lagoon",
+        "timeOfDay": "day",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Maldives",
+      "transition": "ink-wipe",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Male-total.jpg/1920px-Male-total.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Shahee Ilyas · CC BY-SA 3.0 · Wikimedia Commons",
+        "license": "CC BY-SA 3.0"
+      },
+      "landmark": null
+    },
+    {
+      "index": 3,
+      "label": "CHAPTER 03 · ANCIENT WAVES",
+      "titleWord": "SANSKRIT",
+      "heading": "Stories carved in coral and copper.",
+      "subheading": "Settlement traces back millennia.",
+      "body": "Archaeological evidence suggests kingdoms existed in the fifth to sixth century BCE, and oral tradition records migrations from the southern Indian subcontinent. Artefacts show the presence of Hinduism before the Islamic period. Ibn Battuta called the islands Maḥal Dībīyāt, using the Arabic word for palace.",
+      "sceneTemplate": "beach",
+      "sceneParams": {
+        "primaryColor": "#0e2e4a",
+        "accentColor": "#d9a33e",
+        "particleType": "dust",
+        "groundType": "sand",
+        "backgroundObject": "moon",
+        "propVariant": "lagoon",
+        "artKit": "lagoon",
+        "timeOfDay": "dusk",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Maldives",
+      "transition": "noise-dissolve",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cc/Man_on_sand_bank_in_the_Maldives_looking_at_sea.jpg/1920px-Man_on_sand_bank_in_the_Maldives_looking_at_sea.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Pittigrilli · CC BY-SA 4.0 · Wikimedia Commons",
+        "license": "CC BY-SA 4.0"
+      },
+      "landmark": null
+    }
+  ],
+  "createdAt": "2026-10-01T11:37:47Z"
+}

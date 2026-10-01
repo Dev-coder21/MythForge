@@ -1,0 +1,126 @@
+{
+  "Amazon rainforest": {
+    "expected": "grove",
+    "status": "success",
+    "templates": [
+      "grove",
+      "grove",
+      "grove"
+    ],
+    "kits": [
+      "jungle",
+      "jungle",
+      "jungle"
+    ],
+    "timesOfDay": [
+      "dawn",
+      "day",
+      "night"
+    ],
+    "headings": [
+      "Sunlight filters through a living archive.",
+      "Paths carved by conflict linger in the understory.",
+      "Green lungs tremble under a warming sky."
+    ],
+    "fits": true,
+    "grounding": 1.0,
+    "writtenBy": "groq:openai/gpt-oss-120b",
+    "sources": [
+      "wikipedia:Amazon rainforest"
+    ],
+    "seconds": 135.3
+  },
+  "Maldives": {
+    "expected": "beach",
+    "status": "success",
+    "templates": [
+      "beach",
+      "beach",
+      "beach"
+    ],
+    "kits": [
+      "lagoon",
+      "lagoon",
+      "lagoon"
+    ],
+    "timesOfDay": [
+      "dawn",
+      "day",
+      "dusk"
+    ],
+    "headings": [
+      "A line of islands against the sky.",
+      "Words woven from sand and sea.",
+      "Stories carved in coral and copper."
+    ],
+    "fits": true,
+    "grounding": 1.0,
+    "writtenBy": "groq:openai/gpt-oss-120b",
+    "sources": [
+      "wikipedia:Maldives"
+    ],
+    "seconds": 137.3
+  },
+  "Antarctica": {
+    "expected": "polar",
+    "status": "success",
+    "templates": [
+      "polar",
+      "polar",
+      "polar"
+    ],
+    "kits": [
+      "glacier",
+      "glacier",
+      "glacier"
+    ],
+    "timesOfDay": [
+      "dawn",
+      "day",
+      "night"
+    ],
+    "headings": [
+      "A continent of endless white.",
+      "Heat beneath the frozen veil.",
+      "Scientists on a frozen frontier."
+    ],
+    "fits": true,
+    "grounding": 0.933,
+    "writtenBy": "groq:qwen/qwen3.8-27b",
+    "sources": [
+      "wikipedia:Antarctica"
+    ],
+    "seconds": 20.3
+  },
+  "History of jazz": {
+    "expected": "cosmos",
+    "status": "success",
+    "templates": [
+      "cosmos",
+      "cosmos",
+      "cosmos"
+    ],
+    "kits": [
+      "ink-wash",
+      "ink",
+      "ink"
+    ],
+    "timesOfDay": [
+      "dusk",
+      "night",
+      "night"
+    ],
+    "headings": [
+      "Slang carried into print.",
+      "Notes that answer to the moment.",
+      "A restless art that refuses fixed forms."
+    ],
+    "fits": true,
+    "grounding": 1.0,
+    "writtenBy": "groq:qwen/qwen3.8-27b",
+    "sources": [
+      "wikipedia:Jazz"
+    ],
+    "seconds": 167.8
+  }
+}

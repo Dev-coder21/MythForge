@@ -237,11 +237,27 @@ def write_report(data: dict) -> None:
             f"{_model(r.get('checkedBy'))} | {templates} | {fits} | {caught} | {r.get('seconds', '')} s | {r.get('tokensTotal', 0)} |"
         )
     lines += ["", "## Findings", "", *findings(data), ""]
+    lines += routing_section()
     from eval.rubric import rubric_section
     rubric = rubric_section()
     if rubric:
         lines += [*rubric, "", *RUBRIC_NOTES, ""]
     REPORT.write_text("\n".join(lines), encoding="utf-8")
+
+
+def routing_section() -> list[str]:
+    p = HERE / "templates_check.json"
+    if not p.exists():
+        return []
+    d = json.loads(p.read_text(encoding="utf-8"))
+    ok = sum(1 for r in d.values() if r.get("fits"))
+    out = ["## Scene routing check", "", f"Does each topic land in the scene family it should? {ok} of {len(d)} did "
+           "(`python -m eval.templates_check`). Antarctica needed a second run: the first failed the title-word rule.", "",
+           "| Topic | Expected | Scenes chosen | Grounding |", "|---|---|---|---|"]
+    for t, r in d.items():
+        out.append(f"| {t} | {r['expected']} | {' / '.join(r.get('kits', [])) or r['status']} | "
+                   f"{pct(r.get('grounding')) if r.get('grounding') is not None else ''} |")
+    return out + [""]
 
 
 def _count(xs: list[str]) -> dict[str, int]:

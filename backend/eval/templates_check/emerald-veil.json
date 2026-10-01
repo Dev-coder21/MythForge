@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "id": "bf0ba75d-3c2d-4ce8-a7db-3627b4f1ea68",
+  "topic": "Amazon rainforest",
+  "title": "Emerald Veil",
+  "subtitle": "A slow breath of green, water and ancient hands.",
+  "slug": "emerald-veil",
+  "chapters": [
+    {
+      "index": 1,
+      "label": "CHAPTER 01 · ANCIENT CANOPY",
+      "titleWord": "AMAZON",
+      "heading": "Sunlight filters through a living archive.",
+      "subheading": "A forest that remembers its makers.",
+      "body": "The Amazon basin covers about 7 million km2, of which roughly 6 million km2 remain cloaked in moist broadleaf forest. Archaeological sites such as Caverna da Pedra Pintada show human presence at least 11,200 years ago, and later settlements altered forest cover by AD 1250. Modern studies reveal that much of the forest is the product of centuries of indigenous soil management, including the creation of fertile terra preta.",
+      "sceneTemplate": "grove",
+      "sceneParams": {
+        "primaryColor": "#224422",
+        "accentColor": "#88aa66",
+        "particleType": "fireflies",
+        "groundType": "grass",
+        "backgroundObject": "sun",
+        "propVariant": "jungle",
+        "artKit": "jungle",
+        "timeOfDay": "dawn",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Amazon rainforest",
+      "transition": "ink-wipe",
+      "heroImage": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Amazon_Rainforest%2C_Brazil_Timelapse_1984-2018.gif?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "attribution": "Google Earth Timelapse (Google, Landsat, Copernicus) · CC BY 2.5 · Wikimedia Commons",
+        "license": "CC BY 2.5"
+      },
+      "landmark": null
+    },
+    {
+      "index": 2,
+      "label": "CHAPTER 02 · WARRING TRAILS",
+      "titleWord": "BRAZIL",
+      "heading": "Paths carved by conflict linger in the understory.",
+      "subheading": "War and peace etched in bark.",
+      "body": "Historical records note frequent armed conflicts between Amazonian groups. The Jivaroan tribes, including the Shuar, practiced headhunting, while the Yanomami suffered high male mortality from constant fighting. The Munduruku expanded along the Tapajós river before being subdued in the early nineteenth century. By the early twentieth century, ethnographers listed thirty tribes as peaceful and eighty-three as warlike, highlighting a mosaic of conflict and coexistence.",
+      "sceneTemplate": "grove",
+      "sceneParams": {
+        "primaryColor": "#2a3a2a",
+        "accentColor": "#bbaa77",
+        "particleType": "dust",
+        "groundType": "grass",
+        "backgroundObject": "clouds",
+        "propVariant": "jungle",
+        "artKit": "jungle",
+        "timeOfDay": "day",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Amazon rainforest",
+      "transition": "bloom-out",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/42/Noite_no_Teatro_Amazonas_%28cropped%29.jpg/1920px-Noite_no_Teatro_Amazonas_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Susan Valentim · CC BY-SA 4.0 · Wikimedia Commons",
+        "license": "CC BY-SA 4.0"
+      },
+      "landmark": null
+    },
+    {
+      "index": 3,
+      "label": "CHAPTER 03 · FUTURE BREATH",
+      "titleWord": "ORELLANA",
+      "heading": "Green lungs tremble under a warming sky.",
+      "subheading": "Climate shadows over the canopy.",
+      "body": "Amazonian evergreen forests hold about 10 % of the world's terrestrial primary productivity and a comparable share of carbon stores, roughly 1.1 × 10¹¹ metric tonnes. In 2021 the forest released more greenhouse gases than it took up, a first in its record. Deforestation contributed to the severe drought of 2014-2015, and models suggest a 4 °C rise could eliminate 85 % of the forest by 2100.",
+      "sceneTemplate": "grove",
+      "sceneParams": {
+        "primaryColor": "#113311",
+        "accentColor": "#66dd88",
+        "particleType": "rain",
+        "groundType": "water",
+        "backgroundObject": "moon",
+        "propVariant": "jungle",
+        "artKit": "jungle",
+        "timeOfDay": "night",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Amazon rainforest",
+      "transition": "noise-dissolve",
+      "heroImage": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Global_Forest_Change_tree-cover_loss_year_in_the_Brazilian_Amazon%2C_2001-2024.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "attribution": "Yourecoveredinbees · CC BY 4.0 · Wikimedia Commons",
+        "license": "CC BY 4.0"
+      },
+      "landmark": null
+    }
+  ],
+  "createdAt": "2026-10-01T11:34:38Z"
+}

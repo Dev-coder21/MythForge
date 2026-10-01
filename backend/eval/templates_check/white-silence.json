@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "id": "8c3a0f04-b52f-405f-9031-6802fa35fb48",
+  "topic": "Antarctica",
+  "title": "White Silence",
+  "subtitle": "A cold continent of ice, fire and fragile presence.",
+  "slug": "white-silence",
+  "chapters": [
+    {
+      "index": 1,
+      "label": "CHAPTER 01 · ICE SHEET",
+      "titleWord": "ANTARCTICA",
+      "heading": "A continent of endless white.",
+      "subheading": "Vastness measured in kilometres of ice.",
+      "body": "Antarctica is the fifth-largest continent, about forty percent larger than Europe, covering fourteen point two million square kilometres. Most of it is cloaked by an ice sheet averaging one point nine kilometres in thickness. It is the coldest, driest and windiest continent, a polar desert receiving just over two hundred millimetres of precipitation along its coast.",
+      "sceneTemplate": "polar",
+      "sceneParams": {
+        "primaryColor": "#2b3b4d",
+        "accentColor": "#8fa9c2",
+        "particleType": "snow",
+        "groundType": "stone",
+        "backgroundObject": "moon",
+        "propVariant": "glacier",
+        "artKit": "glacier",
+        "timeOfDay": "dawn",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Antarctica",
+      "transition": "noise-dissolve",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Antarctica_6400px_from_Blue_Marble.jpg/1920px-Antarctica_6400px_from_Blue_Marble.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Dave Pape · Public domain · Wikimedia Commons",
+        "license": "Public domain"
+      },
+      "landmark": null
+    },
+    {
+      "index": 2,
+      "label": "CHAPTER 02 · VOLCANOIC HEART",
+      "titleWord": "SOUTHERN",
+      "heading": "Heat beneath the frozen veil.",
+      "subheading": "Southern fire on a frozen world.",
+      "body": "Mount Erebus on Ross Island is the world's southernmost active volcano, erupting roughly ten times each day. Ash has been recorded three hundred kilometres from its crater. The continent's highest peak, Vinson Massif, rises to four thousand eight hundred ninety-two metres, while Dome Argus reaches four thousand ninety one metres and records temperatures as low as minus ninety degrees Celsius.",
+      "sceneTemplate": "polar",
+      "sceneParams": {
+        "primaryColor": "#3a4c5e",
+        "accentColor": "#c1d2e3",
+        "particleType": "dust",
+        "groundType": "stone",
+        "backgroundObject": "sun",
+        "propVariant": "glacier",
+        "artKit": "glacier",
+        "timeOfDay": "day",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Antarctica",
+      "transition": "ink-wipe",
+      "heroImage": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cc/Nacreous_clouds_Antarctica.jpg/1920px-Nacreous_clouds_Antarctica.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "attribution": "Alan Light from Charlotte, USA. At Commons:  Alan R Light (talk · contribs) · CC BY 2.0 · Wikimedia Commons",
+        "license": "CC BY 2.0"
+      },
+      "landmark": null
+    },
+    {
+      "index": 3,
+      "label": "CHAPTER 03 · HUMAN FOOTPRINT",
+      "titleWord": "OCEAN",
+      "heading": "Scientists on a frozen frontier.",
+      "subheading": "Governed by peace, visited by few.",
+      "body": "Twenty-nine nations signed the 1959 Antarctic Treaty, banning military activity, mining and nuclear waste. During summer about five thousand people live in research stations, falling to roughly one thousand in winter. Tourism, fishing and scientific work are the main human activities, yet their impact is felt through pollution, ozone depletion and accelerating ice-sheet melt.",
+      "sceneTemplate": "polar",
+      "sceneParams": {
+        "primaryColor": "#1e2a38",
+        "accentColor": "#7a9fb5",
+        "particleType": "none",
+        "groundType": "void",
+        "backgroundObject": "stars",
+        "propVariant": "glacier",
+        "artKit": "glacier",
+        "timeOfDay": "night",
+        "props": [],
+        "particleDensity": 0.3
+      },
+      "titleLayout": "horizontal",
+      "source": "wikipedia:Antarctica",
+      "transition": "bloom-out",
+      "heroImage": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Antarctica_satellite_globe.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "attribution": "NASA · Public domain · Wikimedia Commons",
+        "license": "Public domain"
+      },
+      "landmark": null
+    }
+  ],
+  "createdAt": "2026-10-01T11:45:08Z"
+}
