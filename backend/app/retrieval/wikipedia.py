@@ -21,20 +21,49 @@ PREFERRED = (
 )
 
 
+# Scripts written without spaces between words: count characters instead (about 2 per word).
+_NO_SPACES = {"ja", "zh", "th", "lo", "km", "my"}
+
+# Local digits (Devanagari, Bengali, Gujarati, Gurmukhi, Odia, Tamil, Telugu, Kannada, Malayalam, Arabic-Indic,
+# Extended Arabic-Indic, full-width) -> ASCII, so numbers in other-language sources can be checked.
+_DIGITS = str.maketrans({
+    chr(base + i): str(i)
+    for base in (0x0966, 0x09E6, 0x0AE6, 0x0A66, 0x0B66, 0x0BE6, 0x0C66, 0x0CE6, 0x0D66, 0x0660, 0x06F0, 0xFF10)
+    for i in range(10)
+})
+
+
+def ascii_digits(text: str) -> str:
+    return text.translate(_DIGITS)
+
+
+def word_count(text: str, lang: str = "en") -> int:
+    if lang in _NO_SPACES:
+        return len(re.sub(r"\s+", "", text)) // 2
+    return len(text.split())
+
+
+def truncate_words(text: str, n: int, lang: str = "en") -> str:
+    if lang in _NO_SPACES:
+        return text[: n * 2] + " ..."
+    return " ".join(text.split()[:n]) + " ..."
+
+
 @dataclass
 class WikiPage:
     title: str
     url: str
     summary: str
     sections: list[tuple[str, str]] = field(default_factory=list)
+    lang: str = "en"
 
     @property
     def source_id(self) -> str:
-        """Chapter source reference, e.g. 'wikipedia:Mount Fuji'."""
-        return f"wikipedia:{self.title}"
+        """Chapter source reference: 'wikipedia:Mount Fuji' (English) or 'wikipedia:hi:Title' (other languages)."""
+        return f"wikipedia:{self.title}" if self.lang == "en" else f"wikipedia:{self.lang}:{self.title}"
 
     def words(self) -> int:
-        return len(self.summary.split()) + sum(len(t.split()) for _, t in self.sections)
+        return word_count(self.summary, self.lang) + sum(word_count(t, self.lang) for _, t in self.sections)
 
 
 def _api(lang: str) -> str:
@@ -90,7 +119,7 @@ def split_sections(text: str) -> list[tuple[str, str]]:
     return sections
 
 
-def select_sections(sections: list[tuple[str, str]], max_words: int) -> list[tuple[str, str]]:
+def select_sections(sections: list[tuple[str, str]], max_words: int, lang: str = "en") -> list[tuple[str, str]]:
     """Keep the introduction, then preferred sections, then the rest, within a word budget."""
 
     def rank(item: tuple[int, tuple[str, str]]) -> tuple[int, int]:
@@ -103,16 +132,16 @@ def select_sections(sections: list[tuple[str, str]], max_words: int) -> list[tup
     chosen: list[tuple[int, tuple[str, str]]] = []
     used = 0
     for i, (heading, body) in sorted(enumerate(sections), key=rank):
-        words = body.split()
+        n = word_count(body, lang)
         if used >= max_words:
             break
         room = max_words - used
-        if len(words) > room:
+        if n > room:
             if room < 60:
                 continue
-            body = " ".join(words[:room]) + " ..."
+            body = truncate_words(body, room, lang)
         chosen.append((i, (heading, body)))
-        used += min(len(words), room)
+        used += min(n, room)
     return [s for _, s in sorted(chosen)]  # back in article order
 
 
@@ -123,7 +152,18 @@ def fetch_page(client: httpx.Client, topic: str, lang: str = "en", max_words: in
         if not summary:
             continue
         real_title = summary.get("title", title)
-        sections = select_sections(fetch_sections(client, real_title, lang), max_words)
+        sections = select_sections(fetch_sections(client, real_title, lang), max_words, lang)
         url = summary.get("content_urls", {}).get("desktop", {}).get("page") or f"https://{lang}.wikipedia.org/wiki/{quote(real_title.replace(' ', '_'))}"
-        return WikiPage(title=real_title, url=url, summary=summary.get("extract", ""), sections=sections)
+        return WikiPage(title=real_title, url=url, summary=summary.get("extract", ""), sections=sections, lang=lang)
     return None
+
+
+def fetch_page_by_title(client: httpx.Client, title: str, lang: str, max_words: int) -> WikiPage | None:
+    """A known article (e.g. a Wikidata sitelink) in any language, trimmed to the word budget."""
+    summary = fetch_summary(client, title, lang)
+    if not summary:
+        return None
+    real_title = summary.get("title", title)
+    sections = select_sections(fetch_sections(client, real_title, lang), max_words, lang)
+    url = summary.get("content_urls", {}).get("desktop", {}).get("page") or f"https://{lang}.wikipedia.org/wiki/{quote(real_title.replace(' ', '_'))}"
+    return WikiPage(title=real_title, url=url, summary=summary.get("extract", ""), sections=sections, lang=lang)

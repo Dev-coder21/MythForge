@@ -276,6 +276,9 @@ def validate_draft_full(raw: str, topic: str, content: RetrievedContent, chapter
         )
     source_text = content.as_prompt_text()
     source_numbers = _numbers(source_text)
+    # English names from Wikidata let English words match sources written in other scripts.
+    name_text = f"{topic} {source_text} {' '.join(getattr(content, 'names', []))}"
+    foreign = getattr(content, "has_foreign", False)
     used_words = {c.titleWord.upper() for c in draft.chapters}
     seen_words = set()
     candidates: list[list[str]] = []
@@ -301,14 +304,14 @@ def validate_draft_full(raw: str, topic: str, content: RetrievedContent, chapter
         invented = sorted(_numbers(f"{c.heading} {c.subheading} {c.body}") - source_numbers)
         if invented:
             errors.append(f"{where}: these numbers are not in the SOURCE TEXT: {', '.join(invented)}; use only numbers from the source")
-        if not _word_in(c.titleWord, f"{topic} {source_text}"):
+        if not _word_in(c.titleWord, name_text) and not foreign:
             errors.append(
                 f"{where}.titleWord: {c.titleWord} does not appear in the topic or SOURCE TEXT; "
                 f"pick one of: {', '.join(_title_candidates(source_text, used_words))}"
             )
         if c.landmark and not any(
-            _word_in(w, f"{topic} {source_text}") for w in re.findall(r"[^\W\d_][\w'-]{3,}", c.landmark.name)
-        ):
+            _word_in(w, name_text) for w in re.findall(r"[^\W\d_][\w'-]{3,}", c.landmark.name)
+        ) and not foreign:
             errors.append(f"{where}.landmark: \"{c.landmark.name}\" is not named in the SOURCE TEXT; use a structure the source names, or null")
         if c.titleWord.upper() in seen_words:
             errors.append(

@@ -28,6 +28,8 @@ COPY RULES (hard rules; breaking one fails validation)
 - No placeholder text.
 
 FACTS
+- The SOURCE TEXT may include articles in other languages (Hindi, Japanese, French...). Read them, but always write
+  the story in English, and cite the article a chapter's facts come from by its SOURCE id.
 - Only state facts found in the SOURCE TEXT. Do not add numbers, names, dates or claims that are not in it.
 - Copy numbers exactly as written in the source (keep its digits and units).
 - Every chapter has a "source" that is one of the SOURCE ids given.

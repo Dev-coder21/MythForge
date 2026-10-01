@@ -21,15 +21,32 @@ export const chromeRefs = {
 
 export const chapterCaption = (spec: StorySpec, c: Chapter) => `${spec.topic} · ${c.sceneParams.timeOfDay}`
 
-/** "wikipedia:Great Pyramid of Giza" → label + link; anything else is shown as given. */
-export function sourceOf(source?: string): { label: string; href?: string } | null {
+/** Wikipedia languages a source can come from (multilingual retrieval), code -> English name. */
+const WIKI_LANGS: Record<string, string> = {
+  hi: 'Hindi', mr: 'Marathi', bn: 'Bengali', ta: 'Tamil', te: 'Telugu', kn: 'Kannada', ml: 'Malayalam', gu: 'Gujarati',
+  pa: 'Punjabi', or: 'Odia', ur: 'Urdu', ja: 'Japanese', zh: 'Chinese', ko: 'Korean', th: 'Thai', vi: 'Vietnamese',
+  id: 'Indonesian', ne: 'Nepali', si: 'Sinhala', fa: 'Persian', tr: 'Turkish', ar: 'Arabic', fr: 'French', de: 'German',
+  es: 'Spanish', it: 'Italian', pt: 'Portuguese', ru: 'Russian', el: 'Greek', pl: 'Polish', nl: 'Dutch', sv: 'Swedish',
+}
+
+/**
+ * "wikipedia:Great Pyramid of Giza" (English) or "wikipedia:hi:Title" (another language) -> label + link;
+ * anything else is shown as given. An English title with a colon stays English (its prefix is not a language code).
+ */
+export function sourceOf(source?: string): { label: string; href?: string; lang?: string } | null {
   if (!source) return null
   const [kind, ...rest] = source.split(':')
-  const title = rest.join(':').trim()
-  if (kind === 'wikipedia' && title) {
-    return { label: `Wikipedia · ${title}`, href: `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}` }
+  let title = rest.join(':').trim()
+  if (kind !== 'wikipedia' || !title) return { label: source }
+  let lang = 'en'
+  const [maybeLang, ...titleRest] = title.split(':')
+  if (titleRest.length && maybeLang && WIKI_LANGS[maybeLang]) {
+    lang = maybeLang
+    title = titleRest.join(':').trim()
   }
-  return { label: source }
+  const href = `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}`
+  const label = lang === 'en' ? `Wikipedia · ${title}` : `Wikipedia · ${WIKI_LANGS[lang]} · ${title}`
+  return { label, href, lang }
 }
 
 /** Small attribution under the chapter body; the only clickable thing in the overlay. */

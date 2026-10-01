@@ -9,6 +9,7 @@ from urllib.parse import quote
 import httpx
 
 from app.core.config import get_settings
+from app.retrieval.wikidata import LANG_NAMES
 from app.imagegen.landmarks import Checker, layer_url, paint_landmark
 from app.imagegen.providers import AllImageProvidersFailed, ImageChain
 from app.llm_pipeline.providers import LLMError
@@ -26,6 +27,9 @@ def lead_photo(source: str | None, client: httpx.Client) -> dict | None:
         return None
     title = source.split(":", 1)[1]
     lang = get_settings().wiki_lang
+    head, _, rest = title.partition(":")
+    if rest and head in LANG_NAMES:  # "wikipedia:hi:Title"
+        lang, title = head, rest
     try:
         r = client.get(f"https://{lang}.wikipedia.org/api/rest_v1/page/summary/{quote(title.replace(' ', '_'))}")
         r.raise_for_status()
