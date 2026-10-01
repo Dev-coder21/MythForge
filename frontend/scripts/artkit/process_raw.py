@@ -540,6 +540,18 @@ GENERIC_SETS = {
     "harbor": ("harbor", {
         "skyline-low.png": "skyline-low", "boats.png": "boats", "ferry.png": "ferry", "seawall.png": "seawall",
     }),
+    "forest": ("grove", {
+        "canopy-far.png": "canopy-far", "trunks-mid.png": "trunks-mid", "trunk-near.png": "trunk-near",
+        "vines.png": "vines", "ferns.png": "ferns",
+    }),
+    # A tuple value is a two-up sheet: left half, right half.
+    "beach": ("beach", {
+        "islands-far.png": "islands-far", "sand.png": "sand", "rocks-shore.png": "rocks-shore",
+        "sheet-palms.png": ("palm", "palm-b"),
+    }),
+    "ice": ("polar", {
+        "ice-far.png": "ice-far", "ice-cliff.png": "ice-cliff", "iceberg.png": "iceberg", "snowfield.png": "snowfield",
+    }),
 }
 FULL_DESPILL = {"lamp"}
 # Elements painted standing on a thin dark ground line (cropped before the cutout).
@@ -553,12 +565,19 @@ def run_generic(folder: str) -> None:
     out_dir = ROOT / "frontend" / "public" / "artkits" / template / "hand"
     out_dir.mkdir(parents=True, exist_ok=True)
     elements: dict[str, np.ndarray] = {}
+    jobs: list[tuple[str, np.ndarray]] = []
     for src, name in mapping.items():
         path = RAW / folder / src
         if not path.exists():
             print(f"skip {src} (missing)")
             continue
-        rgb = remove_sparkle(load(f"{folder}/{src}"))
+        rgb = remove_sparkle(load(f"{folder}/{src}"))  # whole sheet first, then slice
+        if isinstance(name, tuple):
+            mid = rgb.shape[1] // 2
+            jobs += [(name[0], rgb[:, :mid]), (name[1], rgb[:, mid:])]
+        else:
+            jobs.append((name, rgb))
+    for name, rgb in jobs:
         if name in GROUND_LINE:
             rgb = erase_ground_line(rgb)
         key = key_color(rgb)
@@ -566,6 +585,16 @@ def run_generic(folder: str) -> None:
         # Full despill on magenta sheets (no genuine pink) and on elements whose glass or metal took green
         # spill; other green sheets keep grass and foliage greens.
         c, a = cutout(rgb, watermark=False, despill_all=magenta or name in FULL_DESPILL)
+        if magenta:
+            # Thin leaf tips were painted see-through over the screen, so magenta is mixed into the paint.
+            # Near the edge, pink-tinted pixels take their colour from the solid foliage nearby, in
+            # proportion to how pink they are (this art has no genuine pink).
+            solid = (a > 0.97).astype(np.float32)
+            wsum = ndimage.gaussian_filter(solid, 4.0) + 1e-6
+            inner = np.stack([ndimage.gaussian_filter(c[..., k] * solid, 4.0) for k in range(3)], axis=2) / wsum[..., None]
+            band = ndimage.binary_dilation(a < 0.5, iterations=8) & (a > 0.02) & (wsum > 0.05)
+            pink = np.clip((np.minimum(c[..., 0], c[..., 2]) - c[..., 1]) / 0.08, 0, 1) * band
+            c = c * (1 - pink[..., None]) + inner * pink[..., None]
         elements[name] = trim(rgba_of(c, a))
         print(f"cut {name}")
     measured = {k: stats(v) for k, v in elements.items()}
@@ -599,7 +628,7 @@ def main() -> None:
     import argparse
 
     ap = argparse.ArgumentParser(description="Process hand-painted art into kit layers.")
-    ap.add_argument("--set", choices=["kyoto", "giza", "peak", "oldcity", "ruins", "harbor", "all"], default="all", help="which art set to process")
+    ap.add_argument("--set", choices=["kyoto", "giza", "peak", "oldcity", "ruins", "harbor", "forest", "beach", "ice", "all"], default="all", help="which art set to process")
     ap.add_argument("--landmark", nargs=2, metavar=("SRC", "DST"), help="process one AI-painted landmark image")
     ap.add_argument("--template", default="peak", help="template whose grade the landmark takes")
     args = ap.parse_args()

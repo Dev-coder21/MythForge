@@ -2,11 +2,26 @@
   "name": "jungle",
   "template": "grove",
   "textures": {
-    "canopy-far": "../painted/canopy-far.webp",
-    "trunks-mid": "../painted/trunks-mid.webp",
-    "trunk-near": "../painted/trunk-near.webp",
-    "vines": "../painted/vines.webp",
-    "ferns": "../painted/ferns.webp",
+    "canopy-far": [
+      "../hand/canopy-far.webp",
+      "../painted/canopy-far.webp"
+    ],
+    "trunks-mid": [
+      "../hand/trunks-mid.webp",
+      "../painted/trunks-mid.webp"
+    ],
+    "trunk-near": [
+      "../hand/trunk-near.webp",
+      "../painted/trunk-near.webp"
+    ],
+    "vines": [
+      "../hand/vines.webp",
+      "../painted/vines.webp"
+    ],
+    "ferns": [
+      "../hand/ferns.webp",
+      "../painted/ferns.webp"
+    ],
     "fireflies": "../painted/fireflies.webp"
   },
   "layers": [
@@ -15,15 +30,15 @@
       "texture": "canopy-far",
       "z": -60,
       "x": 0,
-      "bottom": -0.06,
-      "height": 0.64,
+      "bottom": 0.14,
+      "height": 0.34,
       "stretch": true,
       "fog": 0.55,
       "tint": 0.5,
-      "rim": 0.1,
+      "rim": 0.08,
       "portrait": {
-        "bottom": 0.0,
-        "height": 0.34
+        "bottom": 0.22,
+        "height": 0.16
       }
     },
     {
@@ -31,15 +46,15 @@
       "texture": "trunks-mid",
       "z": -24,
       "x": 0,
-      "bottom": -0.02,
-      "height": 0.95,
+      "bottom": -0.06,
+      "height": 1.18,
       "stretch": true,
       "fog": 0.18,
       "tint": 0.4,
-      "rim": 0.35,
+      "rim": 0.08,
       "portrait": {
-        "bottom": 0.04,
-        "height": 0.6
+        "bottom": 0.0,
+        "height": 1.05
       }
     },
     {
@@ -47,31 +62,32 @@
       "texture": "ferns",
       "z": -4,
       "x": 0,
-      "bottom": -0.04,
-      "height": 0.5,
+      "bottom": -0.12,
+      "height": 0.34,
       "stretch": true,
-      "shade": 0.6,
+      "shade": 0.7,
       "tint": 0.25,
-      "rim": 0.3,
+      "rim": 0.08,
       "sway": 0.02,
       "portrait": {
-        "bottom": -0.02,
-        "height": 0.26
+        "bottom": -0.06,
+        "height": 0.18
       }
     },
     {
       "id": "trunk-near",
       "texture": "trunk-near",
       "z": -3,
-      "x": -0.46,
+      "x": -0.44,
       "bottom": -0.1,
-      "height": 1.3,
+      "height": 1.25,
       "shade": 0.8,
       "tint": 0.2,
-      "rim": 0.3,
+      "rim": 0.08,
       "portrait": {
         "x": -0.52,
-        "height": 0.8
+        "bottom": -0.06,
+        "height": 1.25
       }
     },
     {
@@ -79,16 +95,16 @@
       "texture": "vines",
       "z": -6,
       "x": 0,
-      "bottom": 0.62,
-      "height": 0.42,
+      "bottom": 0.64,
+      "height": 0.5,
       "stretch": true,
       "shade": 0.7,
       "tint": 0.25,
-      "rim": 0.2,
+      "rim": 0.08,
       "sway": 0.03,
       "portrait": {
-        "bottom": 0.78,
-        "height": 0.24
+        "bottom": 0.72,
+        "height": 0.34
       }
     }
   ],
