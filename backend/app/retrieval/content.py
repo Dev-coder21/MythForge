@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from app.core.config import get_settings
 from app.models import CachedContent, SourceType
 from app.retrieval.commons import search_images
-from app.retrieval.wikidata import LANG_NAMES, fetch_entity, qid_for_title, search_qid
+from app.retrieval.wikidata import LANG_NAMES, fetch_entity, matches_type, qid_for_title, search_qid, type_labels
 from app.retrieval.wikipedia import WikiPage, ascii_digits, fetch_page, fetch_page_by_title, select_sections
 
 
@@ -97,7 +97,7 @@ def _other_languages(topic: str, en: WikiPage | None, db: Session, client: httpx
     raw = _cache_get(db, SourceType.wikipedia, key)
     if raw is not None:
         return raw
-    raw = {"names": [], "pages": [], "tried": {}}
+    raw = {"names": [], "pages": [], "tried": {}, "skipped": {}}
     try:
         qid = qid_for_title(client, en.title) if en else None
         qid = qid or search_qid(client, topic)
@@ -111,8 +111,14 @@ def _other_languages(topic: str, en: WikiPage | None, db: Session, client: httpx
             for lang in entity.candidate_langs():
                 page = fetch_page_by_title(client, entity.sitelinks[lang], lang, s.max_source_words)
                 raw["tried"][lang] = page.words() if page else 0
-                if page:
-                    raw["pages"].append(asdict(page))
+                if not page:
+                    continue
+                # Wikidata sometimes links an article about a related subject (a festival committee for a
+                # temple); keep it only if it reads as the same kind of thing as the topic.
+                if not matches_type(page.title, page.summary, type_labels(client, entity.types, lang)):
+                    raw["skipped"][lang] = page.title
+                    continue
+                raw["pages"].append(asdict(page))
     except httpx.HTTPError:
         pass  # other languages are a bonus; English-only still works
     _cache_put(db, SourceType.wikipedia, key, raw)
@@ -142,10 +148,12 @@ def gather_content(topic: str, db: Session, client: httpx.Client) -> RetrievedCo
             pages.append(page)
             budget -= page.words()
     content = RetrievedContent(topic=topic, pages=pages, names=names, tried=tried)
+    skipped = multi.get("skipped", {}) if en_words < 0.6 * s.max_source_words else {}
     words = content.words()
     if words < s.min_content_words:
         tried_text = ", ".join(
-            f"{LANG_NAMES.get(lang, lang)} ({n} words)" if n else f"{LANG_NAMES.get(lang, lang)} (no article)"
+            f"{LANG_NAMES.get(lang, lang)} (about a different subject)" if lang in skipped
+            else f"{LANG_NAMES.get(lang, lang)} ({n} words)" if n else f"{LANG_NAMES.get(lang, lang)} (no article)"
             for lang, n in tried.items()
         )
         if not pages:

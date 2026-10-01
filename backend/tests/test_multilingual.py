@@ -68,3 +68,12 @@ def test_word_count_and_digits():
     assert ascii_digits("१७३६ ٢٠٢٤ １２") == "1736 2024 12"
     assert WikiPage("X", "u", "s", lang="ja").source_id == "wikipedia:ja:X"
     assert WikiPage("Star Wars: A New Hope", "u", "s").source_id == "wikipedia:Star Wars: A New Hope"
+
+
+def test_article_subject_check():
+    from app.retrieval.wikidata import matches_type
+    # Wikidata links the Kasba Ganapati temple item to a festival-committee article in Marathi
+    assert not matches_type("कसबा गणपती सार्वजनिक गणेशोत्सव मंडळ", "गणेशोत्सव मंडळ पुण्यातील", ["हिंदू मंदिर"])
+    assert matches_type("चतुःशृंगी मंदिर", "पुण्यातील देवीचे मंदिर", ["हिंदू मंदिर"])
+    assert matches_type("大須観音", "真言宗智山派の別格本山の寺院。", ["仏教寺院"])
+    assert matches_type("Anything", "no labels to judge by", [])

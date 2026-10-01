@@ -49,6 +49,7 @@ class Entity:
     sitelinks: dict[str, str] = field(default_factory=dict)  # lang -> article title
     countries: list[str] = field(default_factory=list)
     names: list[str] = field(default_factory=list)  # English label + aliases
+    types: list[str] = field(default_factory=list)  # "instance of" (P31) item ids
 
     def local_langs(self) -> list[str]:
         out: list[str] = []
@@ -92,8 +93,56 @@ def fetch_entity(client: httpx.Client, qid: str) -> Entity:
         val = claim.get("mainsnak", {}).get("datavalue", {}).get("value", {})
         if isinstance(val, dict) and val.get("id"):
             countries.append(val["id"])
+    types = []
+    for claim in (e.get("claims") or {}).get("P31", []):
+        val = claim.get("mainsnak", {}).get("datavalue", {}).get("value", {})
+        if isinstance(val, dict) and val.get("id"):
+            types.append(val["id"])
     names = []
     if (label := (e.get("labels") or {}).get("en", {}).get("value")):
         names.append(label)
     names += [a["value"] for a in (e.get("aliases") or {}).get("en", [])]
-    return Entity(qid=qid, sitelinks=sitelinks, countries=countries, names=names)
+    return Entity(qid=qid, sitelinks=sitelinks, countries=countries, names=names, types=types)
+
+
+def type_labels(client: httpx.Client, type_ids: list[str], lang: str) -> list[str]:
+    """Labels of the topic's "instance of" types and their direct superclasses (P279) in one language,
+    e.g. Hindu temple -> ["हिंदू मंदिर", "मंदिर"] in Marathi. Empty when Wikidata has no label there."""
+    if not type_ids:
+        return []
+    r = client.get(WIKIDATA_API, params={"action": "wbgetentities", "ids": "|".join(type_ids[:5]),
+                                          "props": "labels|claims", "languages": lang, "format": "json"})
+    r.raise_for_status()
+    ents = r.json().get("entities", {})
+    labels, parents = [], []
+    for e in ents.values():
+        if (v := (e.get("labels") or {}).get(lang, {}).get("value")):
+            labels.append(v)
+        for claim in (e.get("claims") or {}).get("P279", [])[:3]:
+            val = claim.get("mainsnak", {}).get("datavalue", {}).get("value", {})
+            if isinstance(val, dict) and val.get("id"):
+                parents.append(val["id"])
+    if parents:
+        r = client.get(WIKIDATA_API, params={"action": "wbgetentities", "ids": "|".join(dict.fromkeys(parents[:8])),
+                                              "props": "labels", "languages": lang, "format": "json"})
+        r.raise_for_status()
+        for e in r.json().get("entities", {}).values():
+            if (v := (e.get("labels") or {}).get(lang, {}).get("value")):
+                labels.append(v)
+    return list(dict.fromkeys(labels))
+
+
+def matches_type(title: str, summary: str, labels: list[str]) -> bool:
+    """Is the article about this kind of thing? Its title or opening must contain one of the type labels
+    (or a label's last word: "Hindu temple" -> "temple"). No labels in that language = cannot judge = keep."""
+    if not labels:
+        return True
+    text = f"{title} {summary[:400]}".lower()
+    for label in labels:
+        lab = label.lower()
+        keys = {lab, lab.split()[-1]}
+        if " " not in lab and len(lab) >= 3 and not lab.isascii():
+            keys.add(lab[-2:])  # compounds in scripts without spaces: "仏教寺院" (Buddhist temple) -> "寺院"
+        if any(len(k) >= 2 and k in text for k in keys):
+            return True
+    return False
