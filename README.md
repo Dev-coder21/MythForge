@@ -4,6 +4,8 @@ Type a place or a piece of history. MythForge reads the sources, writes a short 
 
 ![Kyoto · chapter one at night: a torii gate on a hill, lanterns, falling blossoms and the chapter title rising behind the grass](docs/screenshots/kyoto-torii-night.jpg)
 
+**Live showcase:** https://dev-coder21.github.io/MythForge/ (the gallery and finished stories, served as a static site; writing new stories runs locally, see below).
+
 Everything runs locally on free services: Wikipedia and Wikimedia Commons for sources and images, the Gemini and Groq free tiers (or a local Ollama model) for writing and fact checking.
 
 ## Screenshots

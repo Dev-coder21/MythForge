@@ -6,6 +6,23 @@ import type { StorySpec } from '@/spec'
 
 const BASE = '/api'
 
+/**
+ * Static build (GitHub Pages): no backend. Stories come from public/data/ (exported with
+ * `python -m scripts.export_static`), and generation explains that it runs locally.
+ */
+export const STATIC = import.meta.env.VITE_STATIC === '1'
+const DATA = `${import.meta.env.BASE_URL}data/stories`
+const groundingById = new Map<string, GroundingReport | null>()
+
+async function staticJson<T>(path: string): Promise<T> {
+  const res = await fetch(`${DATA}/${path}`)
+  if (!res.ok) throw new ApiError(res.status === 404 ? 'Story not found.' : `Request failed (${res.status}).`, res.status)
+  return (await res.json()) as T
+}
+
+export const LOCAL_ONLY_MESSAGE =
+  'This is the static showcase. Writing a new story needs the free AI models and runs on your own machine: clone the repository and run npm run dev.'
+
 export type JobStage = 'queued' | 'retrieving' | 'structuring' | 'checking' | 'painting' | 'assembling' | 'done' | 'error'
 
 export interface JobStatus {
@@ -81,7 +98,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return (res.status === 204 ? undefined : await res.json()) as T
 }
 
-export const api = {
+const liveApi = {
   generate: (topic: string) =>
     request<{ jobId: string; storyId: string }>('/generate', { method: 'POST', body: JSON.stringify({ topic }) }),
   status: (jobId: string) => request<JobStatus>(`/generate/${encodeURIComponent(jobId)}/status`),
@@ -93,3 +110,25 @@ export const api = {
   /** Absolute URL for a backend path such as StorySummary.posterUrl. */
   url: (path: string) => BASE + path,
 }
+
+export const api: typeof liveApi = STATIC
+  ? {
+      generate: async () => {
+        throw new ApiError(LOCAL_ONLY_MESSAGE, 0)
+      },
+      status: async () => {
+        throw new ApiError('No generation jobs in the static showcase.', 404)
+      },
+      stories: () => staticJson<StorySummary[]>('index.json'),
+      story: async (slug: string) => {
+        const { spec, grounding } = await staticJson<{ spec: StorySpec; grounding: GroundingReport | null }>(
+          `${encodeURIComponent(slug)}.json`,
+        )
+        groundingById.set(spec.id, grounding)
+        return spec
+      },
+      grounding: async (id: string) => groundingById.get(id) ?? { score: null },
+      uploadPoster: async () => undefined,
+      url: (path: string) => path,
+    }
+  : liveApi

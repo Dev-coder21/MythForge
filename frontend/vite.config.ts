@@ -42,6 +42,9 @@ function devCapture(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
+  // GitHub Pages serves the static showcase at https://dev-coder21.github.io/MythForge/ (VITE_BASE set by the
+  // workflow); local development stays at the root.
+  base: process.env.VITE_BASE || '/',
   plugins: [react(), tailwindcss(), devCapture()],
   resolve: {
     alias: {

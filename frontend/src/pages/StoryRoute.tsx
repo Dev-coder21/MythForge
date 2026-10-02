@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { StoryInfoPanel } from '@/components/StoryInfoPanel'
-import { api, ApiError, type GroundingReport } from '@/lib/api'
+import { api, ApiError, STATIC, type GroundingReport } from '@/lib/api'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { NotFound } from '@/pages/NotFound'
 import { StoryPage } from '@/pages/StoryPage'
@@ -45,6 +45,7 @@ export function StoryRoute() {
           .then((g) => alive && setGrounding(g))
           .catch(() => alive && setGrounding(null))
         // Take a gallery poster on first view.
+        if (STATIC) return
         fetch(api.url(`/stories/${spec.id}/poster`))
           .then((r) => alive && setNeedsPoster(r.status === 404))
           .catch(() => undefined)

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
-import { api, ApiError, type StorySummary } from '@/lib/api'
+import { api, ApiError, STATIC, type StorySummary } from '@/lib/api'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { sampleKyoto } from '@/spec'
 
@@ -23,7 +23,7 @@ const FEATURED: Card[] = [
     title: sampleKyoto.title,
     subtitle: sampleKyoto.subtitle,
     meta: 'Featured · Hand-written example',
-    poster: '/posters/kyoto.jpg',
+    poster: `${import.meta.env.BASE_URL}posters/kyoto.jpg`,
     primary: sampleKyoto.chapters[0]!.sceneParams.primaryColor,
     accent: sampleKyoto.chapters[0]!.sceneParams.accentColor,
   },
@@ -33,7 +33,7 @@ const FEATURED: Card[] = [
     title: 'Giza',
     subtitle: 'Three kings, one plateau, and the river that carried the stone.',
     meta: 'Featured · Hand-written example',
-    poster: '/posters/giza.jpg',
+    poster: `${import.meta.env.BASE_URL}posters/giza.jpg`,
     primary: '#3a2418',
     accent: '#ff8a3c',
   },
@@ -150,7 +150,7 @@ function StoryCard({ card }: { card: Card }) {
         <p className="text-[10px] uppercase tracking-[0.3em] text-white/55">{card.meta}</p>
         <h3 className="mt-2 font-display text-[clamp(32px,5vw,60px)] uppercase leading-[0.95]">{card.title}</h3>
         {card.subtitle && <p className="mt-2 max-w-md text-[14px] font-light leading-[1.6] text-white/75">{card.subtitle}</p>}
-        {!showPoster && <p className="mt-3 text-[11px] text-white/40">The cover frame is taken the first time the story is opened.</p>}
+        {!showPoster && !STATIC && <p className="mt-3 text-[11px] text-white/40">The cover frame is taken the first time the story is opened.</p>}
       </div>
     </Link>
   )

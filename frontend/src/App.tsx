@@ -10,7 +10,7 @@ const GalleryPage = lazy(() => import('@/pages/GalleryPage').then((m) => ({ defa
 /** Routes: / (home), /story/:slug, /gallery, and a 404 for everything else. */
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
       <Suspense fallback={<div className="min-h-screen bg-[#07080c]" aria-busy="true" />}>
         <Routes>
           <Route path="/" element={<LegacyStoryRedirect fallback={<HomePage />} />} />
