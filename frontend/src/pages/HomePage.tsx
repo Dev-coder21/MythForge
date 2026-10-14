@@ -67,7 +67,7 @@ export function HomePage() {
         </nav>
       </header>
 
-      <main className="relative z-10 flex min-h-[calc(100svh-120px)] flex-col justify-end px-5 pb-16 md:px-10 md:pb-24">
+      <main className="relative z-10 flex min-h-[calc(100svh-120px)] flex-col justify-end px-5 pb-16 md:px-10 md:pb-24 [@media(max-height:500px)]:pb-8 [@media(max-height:500px)]:pt-4">
         {jobId ? (
           <GeneratingScreen
             key={jobId}
@@ -82,7 +82,7 @@ export function HomePage() {
           />
         ) : (
           <section className="max-w-3xl">
-            <h1 className="font-display text-[clamp(64px,15vw,184px)] uppercase leading-[0.86] tracking-[-0.01em]">
+            <h1 className="font-display text-[clamp(52px,min(15vw,22svh),184px)] uppercase leading-[0.86] tracking-[-0.01em]">
               MythForge
             </h1>
             <p className="mt-5 max-w-xl text-[15px] font-light leading-[1.7] text-white/75 md:text-[17px]">
